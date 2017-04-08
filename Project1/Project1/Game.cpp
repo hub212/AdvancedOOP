@@ -12,11 +12,6 @@ using namespace std;
 		this->board = new string[numRows];
 		this->dim = make_pair(numRows, numCols);
 
-		for (int i = 0; i<10; i++)
-		{
-			printf("%s\n", board[i]);
-		}
-
 		for(int row = 0; row<numRows; row++)
 		{
 			(this->board)[row] = string(board[row]);

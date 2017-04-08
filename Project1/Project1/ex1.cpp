@@ -12,13 +12,28 @@
 
 int main(int argc, char* argv[])
 {
+
+
+
+	// getting curent path
 	TCHAR pwd[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH, pwd);
-	MessageBox(NULL, pwd, pwd, 0);
+	printf("pwd: %s\n", pwd);
+
+	char attackA[MAX_PATH*2];
+	char attackB[MAX_PATH*2];
+	strcpy_s(attackA, pwd);
+	strcat(attackA, "\\clean_movesA.attack-a");
+	strcpy_s(attackB, pwd);
+	strcat(attackB, "\\clean_movesB.attack-b");
+
+	printf("playerA attack file path: %s\n", attackA);
+	printf("playerB attack file path: %s\n", attackB);
+
 
 	vector<const char*> players_moves;
-	players_moves.push_back("C:\\Users\\Shlomi\\Source\\Repos\\AdvancedOOP2\\Project1\\clean_movesA.attack-a");
-	players_moves.push_back("C:\\Users\\Shlomi\\Source\\Repos\\AdvancedOOP2\\Project1\\clean_movesA.attack-b");
+	players_moves.push_back(attackA);
+	players_moves.push_back(attackB);
 
 	// FIXME - manual board input for testing.
 	char** boards = (char**)malloc(sizeof(char*) * 10);
@@ -31,6 +46,7 @@ int main(int argc, char* argv[])
 		strcpy(boards[i], temp[i]);
 	}
 
+	printf("temporary board:\n");
 	// FIXME - debug leftovers
 	for (int i = 0; i<10; i++)
 	{
