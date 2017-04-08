@@ -110,7 +110,7 @@ using namespace std;
 	}
 
 
-	GameMaster::GameMaster(const char* boards, vector<const char*>& players_moves, int numRows, int numCols)
+	GameMaster::GameMaster(const char** boards, vector<const char*>& players_moves, int numRows, int numCols)
 {
 	playerA = Player(0, "BPMD", players_moves[0]);
 	playerB = Player(1, "bpmd", players_moves[1]);
