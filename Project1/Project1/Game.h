@@ -4,6 +4,53 @@
 #include <set>
 #include <vector>
 
+// foreward decleration
+class Vessel_ID;
+
+enum class Search
+{
+	Down,
+	Right
+};
+
+enum class Players {
+	PlayerA = 0,
+	PlayerB = 1
+};
+
+enum class VesselType
+{
+	Boat, Missiles, Sub, War
+};
+
+enum class Scores
+{
+	BScore = 2,
+	MScore = 3,
+	SScore = 7,
+	WScore = 8
+};
+
+enum class Length
+{
+	BLength = 1,
+	MLength = 2,
+	SLength = 3,
+	WLength = 4
+};
+
+
+class Vessel_ID
+{
+public:
+	VesselType type;
+	Players player;
+	int score;
+
+	Vessel_ID(VesselType type, Players player);
+	Vessel_ID();
+};
+
 class Player
 {
 public:
@@ -13,7 +60,9 @@ public:
 	int				player_num;
 	int				read_pos;
 	int				line_num;
-	std::pair<int, int>	dim;
+	int				done;
+
+	std::pair<int, int>	dim = std::make_pair(-1,-1);
 
 	std::set<char>		myLetters;
 
@@ -25,7 +74,7 @@ public:
 	 * \param numRows 
 	 * \param numCols 
 	 */
-	void setMyBoard(const char** board, int numRows, int numCols);
+	void setMyBoard(std::string* board, int numRows, int numCols);
 
 	/**
 	 * \brief executing the next move. exctracting the next move from move files.
@@ -59,34 +108,74 @@ public:
 class GameMaster : IBattleshipGameAlgo
 {
 
-public:
+private:
 
 	Player playerA;
 	Player playerB;
-	char** boards;
-	std::vector<const char*> players_moves;
+
+	char**	boards;
 	std::pair<int, int> dim;
+	std::vector<const char*> players_moves;
+
+	int		scores[2];
+	Players turn;
 
 
-	/**
-	 * \brief init all internal variables - paths and boards. intansiating the Player intances. 
-	 * \param boards 
-	 * \param players_moves 
-	 * \param numRows 
-	 * \param numCols 
-	 */
-	GameMaster(const char** boards, std::vector<const char*>& players_moves, int numRows, int numCols);
 
-	/**
-	 * \brief impliments the game running phase.
-	 *		  responsible for attack() and notifyOnAttackResult() and updating current state.
-	 */
-	void play();
+	std::pair<Vessel_ID, AttackResult> attack_results(std::pair<int, int> move);
+
+	int extractBoards(const char** board, int numRows, int numCols, std::string** out_board[]);
 
 	void setBoard(const char** board, int numRows, int numCols);
 
 	std::pair<int, int> attack();
 
 	void notifyOnAttackResult(int player, int row, int col, AttackResult result);
+
+	int initGame();
+
+	void update_state(std::pair<int,int> move, std::pair<Vessel_ID, AttackResult> results);
+
+	bool is_defeat();
+
+	void print_results();
+
+
+public:
+	/**
+	* \brief init all internal variables - paths and boards. intansiating the Player intances.
+	* \param boards
+	* \param players_moves
+	* \param numRows
+	* \param numCols
+	*/
+	GameMaster(char** boards, std::vector<const char*>& players_moves, int numRows, int numCols);
+
+	/**
+	* \brief impliments the game running phase.
+	*		  responsible for attack() and notifyOnAttackResult() and updating current state.
+	*/
+	int play();
+};
+
+
+class Utils
+{
+	////-------------------------
+	////		Utils
+	////-------------------------
+public:
+
+	static Vessel_ID Utils::get_vessel(const char curr, Player playerA, Player playerB);
+
+	static bool Utils::search_up(char** boards, int x, int y, char curr);
+
+	static bool Utils::search_down(char** boards, int x, int y, char curr);
+
+	static bool Utils::search_right(char** boards, int x, int y, char curr);
+
+	static bool Utils::search_left(char** boards, int x, int y, char curr);
+
+	static bool is_sink(char** boards, int x, int y, int curr);
 
 };

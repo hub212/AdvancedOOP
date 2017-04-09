@@ -54,11 +54,9 @@ int main(int argc, char* argv[])
 	}
 
 	// DOTO - connect parsed board to gameMaster
-	GameMaster game_master = GameMaster(const_cast<const char**>(boards), players_moves, 10, 10);
-	game_master.setBoard(const_cast<const char**>(boards), game_master.dim.first, game_master.dim.second);
-
-	game_master.attack();
-
+	GameMaster game_master = GameMaster(boards, players_moves, 10, 10);
+	if (game_master.play() != 0)
+		return -1;
 	
 	return 0;
 }
