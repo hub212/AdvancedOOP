@@ -42,14 +42,14 @@ Vessel_ID::Vessel_ID() {};
 ////--------------------------
 
 // copy the relevant vessels
-void Player::setMyBoard(string* board, int numRows, int numCols)
+void Player::setBoard(const char** board, int numRows, int numCols)
 {
 	this->dim = make_pair(numRows, numCols);
 }
 
 
 
-std::pair<int, int> Player::next_move() {
+std::pair<int, int> Player::attack() {
 
 	string line;
 	string col;
@@ -104,15 +104,21 @@ int Player::str2int(const string str, int* num)
 	}
 	catch (invalid_argument&)
 	{
-		cout << "Error(Debug only): none number input; "<< str << endl;
+		if (DEBUG)
+			cout << "Error(Debug only): none number input; "<< str << endl;
 		return -1;
 	}
 	catch (out_of_range&)
 	{
-		cout << "Error(Debug only): input number is out of range; " << str << endl;
+		if(DEBUG)
+			cout << "Error(Debug only): input number is out of range; " << str << endl;
 		return -1;
 	}
 	return 0;
+}
+
+void Player::notifyOnAttackResult(int player, int row, int col, AttackResult result)
+{
 }
 
 // decising letters for each player
@@ -139,17 +145,17 @@ Player::~Player()
 GameMaster::GameMaster(char** boards, vector<const char*>& players_moves, int numRows, int numCols) : playerA(0, "BPMD", players_moves[0]),
 playerB(1, "bpmd", players_moves[1]), boards(boards), players_moves(players_moves), dim(make_pair(numRows, numCols))
 {
-	setBoard(const_cast<const char**>(boards), dim.first, dim.second);
+	setBoards(const_cast<const char**>(boards), dim.first, dim.second);
 	scores[0] = 0;
 	scores[1] = 0;
 	turn = Players::PlayerA;
 };
 
 
-int GameMaster::extractBoards(const char** board, int numRows, int numCols, string** out_board[])
+int GameMaster::extractBoards(const char** board, int numRows, int numCols, char**** out_board)
 {
 	try {
-		*out_board = new string*[2];
+		*out_board = new char**[2];
 	}
 	catch(std::bad_alloc& exc)
 	{
@@ -158,7 +164,7 @@ int GameMaster::extractBoards(const char** board, int numRows, int numCols, stri
 	}
 
 	try {
-		(*out_board)[0] = new string[numRows];
+		(*out_board)[0] = new char*[numRows];
 	}
 	catch (std::bad_alloc& exc)
 	{
@@ -167,7 +173,7 @@ int GameMaster::extractBoards(const char** board, int numRows, int numCols, stri
 	}
 
 	try {
-		(*out_board)[1] = new string[numRows];
+		(*out_board)[1] = new char*[numRows];
 	}
 	catch (std::bad_alloc& exc)
 	{
@@ -178,17 +184,29 @@ int GameMaster::extractBoards(const char** board, int numRows, int numCols, stri
 	
 	for (int row = 0; row < numRows; row++)
 	{
-		(*out_board)[0][row] = string(board[row]);
-		(*out_board)[1][row] = string(board[row]);
+		(*out_board)[0][row] = new char[numCols+1];
+		(*out_board)[1][row] = new char[numCols+1]; 
+		
+		if (strcpy_s((*out_board)[0][row], (rsize_t) numCols+1, board[row])) {
+			cout << "Error: memory allocation failed for boards separating" << endl;
+			return 1;
+		}
+
+		if (strcpy_s((*out_board)[1][row], (rsize_t) numCols+1, board[row]))
+		{
+			cout << "Error: memory allocation failed for boards separating" << endl;
+			return 1;
+		}
+		
 
 		for (int col = 0; col < numCols; col++) {
 			if (this->playerA.myLetters.find(board[row][col]) == this->playerA.myLetters.end())
 			{
-				(*out_board)[0][row].replace(col, 1, 1, ' ');
+				(*out_board)[0][row][col] =  ' ';
 			}
 			if (this->playerB.myLetters.find(board[row][col]) == this->playerB.myLetters.end())
 			{
-				(*out_board)[1][row].replace(col, 1, 1, ' ');
+				(*out_board)[1][row][col] = ' ';
 			}
 		}
 	}
@@ -196,20 +214,23 @@ int GameMaster::extractBoards(const char** board, int numRows, int numCols, stri
 	return 0;
 }
 
-void GameMaster::setBoard(const char** board, int numRows, int numCols)
+void GameMaster::setBoards(const char** board, int numRows, int numCols)
 {
-	string** boards = nullptr;
+	char*** boards = nullptr;
 
 	if (extractBoards(board, numRows, numCols, &boards) != 0)
 	{
-		cout << "Error: setBoard failed due to player boards allocations" << endl;
+		cout << "Error: setBoards failed due to player boards allocations" << endl;
 	}
 	else {
-		playerA.setMyBoard(boards[0], numRows, numCols);
-		playerB.setMyBoard(boards[1], numRows, numCols);
+		playerA.setBoard(const_cast<const char**>(boards[0]), numRows, numCols);
+		playerB.setBoard(const_cast<const char**>(boards[1]), numRows, numCols);
+		for (int i = 0; i < 2; i++)
+			delete []boards[i];
 		delete[] boards;
 	}
 }
+
 
 pair<int, int> GameMaster::attack()
 {
@@ -218,11 +239,11 @@ pair<int, int> GameMaster::attack()
 	switch (turn)
 	{
 	case(Players::PlayerA):
-		curr_move = playerA.next_move();
+		curr_move = playerA.attack();
 		break;
 
 	case(Players::PlayerB):
-		curr_move = playerB.next_move();
+		curr_move = playerB.attack();
 		break;
 	default:
 		return make_pair(-1, -1);
@@ -232,15 +253,11 @@ pair<int, int> GameMaster::attack()
 	{
 		cout << "Error: attack() failed on " << ("%s", Players::PlayerA == turn ? "player A" : "player B") << "turn" << endl;
 		return make_pair(-1, -1);
-	}
-
-	cout << ("%s move:\t", Players::PlayerA == turn ? "player A" : "player B") << "(" << curr_move.first << "," << curr_move.second << ")" << endl;
+	} else if (curr_move != make_pair(0, 0) && DEBUG)
+		cout << ("%s", Players::PlayerA == turn ? "player A move:\t" : "player B move:\t") << "(" << curr_move.first+1 << "," << curr_move.second+1 << ")" << endl;
 	return curr_move;
 }
 
-void GameMaster::notifyOnAttackResult(int player, int row, int col, AttackResult result)
-{
-}
 
 int GameMaster::play()
 {
@@ -270,7 +287,8 @@ int GameMaster::play()
 		if (results.second != AttackResult::Miss)
 		{
 			update_state(move, results);
-			cout << ("%s", results.second == AttackResult::Hit ? "Hit " : "Sink ") << ("%s", results.first.type == VesselType::Boat ? "Boat " : results.first.type == VesselType::Missiles ? "Missiles " : results.first.type == VesselType::Sub ? "Sub " : "War ") << endl << "Score " << scores[0] << ":" << scores[1] << endl;
+			if (DEBUG)
+				cout << ("%s ", turn == Players::PlayerA ? "player A move results " : "player B move results") <<  ("%s", results.second == AttackResult::Hit ? "Hit " : "Sink ") << ("%s ", results.first.player == Players::PlayerA ? "player A's " : "player B's ") << ("%s", results.first.type == VesselType::Boat ? "Boat " : results.first.type == VesselType::Missiles ? "Missiles " : results.first.type == VesselType::Sub ? "Sub " : "War ") << endl << "Score " << scores[0] << ":" << scores[1] << endl;
 
 			if (is_defeat())
 			{
@@ -278,8 +296,9 @@ int GameMaster::play()
 			}
 			turn = (results.first.player == Players::PlayerA) ? Players::PlayerB : Players::PlayerA;
 		}
-
-		turn = (turn == Players::PlayerA) ? Players::PlayerB : Players::PlayerA;
+		else {
+			turn = (turn == Players::PlayerA) ? Players::PlayerB : Players::PlayerA;
+		}
 	}
 
 	print_results();
@@ -314,7 +333,8 @@ pair<Vessel_ID, AttackResult> GameMaster::attack_results(pair<int,int> move)
  void GameMaster::update_state(pair<int,int> move, pair<Vessel_ID, AttackResult> results)
 {
 	 boards[move.first][move.second] = '@';
-	 scores[(int)results.first.player] += results.first.score;
+	if (results.second == AttackResult::Sink)
+		scores[(int) (results.first.player == Players::PlayerA ? Players::PlayerB : Players::PlayerA)] += results.first.score;
 }
 
  bool GameMaster::is_defeat()
@@ -411,9 +431,6 @@ Vessel_ID Utils::get_vessel(char curr, Player playerA, Player playerB)
 
 bool Utils::is_sink(char** boards, int x, int y, int curr)
 {
-	int tx = x;
-	int ty = y;
-
 	bool up, down, left, right;
 
 	up = Utils::search_up(boards, x, y, curr);
@@ -427,7 +444,7 @@ bool Utils::is_sink(char** boards, int x, int y, int curr)
 bool Utils::search_up(char** boards, int x, int y, char curr)
 {
 	//search up
-	while (++y < 10 && boards[x][y] != ' ')
+	while (--x >= 0 && boards[x][y] != ' ')
 	{
 		if (boards[x][y] == '@') continue;
 		if (boards[x][y] == curr) return false;
@@ -438,7 +455,7 @@ bool Utils::search_up(char** boards, int x, int y, char curr)
 bool Utils::search_down(char** boards, int x, int y, char curr)
 {
 	//search down
-	while (--y >= 0 && boards[x][y] != ' ')
+	while (++x < 10 && boards[x][y] != ' ')
 	{
 		if (boards[x][y] == '@') continue;
 		if (boards[x][y] == curr) return false;
@@ -449,7 +466,7 @@ bool Utils::search_down(char** boards, int x, int y, char curr)
 bool Utils::search_right(char** boards, int x, int y, char curr)
 {
 	//search right
-	while (++x < 10 && boards[x][y] != ' ')
+	while (++y < 10 && boards[x][y] != ' ')
 	{
 		if (boards[x][y] == '@') continue;
 		if (boards[x][y] == curr) return false;
@@ -460,7 +477,7 @@ bool Utils::search_right(char** boards, int x, int y, char curr)
 bool Utils::search_left(char** boards, int x, int y, char curr)
 {
 	//search left
-	while (++x < 10 && boards[x][y] != ' ')
+	while (--y >= 0 && boards[x][y] != ' ')
 	{
 		if (boards[x][y] == '@') continue;
 		if (boards[x][y] == curr) return false;

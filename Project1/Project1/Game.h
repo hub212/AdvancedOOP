@@ -1,8 +1,9 @@
 
 #include "IBattleshipGameAlgo.h"
-#include <string>
 #include <set>
 #include <vector>
+
+#define DEBUG 0
 
 // foreward decleration
 class Vessel_ID;
@@ -51,7 +52,7 @@ public:
 	Vessel_ID();
 };
 
-class Player
+class Player : IBattleshipGameAlgo
 {
 public:
 
@@ -69,19 +70,19 @@ public:
 	
 	/**
 	 * \brief copying the relevant board and updating data set.
-	 *		  being called by setBoard from GameMaster
+	 *		  being called by setBoards from GameMaster
 	 * \param board 
 	 * \param numRows 
 	 * \param numCols 
 	 */
-	void setMyBoard(std::string* board, int numRows, int numCols);
+	void setBoard(const char** board, int numRows, int numCols);
 
 	/**
 	 * \brief executing the next move. exctracting the next move from move files.
 	 *		  being called by GameMaster attack().
 	 * \return pair of int - (row,col) tuple. (-1,-1) for failure, (0,0) -EOF.
 	 */
-	std::pair<int, int> next_move();
+	std::pair<int, int> attack();
 
 	/**
 	 * \brief converting string to int and handles exceptions.
@@ -91,6 +92,8 @@ public:
 	 */
 	int str2int(const std::string str, int* num);
 
+
+	void notifyOnAttackResult(int player, int row, int col, AttackResult result);
 	
 	/**
 	 * \brief initilze all internal variables.
@@ -100,12 +103,13 @@ public:
 	 */
 	Player(int player_num, char* letters,const  char* moves);
 
+
 	Player() = default;
 
 	~Player();
 };
 
-class GameMaster : IBattleshipGameAlgo
+class GameMaster
 {
 
 private:
@@ -124,13 +128,11 @@ private:
 
 	std::pair<Vessel_ID, AttackResult> attack_results(std::pair<int, int> move);
 
-	int extractBoards(const char** board, int numRows, int numCols, std::string** out_board[]);
+	int extractBoards(const char** board, int numRows, int numCols, char**** out_board);
 
-	void setBoard(const char** board, int numRows, int numCols);
+	void setBoards(const char** board, int numRows, int numCols);
 
 	std::pair<int, int> attack();
-
-	void notifyOnAttackResult(int player, int row, int col, AttackResult result);
 
 	int initGame();
 

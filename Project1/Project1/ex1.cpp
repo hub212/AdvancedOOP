@@ -45,19 +45,8 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	// getting curent path
-	TCHAR pwd[MAX_PATH];
-	GetCurrentDirectory(MAX_PATH, pwd);
-	printf("pwd: %s\n", pwd);
-
 	char attackA[MAX_PATH*2];
 	char attackB[MAX_PATH*2];
-	/*
-	strcpy_s(attackA, pwd);
-	strcat(attackA, "\\clean_movesA.attack-a");
-	strcpy_s(attackB, pwd);
-	strcat(attackB, "\\clean_movesB.attack-b");
-	*/
 
 	strcpy_s(attackA, bc->movesA_file.c_str());
 	strcpy_s(attackB, bc->movesB_file.c_str());
@@ -69,31 +58,8 @@ int main(int argc, char* argv[])
 	players_moves.push_back(attackA);
 	players_moves.push_back(attackB);
 
-	// FIXME - manual board input for testing.
 	char** boards = bc->board;
-	/*
-	boards = (char**)malloc(sizeof(char*) * 10);
-	char* temp[] = { "  B       ", " p        ", " p        ", "      MMM ", "m  d      ", "m  d     b", "m  d      ", "   d      ", "B          ", "   b    PP"
-	};
 
-	for (int i = 0; i<10; i++)
-	{
-		boards[i] = (char*)malloc(11 * sizeof(char));
-		strcpy(boards[i], temp[i]);
-	}
-	*/
-
-	strcpy_s(attackA, bc->movesA_file.c_str());
-	strcpy_s(attackB, bc->movesB_file.c_str());
-
-	printf("temporary board:\n");
-	// FIXME - debug leftovers
-	for (int i = 0; i<NUM_ROWS; i++)
-	{
-		printf("%s\n", boards[i]);
-	}
-
-	// DOTO - connect parsed board to gameMaster
 	game_master = new GameMaster(boards, players_moves, NUM_ROWS, NUM_COLS);
 	if (game_master->play() != 0) {
 		del(&game_master, &bc);
