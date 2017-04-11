@@ -1,6 +1,2 @@
 clean_movesA.attack-a
 clean_movesB.attack-b
-ex1.sln
-ex1.VC.db
-ex1.VC.VC.opendb
-good_board_0.sboard

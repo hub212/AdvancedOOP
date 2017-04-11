@@ -1,6 +1,8 @@
 // ex1.cpp : Defines the entry point for the console application.
 //
 #include "stdafx.h"
+#include "Board.h"
+#include "BoardChecker.h"
 #include "ex1.h"
 #include "Game.h"
 #include <vector>
@@ -12,6 +14,16 @@
 
 int main(int argc, char* argv[])
 {
+	BoardChecker::isDebug = true;
+	BoardChecker* bc = new BoardChecker();
+	if (argc > 1) {
+		bc->checkBoard(argv[1]);
+	}
+	else {
+		TCHAR pwd[MY_MAX_PATH];
+		GetCurrentDirectory(MY_MAX_PATH, pwd);
+		bc->checkBoard(pwd);
+	}
 
 
 
@@ -59,7 +71,10 @@ int main(int argc, char* argv[])
 
 	game_master.attack();
 
-	
+
+	return 0;
+
 	return 0;
 }
+
 
