@@ -6,14 +6,25 @@
 #include <vector>
 #include <Windows.h>
 #include <WinBase.h>
+#include "BoardChecker.h"
 //test push michael
 
 #define MAX_PATH 1024
+#define MY_MAX_PATH 1024
 
 int main(int argc, char* argv[])
 {
 
-
+	BoardChecker::isDebug = true;
+	BoardChecker* bc = new BoardChecker();
+	if (argc > 1) {
+		bc->checkBoard(argv[1]);
+	}
+	else {
+		TCHAR pwd[MY_MAX_PATH];
+		GetCurrentDirectory(MY_MAX_PATH, pwd);
+		bc->checkBoard(pwd);
+	}
 
 	// getting curent path
 	TCHAR pwd[MAX_PATH];
