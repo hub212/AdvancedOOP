@@ -263,9 +263,19 @@ Board::~Board()
 	if (BoardChecker::isDebug)
 		std::cout << "deleting board" << std::endl;
 	
-		for (int row_index = 0; row_index < num_rows; row_index++)
+	for (int row_index = 0; row_index < num_rows; row_index++)
 	{
 		delete[] board[row_index];
 	}
 	delete[] board;
+}
+
+int Board::numRows() {
+	return num_rows;
+}
+int Board::numCols() {
+	return num_cols;
+}
+char** Board::getboard() {
+	return board;
 }

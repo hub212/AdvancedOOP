@@ -9,6 +9,9 @@ class Board
 	char** board;
 
 public:
+	int numRows();
+	int numCols();
+	char** getboard();
 	int countNonEmptyCells();
 	char get(int row, int col);
 	void set(int row, int col, char ch);

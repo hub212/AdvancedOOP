@@ -1,6 +1,11 @@
 #include "BoardChecker.h"
 
 bool BoardChecker::isDebug;
+string movesA_file;
+string movesB_file;
+char** board = NULL;
+int num_rows = 0;
+int num_cols = 0;
 
 BoardChecker::BoardChecker()
 {
@@ -117,12 +122,14 @@ ifstream* BoardChecker::checkPath(char* path) {
 		if (!isPlayerA_fileFound && string_has_suffix(str, ".attack-a")) {
 			playerA_fileName.append(str);
 			isPlayerA_fileFound = true;
+			movesA_file = playerA_fileName;
 			playerA_Stream = new ifstream(playerA_fileName);
 		}
 
 		if (!isPlayerB_fileFound && string_has_suffix(str, ".attack-b")) {
 			playerB_fileName.append(str);
 			isPlayerB_fileFound = true;
+			movesB_file = playerB_fileName;
 			playerB_Stream = new ifstream(playerB_fileName);
 		}
 	}
@@ -162,11 +169,11 @@ ifstream* BoardChecker::checkPath(char* path) {
 	return boardStream;
 }
 
-void BoardChecker::checkBoard(char* path) {
+bool BoardChecker::checkBoard(char* path) {
 	
 	ifstream* boardStream = checkPath(path);
 	if (boardStream == NULL) {
-		return;
+		return false;
 	}
 
 
@@ -222,7 +229,8 @@ void BoardChecker::checkBoard(char* path) {
 				int maxCol = tmpBoard->maxOccupiedCol();
 
 				if (minRow == -1 || minCol == -1 || maxRow == -1 || maxCol == -1) {
-					std::cout << "error, no chars in tmpBoard" << std::endl;
+					if (BoardChecker::isDebug)
+						std::cout << "error, no chars in tmpBoard" << std::endl;
 					continue;
 				}
 
@@ -246,6 +254,8 @@ void BoardChecker::checkBoard(char* path) {
 		}
 	}
 
+	bool boardIsOk = illegalShips.length() == 0;
+
 	printIllegalShapeError(illegalShips, 'B');
 	printIllegalShapeError(illegalShips, 'P');
 	printIllegalShapeError(illegalShips, 'M');
@@ -257,30 +267,59 @@ void BoardChecker::checkBoard(char* path) {
 
 	if (playerA_ships > 5) {
 		std::cout << "Too many ships for player A" << std::endl;
+		boardIsOk = false;
 	}
 	if (playerA_ships < 5) {
 		std::cout << "Too few ships for player A" << std::endl;
+		boardIsOk = false;
 	}
 	if (playerB_ships > 5) {
 		std::cout << "Too many ships for player B" << std::endl;
+		boardIsOk = false;
 	}
 	if (playerB_ships < 5) {
 		std::cout << "Too few ships for player B" << std::endl;
+		boardIsOk = false;
 	}
 	if (areAdjacentShips) {
 		std::cout << "Adjacent Ships on Board" << std::endl;
+		boardIsOk = false;
 	}
 
 	
+	
+	if (boardIsOk)
+	{
+		num_rows = newBoard->numRows();
+		num_cols = newBoard->numCols();
+		char** tmpArr = new char*[num_rows];
+		for (int row_index = 0; row_index < num_rows; row_index++)
+		{
+			tmpArr[row_index] = new char[num_cols];
+			for (int col_index = 0; col_index < num_cols; col_index++) {
+				tmpArr[row_index][col_index] = newBoard->get(row_index, col_index);
+			}
+		}
+		this->board = tmpArr;
+	}
+
 	delete newBoard;
 	delete tmpBoard;
-
-
-
-
 	delete board;
+
+	return boardIsOk;
 }
 
 BoardChecker::~BoardChecker()
 {
+	if (BoardChecker::isDebug)
+		std::cout << "deleting board checker" << std::endl;
+
+	if (board != NULL && num_rows > 0 && num_cols > 0) {
+		for (int row_index = 0; row_index < num_rows; row_index++)
+		{
+			delete[] board[row_index];
+		}
+		delete[] board;
+	}
 }

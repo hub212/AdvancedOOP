@@ -9,6 +9,8 @@
 #include "BoardChecker.h"
 //test push michael
 
+#define NUM_ROWS 10
+#define NUM_COLS 10
 #define MAX_PATH 1024
 #define MY_MAX_PATH 1024
 
@@ -17,13 +19,18 @@ int main(int argc, char* argv[])
 
 	BoardChecker::isDebug = true;
 	BoardChecker* bc = new BoardChecker();
+	bool isInputOk = false;
 	if (argc > 1) {
-		bc->checkBoard(argv[1]);
+		isInputOk = bc->checkBoard(argv[1]);
 	}
 	else {
 		TCHAR pwd[MY_MAX_PATH];
 		GetCurrentDirectory(MY_MAX_PATH, pwd);
-		bc->checkBoard(pwd);
+		isInputOk = bc->checkBoard(pwd);
+	}
+
+	if (!isInputOk) {
+		return 1;
 	}
 
 	// getting curent path
@@ -33,21 +40,27 @@ int main(int argc, char* argv[])
 
 	char attackA[MAX_PATH*2];
 	char attackB[MAX_PATH*2];
+	/*
 	strcpy_s(attackA, pwd);
 	strcat(attackA, "\\clean_movesA.attack-a");
 	strcpy_s(attackB, pwd);
 	strcat(attackB, "\\clean_movesB.attack-b");
+	*/
+
+	strcpy_s(attackA, bc->movesA_file.c_str());
+	strcpy_s(attackB, bc->movesB_file.c_str());
 
 	printf("playerA attack file path: %s\n", attackA);
 	printf("playerB attack file path: %s\n", attackB);
-
 
 	vector<const char*> players_moves;
 	players_moves.push_back(attackA);
 	players_moves.push_back(attackB);
 
 	// FIXME - manual board input for testing.
-	char** boards = (char**)malloc(sizeof(char*) * 10);
+	char** boards = bc->board;
+	/*
+	boards = (char**)malloc(sizeof(char*) * 10);
 	char* temp[] = { "  B       ", " p        ", " p        ", "      MMM ", "m  d      ", "m  d     b", "m  d      ", "   d      ", "B          ", "   b    PP"
 	};
 
@@ -56,6 +69,10 @@ int main(int argc, char* argv[])
 		boards[i] = (char*)malloc(11 * sizeof(char));
 		strcpy(boards[i], temp[i]);
 	}
+	*/
+
+	strcpy_s(attackA, bc->movesA_file.c_str());
+	strcpy_s(attackB, bc->movesB_file.c_str());
 
 	printf("temporary board:\n");
 	// FIXME - debug leftovers

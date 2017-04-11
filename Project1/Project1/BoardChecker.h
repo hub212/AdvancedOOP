@@ -10,13 +10,18 @@
 class BoardChecker
 {
 public:
+	string movesA_file;
+	string movesB_file;
+	char** board;
+	int num_rows;
+	int num_cols;
 	static bool isDebug;
 	ifstream* checkPath(char* path);
 	BoardChecker();
 	void printIllegalShapeError(string illegalShips, char ch);
 	bool string_has_suffix(const std::string &str, const std::string &suffix);
 	static int shipSize(char ch);
-	void checkBoard(char* path);
+	bool checkBoard(char* path);
 	~BoardChecker();
 };
 
