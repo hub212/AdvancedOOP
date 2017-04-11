@@ -86,6 +86,7 @@ int main(int argc, char* argv[])
 	if (game_master.play() != 0)
 		return -1;
 	
+	delete bc;
 	return 0;
 }
 

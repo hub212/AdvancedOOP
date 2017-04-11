@@ -295,7 +295,8 @@ bool BoardChecker::checkBoard(char* path) {
 		char** tmpArr = new char*[num_rows];
 		for (int row_index = 0; row_index < num_rows; row_index++)
 		{
-			tmpArr[row_index] = new char[num_cols];
+			tmpArr[row_index] = new char[num_cols + 1];
+			tmpArr[row_index][num_cols] = '\0';
 			for (int col_index = 0; col_index < num_cols; col_index++) {
 				tmpArr[row_index][col_index] = newBoard->get(row_index, col_index);
 			}
