@@ -260,14 +260,20 @@ void Board::add(const Board &other) {
 
 Board::~Board()
 {
-	if (BoardChecker::isDebug)
+	if (BoardChecker::isDebug) {
 		std::cout << "deleting board" << std::endl;
-	
-	for (int row_index = 0; row_index < num_rows; row_index++)
-	{
-		delete[] board[row_index];
 	}
-	delete[] board;
+	if (board != nullptr) {
+		for (int row_index = 0; row_index < num_rows; row_index++)
+		{
+			if (board[row_index] != nullptr) {
+				delete[] board[row_index];
+				board[row_index] = nullptr;
+			}
+		}
+		delete[] board;
+		board = nullptr;
+	}
 }
 
 int Board::numRows() {

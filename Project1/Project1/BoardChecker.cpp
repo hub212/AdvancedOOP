@@ -316,11 +316,15 @@ BoardChecker::~BoardChecker()
 	if (BoardChecker::isDebug)
 		std::cout << "deleting board checker" << std::endl;
 
-	if (board != NULL && num_rows > 0 && num_cols > 0) {
+	if (board != nullptr && num_rows > 0 && num_cols > 0) {
 		for (int row_index = 0; row_index < num_rows; row_index++)
 		{
-			delete[] board[row_index];
+			if (board[row_index] != nullptr) {
+				delete[] board[row_index];
+				board[row_index] = nullptr;
+			}
 		}
 		delete[] board;
+		board = nullptr;
 	}
 }

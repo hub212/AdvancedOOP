@@ -14,9 +14,20 @@
 #define MAX_PATH 1024
 #define MY_MAX_PATH 1024
 
+void del(GameMaster** game_master, BoardChecker** bc) {
+	if (*bc != nullptr) {
+		delete *bc;
+		*bc = nullptr;
+	}
+	if (*game_master != nullptr) {
+		delete *game_master;
+		*game_master = nullptr;
+	}
+}
+
 int main(int argc, char* argv[])
 {
-
+	GameMaster* game_master = nullptr;
 	BoardChecker::isDebug = false;
 	BoardChecker* bc = new BoardChecker();
 	bool isInputOk = false;
@@ -30,6 +41,7 @@ int main(int argc, char* argv[])
 	}
 
 	if (!isInputOk) {
+		del(&game_master, &bc);
 		return 1;
 	}
 
@@ -76,17 +88,18 @@ int main(int argc, char* argv[])
 
 	printf("temporary board:\n");
 	// FIXME - debug leftovers
-	for (int i = 0; i<10; i++)
+	for (int i = 0; i<NUM_ROWS; i++)
 	{
 		printf("%s\n", boards[i]);
 	}
 
 	// DOTO - connect parsed board to gameMaster
-	GameMaster game_master = GameMaster(boards, players_moves, 10, 10);
-	if (game_master.play() != 0)
+	game_master = new GameMaster(boards, players_moves, NUM_ROWS, NUM_COLS);
+	if (game_master->play() != 0) {
+		del(&game_master, &bc);
 		return -1;
-	
-	delete bc;
+	}
+	del(&game_master, &bc);
 	return 0;
 }
 

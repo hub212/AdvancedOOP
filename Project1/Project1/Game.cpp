@@ -122,8 +122,10 @@ Player::Player(int player_num, char* letters,const char* moves) : moves(moves), 
 
 Player::~Player() 
 {
-	if (board != nullptr)
+	if (board != nullptr) {
 		delete[] board;
+		board = nullptr;
+	}
 	myLetters.clear();
 }
 
