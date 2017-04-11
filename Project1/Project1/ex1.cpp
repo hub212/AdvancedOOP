@@ -1,8 +1,6 @@
 // ex1.cpp : Defines the entry point for the console application.
 //
 #include "stdafx.h"
-#include "Board.h"
-#include "BoardChecker.h"
 #include "ex1.h"
 #include "Game.h"
 #include <vector>
@@ -14,16 +12,6 @@
 
 int main(int argc, char* argv[])
 {
-	BoardChecker::isDebug = true;
-	BoardChecker* bc = new BoardChecker();
-	if (argc > 1) {
-		bc->checkBoard(argv[1]);
-	}
-	else {
-		TCHAR pwd[MY_MAX_PATH];
-		GetCurrentDirectory(MY_MAX_PATH, pwd);
-		bc->checkBoard(pwd);
-	}
 
 
 
@@ -66,15 +54,10 @@ int main(int argc, char* argv[])
 	}
 
 	// DOTO - connect parsed board to gameMaster
-	GameMaster game_master = GameMaster(const_cast<const char**>(boards), players_moves, 10, 10);
-	game_master.setBoard(const_cast<const char**>(boards), game_master.dim.first, game_master.dim.second);
-
-	game_master.attack();
-
-
-	return 0;
-
+	GameMaster game_master = GameMaster(boards, players_moves, 10, 10);
+	if (game_master.play() != 0)
+		return -1;
+	
 	return 0;
 }
-
 
