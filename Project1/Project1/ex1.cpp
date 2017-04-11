@@ -17,7 +17,7 @@
 int main(int argc, char* argv[])
 {
 
-	BoardChecker::isDebug = true;
+	BoardChecker::isDebug = false;
 	BoardChecker* bc = new BoardChecker();
 	bool isInputOk = false;
 	if (argc > 1) {
