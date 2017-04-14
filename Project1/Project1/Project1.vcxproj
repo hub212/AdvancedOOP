@@ -25,12 +25,14 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="IBattleshipGameAlgo.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Tests.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="BoardChecker.cpp" />
     <ClCompile Include="ex1.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Tests.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0EC48043-11D4-44CF-A5B9-18AFD0773214}</ProjectGuid>

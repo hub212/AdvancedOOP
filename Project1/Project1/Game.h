@@ -1,9 +1,16 @@
+#ifndef GAMEMASTER_H
+#define GAMEMASTER_H
 
 #include "IBattleshipGameAlgo.h"
+#include "ex1.h"
 #include <set>
 #include <vector>
 
+#if(TEST == 1)
+#define DEBUG 1
+#else
 #define DEBUG 0
+#endif
 
 // foreward decleration
 class Vessel_ID;
@@ -181,3 +188,4 @@ public:
 	static bool is_sink(char** boards, int x, int y, int curr);
 
 };
+#endif

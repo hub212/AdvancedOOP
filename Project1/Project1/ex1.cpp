@@ -1,12 +1,13 @@
 // ex1.cpp : Defines the entry point for the console application.
 //
 #include "stdafx.h"
-#include "ex1.h"
-#include "Game.h"
 #include <vector>
 #include <Windows.h>
 #include <WinBase.h>
+#include "ex1.h"
+#include "Game.h"
 #include "BoardChecker.h"
+#include "Tests.h"
 //test push michael
 
 #define NUM_ROWS 10
@@ -27,10 +28,22 @@ void del(GameMaster** game_master, BoardChecker** bc) {
 
 int main(int argc, char* argv[])
 {
+
+	if (TEST)
+	{
+		Tests tests;
+		if (tests.moves_check() != 0)
+		{
+			cout << "Error: moves_check() failed" << endl;
+			return -1;
+		}
+		return 0;
+	} 
+
 	GameMaster* game_master = nullptr;
 	BoardChecker::isDebug = false;
 	BoardChecker* bc = new BoardChecker();
-	bool isInputOk = false;
+	bool isInputOk;
 	if (argc > 1) {
 		isInputOk = bc->checkBoard(argv[1]);
 	}

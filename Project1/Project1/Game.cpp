@@ -247,6 +247,8 @@ void GameMaster::setBoards(const char** board, int numRows, int numCols)
 {
 	char*** boards = nullptr;
 
+
+
 	if (extractBoards(board, numRows, numCols, &boards) != 0)
 	{
 		cout << "Error: setBoards failed due to player boards allocations" << endl;
