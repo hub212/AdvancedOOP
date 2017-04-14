@@ -159,7 +159,7 @@ int GameMaster::extractBoards(const char** board, int numRows, int numCols, char
 	}
 	catch(std::bad_alloc& exc)
 	{
-		cout << "Error: double string array allocation failed" << endl;
+		cout << "Error: double string array allocation failed while allocating multi board" << endl;
 		return 1;
 	}
 
@@ -168,7 +168,8 @@ int GameMaster::extractBoards(const char** board, int numRows, int numCols, char
 	}
 	catch (std::bad_alloc& exc)
 	{
-		cout << "Error: string array allocation failed for player A" << endl;
+		delete[] *out_board;
+		cout << "Error: string array allocation failed for player A while allocating board" << endl;
 		return 1;
 	}
 
@@ -177,18 +178,46 @@ int GameMaster::extractBoards(const char** board, int numRows, int numCols, char
 	}
 	catch (std::bad_alloc& exc)
 	{
-		cout << "Error: string array allocation failed for player B" << endl;
+		delete[] (*out_board)[0];
+		delete[] *out_board;
+		cout << "Error: string array allocation failed for player B while allocating board" << endl;
 		return 1;
 	}
 
 	
 	for (int row = 0; row < numRows; row++)
 	{
-		(*out_board)[0][row] = new char[numCols+1];
-		(*out_board)[1][row] = new char[numCols+1]; 
+		try {
+			(*out_board)[0][row] = new char[numCols + 1];
+		}
+		catch (std::bad_alloc& exc)
+		{
+			cout << "Error: string array allocation failed for player B while allocating row strings" << endl;
+			for (int delete_row = 0; delete_row < row; delete_row++)
+				delete[](*out_board)[0][delete_row];
+			delete[] (*out_board)[0];
+			delete[] (*out_board)[1];
+			delete[] *out_board;
+			return 1;
+		}
+		try {
+			(*out_board)[1][row] = new char[numCols + 1];
+		}
+		catch (std::bad_alloc& exec)
+		{
+			cout << "Error: string array allocation failed for player A while allocating row strings" << endl;
+			for (int delete_row = 0; delete_row < numRows; delete_row++)
+				delete[](*out_board)[0][delete_row];
+			for (int delete_row = 0; delete_row < row; delete_row++)
+				delete[](*out_board)[1][delete_row];
+			delete[](*out_board)[0];
+			delete[](*out_board)[1];
+			delete[] * out_board;
+			return 1;
+		}
 		
 		if (strcpy_s((*out_board)[0][row], (rsize_t) numCols+1, board[row])) {
-			cout << "Error: memory allocation failed for boards separating" << endl;
+			cout << "Error: copy failed failed for boards separating" << endl;
 			return 1;
 		}
 
@@ -225,8 +254,11 @@ void GameMaster::setBoards(const char** board, int numRows, int numCols)
 	else {
 		playerA.setBoard(const_cast<const char**>(boards[0]), numRows, numCols);
 		playerB.setBoard(const_cast<const char**>(boards[1]), numRows, numCols);
-		for (int i = 0; i < 2; i++)
-			delete []boards[i];
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 2; j++)
+				delete[] boards[i][j];
+			delete[] boards[i];
+		}
 		delete[] boards;
 	}
 }
