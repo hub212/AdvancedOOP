@@ -1,12 +1,11 @@
-#include <Windows.h>
-#include <vector>
-#include <iostream>
-#include "Game.h"
+#ifndef TESTS_H
+#define TESTS_H
 #include "BoardChecker.h"
-#include <algorithm>
-
+#include <vector>
+#include "windows.h"
 
 #define SIZE 10
+#define MY_MAX_PATH 1024
 
 class Tests {
 
@@ -29,3 +28,4 @@ public:
 	int Tests::moves_check();
 	
 };
+#endif

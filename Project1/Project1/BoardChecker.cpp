@@ -1,4 +1,6 @@
 #include "BoardChecker.h"
+#include "Board.h"
+#include "windows.h"
 
 bool BoardChecker::isDebug;
 string movesA_file;
@@ -62,7 +64,7 @@ bool BoardChecker::string_has_suffix(const std::string &str, const std::string &
 
 ifstream* BoardChecker::checkPath(char* path) {
 	char dir[MY_MAX_PATH];
-	strcpy(dir, path);
+	strcpy_s(dir, MY_MAX_PATH, path);
 	dir[MY_MAX_PATH - 1] = '\0';
 
 	struct stat info;

@@ -1,5 +1,7 @@
 #include "Tests.h"
 #include <Windows.h>
+#include <algorithm>
+#include "Game.h"
 
 Tests::Tests()
 {

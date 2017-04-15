@@ -1,9 +1,7 @@
-#pragma once
+#ifndef BOARD_CH_H
+#define BOARD_CH_H
+
 #include "ex1.h"
-#include "Board.h"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <Windows.h>
 
 #define NUM_ROWS 10
 #define NUM_COLS 10
@@ -24,4 +22,4 @@ public:
 	bool checkBoard(char* path);
 	~BoardChecker();
 };
-
+#endif

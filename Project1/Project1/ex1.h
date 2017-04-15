@@ -1,4 +1,3 @@
-#pragma once
 #ifndef ex1_h
 #define ex1_h
 

@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "IBattleshipGameAlgo.h"
 #include "Game.h"
 #include <set>
@@ -59,10 +58,9 @@ std::pair<int, int> Player::attack() {
 	int row_int;
 	int curr_line = 0;
 
-	// FIXME - not opennig with given path argument - replace the string with (this->moves).c_str() for checking
 	ifstream inputFile = ifstream(moves);
 	if (!inputFile.is_open()) {
-		cout << "Error: unable to open player " << player_num << "move files from path:\n" << (this->moves).c_str() << endl <<  strerror((errno)) << endl;
+		cout << "Error: unable to open player " << player_num << "move files from path:\n" << (this->moves).c_str() << endl;
 		return make_pair(-1,-1);
 	}
 
@@ -203,7 +201,7 @@ int GameMaster::extractBoards(const char** board, int numRows, int numCols, char
 		try {
 			(*out_board)[1][row] = new char[numCols + 1];
 		}
-		catch (std::bad_alloc& exec)
+		catch (std::bad_alloc& exc)
 		{
 			cout << "Error: string array allocation failed for player A while allocating row strings" << endl;
 			for (int delete_row = 0; delete_row < numRows; delete_row++)
@@ -396,19 +394,12 @@ pair<Vessel_ID, AttackResult> GameMaster::attack_results(pair<int,int> move)
 
  void GameMaster::print_results()
 {
-
-	if (scores[0] > scores[1])
-	{
-		cout << "The winner is " << "player A with " << scores[0] << " vs. " << scores[1] << endl;
-	} 
-	else if (scores[0] < scores[1])
-	{
-		cout << "The winner is " << "player B with " << scores[1] << " vs. " << scores[0] << endl;
-
-	} else
-	{
-		cout << "No winner is declared, both players with  " << scores[0] << " points" << endl;
-	}
+	if (scores[0] != scores[1])
+		cout << "Player " << ("%s", scores[0] > scores[1] ? "A " : "B ") << "won"<< endl;
+	
+	cout << "Points:" << endl;
+	cout << "Player A: " << ("%d", scores[0]) << endl;
+	cout << "Player B: " << ("%d", scores[1]) << endl;
 
 }
 ////-------------------------

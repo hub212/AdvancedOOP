@@ -1,9 +1,7 @@
 // ex1.cpp : Defines the entry point for the console application.
 //
-#include "stdafx.h"
 #include <vector>
 #include <Windows.h>
-#include <WinBase.h>
 #include "ex1.h"
 #include "Game.h"
 #include "BoardChecker.h"
@@ -64,8 +62,6 @@ int main(int argc, char* argv[])
 	strcpy_s(attackA, bc->movesA_file.c_str());
 	strcpy_s(attackB, bc->movesB_file.c_str());
 
-	printf("playerA attack file path: %s\n", attackA);
-	printf("playerB attack file path: %s\n", attackB);
 
 	vector<const char*> players_moves;
 	players_moves.push_back(attackA);
