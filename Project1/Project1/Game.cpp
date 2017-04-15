@@ -396,19 +396,12 @@ pair<Vessel_ID, AttackResult> GameMaster::attack_results(pair<int,int> move)
 
  void GameMaster::print_results()
 {
-
-	if (scores[0] > scores[1])
-	{
-		cout << "The winner is " << "player A with " << scores[0] << " vs. " << scores[1] << endl;
-	} 
-	else if (scores[0] < scores[1])
-	{
-		cout << "The winner is " << "player B with " << scores[1] << " vs. " << scores[0] << endl;
-
-	} else
-	{
-		cout << "No winner is declared, both players with  " << scores[0] << " points" << endl;
-	}
+	if (scores[0] != scores[1])
+		cout << "Player " << ("%s", scores[0] > scores[1] ? "A " : "B ") << "won"<< endl;
+	
+	cout << "Points:" << endl;
+	cout << "Player A: " << ("%d", scores[0]) << endl;
+	cout << "Player B: " << ("%d", scores[1]) << endl;
 
 }
 ////-------------------------
