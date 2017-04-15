@@ -64,8 +64,6 @@ int main(int argc, char* argv[])
 	strcpy_s(attackA, bc->movesA_file.c_str());
 	strcpy_s(attackB, bc->movesB_file.c_str());
 
-	printf("playerA attack file path: %s\n", attackA);
-	printf("playerB attack file path: %s\n", attackB);
 
 	vector<const char*> players_moves;
 	players_moves.push_back(attackA);
