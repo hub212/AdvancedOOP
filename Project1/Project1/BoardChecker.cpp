@@ -1,4 +1,3 @@
-#include "BoardChecker.h"
 #include "Board.h"
 #include "windows.h"
 

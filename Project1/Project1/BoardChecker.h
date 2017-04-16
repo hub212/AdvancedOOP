@@ -3,8 +3,6 @@
 
 #include "ex1.h"
 
-#define NUM_ROWS 10
-#define NUM_COLS 10
 class BoardChecker
 {
 public:

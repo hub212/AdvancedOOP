@@ -53,7 +53,7 @@ std::pair<int, int> Player::attack() {
 	string line;
 	string col;
 	string row;
-	int	pos;
+	size_t	pos;
 	int col_int;
 	int row_int;
 	int curr_line = 0;
@@ -157,7 +157,7 @@ int GameMaster::extractBoards(const char** board, int numRows, int numCols, char
 	}
 	catch(std::bad_alloc& exc)
 	{
-		cout << "Error: double string array allocation failed while allocating multi board" << endl;
+		cout << "Error: double string array allocation failed while allocating multi board; " <<exc.what() << endl;
 		return 1;
 	}
 
@@ -167,7 +167,7 @@ int GameMaster::extractBoards(const char** board, int numRows, int numCols, char
 	catch (std::bad_alloc& exc)
 	{
 		delete[] *out_board;
-		cout << "Error: string array allocation failed for player A while allocating board" << endl;
+		cout << "Error: string array allocation failed for player A while allocating board; " << exc.what() << endl;
 		return 1;
 	}
 
@@ -178,7 +178,7 @@ int GameMaster::extractBoards(const char** board, int numRows, int numCols, char
 	{
 		delete[] (*out_board)[0];
 		delete[] *out_board;
-		cout << "Error: string array allocation failed for player B while allocating board" << endl;
+		cout << "Error: string array allocation failed for player B while allocating board; " << exc.what() << endl;
 		return 1;
 	}
 
@@ -190,7 +190,7 @@ int GameMaster::extractBoards(const char** board, int numRows, int numCols, char
 		}
 		catch (std::bad_alloc& exc)
 		{
-			cout << "Error: string array allocation failed for player B while allocating row strings" << endl;
+			cout << "Error: string array allocation failed for player B while allocating row strings; " << exc.what() << endl;
 			for (int delete_row = 0; delete_row < row; delete_row++)
 				delete[](*out_board)[0][delete_row];
 			delete[] (*out_board)[0];
@@ -203,7 +203,7 @@ int GameMaster::extractBoards(const char** board, int numRows, int numCols, char
 		}
 		catch (std::bad_alloc& exc)
 		{
-			cout << "Error: string array allocation failed for player A while allocating row strings" << endl;
+			cout << "Error: string array allocation failed for player A while allocating row strings; " << exc.what() << endl;
 			for (int delete_row = 0; delete_row < numRows; delete_row++)
 				delete[](*out_board)[0][delete_row];
 			for (int delete_row = 0; delete_row < row; delete_row++)
