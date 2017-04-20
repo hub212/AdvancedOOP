@@ -1,5 +1,6 @@
-#pragma once
-#include "stdafx.h"
+#ifndef BOARD_H
+#define BOARD_H
+
 #include "BoardChecker.h"
 class Board
 {
@@ -31,3 +32,4 @@ public:
 	~Board();
 };
 
+#endif

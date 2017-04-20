@@ -1,12 +1,10 @@
-#include <Windows.h>
-#include <vector>
-#include <iostream>
-#include "Game.h"
+#ifndef TESTS_H
+#define TESTS_H
 #include "BoardChecker.h"
-#include <algorithm>
+#include <vector>
+#include "windows.h"
 
 
-#define SIZE 10
 
 class Tests {
 
@@ -15,7 +13,7 @@ class Tests {
 	string moves_dir;
 	string good_boards_dir;
 	string bad_boards_dir;
-	char* fixed_board[SIZE];
+	char* fixed_board[NUM_ROWS];
 	vector<string> moves_list;
 
 	void GetFileNamesInDirectory(std::vector<string> *names, std::string folder);
@@ -29,3 +27,4 @@ public:
 	int Tests::moves_check();
 	
 };
+#endif

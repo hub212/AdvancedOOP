@@ -1,3 +1,6 @@
 board.sboard
+good_board_0.sboard
+clean_movesA.attack-a
 moves.attack-a
+clean_movesB.attack-b
 moves.attack-b

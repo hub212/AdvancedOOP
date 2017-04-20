@@ -1,19 +1,13 @@
 // ex1.cpp : Defines the entry point for the console application.
 //
-#include "stdafx.h"
 #include <vector>
 #include <Windows.h>
-#include <WinBase.h>
 #include "ex1.h"
 #include "Game.h"
 #include "BoardChecker.h"
 #include "Tests.h"
 //test push michael
 
-#define NUM_ROWS 10
-#define NUM_COLS 10
-#define MAX_PATH 1024
-#define MY_MAX_PATH 1024
 
 void del(GameMaster** game_master, BoardChecker** bc) {
 	if (*bc != nullptr) {
@@ -58,8 +52,8 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	char attackA[MAX_PATH*2];
-	char attackB[MAX_PATH*2];
+	char attackA[MY_MAX_PATH];
+	char attackB[MY_MAX_PATH];
 
 	strcpy_s(attackA, bc->movesA_file.c_str());
 	strcpy_s(attackB, bc->movesB_file.c_str());

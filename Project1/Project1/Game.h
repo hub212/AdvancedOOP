@@ -1,8 +1,8 @@
 #ifndef GAMEMASTER_H
 #define GAMEMASTER_H
 
-#include "IBattleshipGameAlgo.h"
 #include "ex1.h"
+#include "IBattleshipGameAlgo.h"
 #include <set>
 #include <vector>
 
@@ -140,8 +140,6 @@ private:
 	void setBoards(const char** board, int numRows, int numCols);
 
 	std::pair<int, int> attack();
-
-	int initGame();
 
 	void update_state(std::pair<int,int> move, std::pair<Vessel_ID, AttackResult> results);
 
