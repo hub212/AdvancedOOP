@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 		isInputOk = bc->checkBoard(argv[1]);
 	}
 	else {
-		TCHAR pwd[MY_MAX_PATH];
+		char pwd[MY_MAX_PATH];
 		GetCurrentDirectory(MY_MAX_PATH, pwd);
 		isInputOk = bc->checkBoard(pwd);
 	}

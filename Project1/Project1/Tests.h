@@ -10,7 +10,7 @@
 
 class Tests {
 
-	TCHAR pwd[MY_MAX_PATH];
+	char pwd[MY_MAX_PATH];
 	string files;
 	string moves_dir;
 	string good_boards_dir;
