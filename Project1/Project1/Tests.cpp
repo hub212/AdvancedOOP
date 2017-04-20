@@ -1,12 +1,14 @@
 #include "Tests.h"
 #include <Windows.h>
 #include <algorithm>
+#include <string>
+#include <iostream>
 #include "Game.h"
 
 Tests::Tests()
 {
 	// getting paths to relevant tests dir - moves, good boards, bad boards
-	GetCurrentDirectory(MY_MAX_PATH, pwd);
+	GetCurrentDirectoryA(MY_MAX_PATH, pwd);
 	files = pwd;
 	files.append("\\TestFiles");
 	moves_dir = files + "\\Moves";
@@ -51,8 +53,8 @@ int Tests::moves_check()
 void Tests::GetFileNamesInDirectory(vector<string> *names,string folder)
 {
 	string search_path = folder + "/*.*";
-	WIN32_FIND_DATA fd;
-	HANDLE hFind = ::FindFirstFile(search_path.c_str(), &fd);
+	WIN32_FIND_DATAA  fd;
+	HANDLE hFind = FindFirstFileA(search_path.c_str(), &fd);
 	if (hFind != INVALID_HANDLE_VALUE) {
 		do {
 			// read all (real) files in current folder
@@ -60,7 +62,7 @@ void Tests::GetFileNamesInDirectory(vector<string> *names,string folder)
 			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
 				(*names).push_back(moves_dir + "\\" +  fd.cFileName);
 			}
-		} while (::FindNextFile(hFind, &fd));
+		} while (::FindNextFileA(hFind, &fd));
 		::FindClose(hFind);
 	}
 }

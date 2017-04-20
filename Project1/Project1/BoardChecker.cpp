@@ -85,9 +85,11 @@ ifstream* BoardChecker::checkPath(char* path) {
 	command.append(" /b /a-d > file_names.txt  2>&1");
 
 
-	char pwd[MY_MAX_PATH];
+	TCHAR pwd[MY_MAX_PATH];
 	GetCurrentDirectory(MY_MAX_PATH, pwd);
-	string files = pwd;
+	std::wstring arr_w(pwd);
+	std::string files(arr_w.begin(), arr_w.end());
+
 	files.append("\\file_names.txt");
 	system(command.c_str());
 	
