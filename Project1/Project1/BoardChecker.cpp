@@ -61,16 +61,47 @@ bool BoardChecker::string_has_suffix(const std::string &str, const std::string &
 		str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
 
+
+bool dirExists(const std::string& dirName_in)
+{
+	DWORD ftyp = GetFileAttributesA(dirName_in.c_str());
+	if (ftyp == INVALID_FILE_ATTRIBUTES)
+		return false;  //something is wrong with your path!
+
+	if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
+		return true;   // this is a directory!
+
+	return false;    // this is not a directory!
+}
+
 ifstream* BoardChecker::checkPath(char* path) {
+
+	
+
 	char dir[MY_MAX_PATH];
 	strcpy_s(dir, MY_MAX_PATH, path);
 	dir[MY_MAX_PATH - 1] = '\0';
 
+	for (int i = 0; i < MY_MAX_PATH; i++) {
+
+		if (dir[i] == '/') {
+			dir[i] = '\\';
+		}
+
+	}
+	
+	string dirStr(dir);
+	if (!dirExists(dirStr)) {
+		std::cout << "Wrong path: " << dir << std::endl;
+		return NULL;
+	}
+	/*
 	struct stat info;
 	if (stat(dir, &info) != 0 || !(info.st_mode & S_IFDIR)) {
 		std::cout << "Wrong path: " << dir << std::endl;
 		return NULL;
 	}
+	*/
 
 	string command = "dir ";
 	command.append(dir);
