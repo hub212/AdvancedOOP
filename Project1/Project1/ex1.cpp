@@ -8,6 +8,56 @@
 #include "Tests.h"
 //test push michael
 
+void createPath(int argc, char* argv[], char* pwd) {
+
+	int cnt = 0;
+
+	for (int i = 1; i < argc; i++) {
+
+		if (cnt == MY_MAX_PATH-1) {
+			break;
+		}
+
+		if (i > 1) {
+			pwd[cnt++] = ' ';
+		}
+
+		string arg(argv[i]);
+
+		for (int j = 0; j < arg.length(); j++) {
+
+			if (cnt == MY_MAX_PATH - 1) {
+				break;
+			}
+
+			if (j == arg.length()-1 && !(i == 1 && j==0) && ((arg.at(j)=='/') || (arg.at(j)=='\\'))) {
+				continue;
+			}
+			
+			else if ((argc > 2 || arg.length() > 1) && j == 0 && i == 1 && ((arg.at(j) == '/') || (arg.at(j) == '\\'))) {
+				continue;
+			}
+
+			else if (arg.at(j) == '\'' || arg.at(j) == '"') {
+				continue;
+			}
+			
+			else {
+				pwd[cnt++] = arg.at(j);
+			}
+		}
+	}
+
+	pwd[cnt] = '\0';
+
+	for (int i=0; i < MY_MAX_PATH; i++) {
+
+		if (pwd[i] == '/') {
+			pwd[i] = '\\';
+		}
+
+	}
+}
 
 void del(GameMaster** game_master, BoardChecker** bc) {
 	if (*bc != nullptr) {
@@ -38,11 +88,15 @@ int main(int argc, char* argv[])
 	BoardChecker::isDebug = false;
 	BoardChecker* bc = new BoardChecker();
 	bool isInputOk;
+
+	char pwd[MY_MAX_PATH];
+
 	if (argc > 1) {
-		isInputOk = bc->checkBoard(argv[1]);
+		createPath(argc, argv, pwd);
+		isInputOk = bc->checkBoard(pwd);
 	}
 	else {
-		char pwd[MY_MAX_PATH];
+		
 		GetCurrentDirectoryA(MY_MAX_PATH, pwd);
 		isInputOk = bc->checkBoard(pwd);
 	}
