@@ -1,6 +1,7 @@
 #include "IBattleshipGameAlgo.h"
 #include "Game.h"
 #include "utils.h"
+#include <sstream>
 #include <set>
 #include <vector>
 
@@ -84,7 +85,8 @@ std::pair<int, int> Player::attack() {
 
 		row = line.substr(0, pos);
 		col = line.substr(pos + 1,line.length());
-			
+		
+
 		if ((str2int(row, &row_int) != 0) || (str2int(col, &col_int)) != 0) continue;
 			
 		if (row_int > dim.first || col_int > dim.second) continue;
@@ -161,75 +163,24 @@ int GameMaster::extractBoards(const char** board, int numRows, int numCols, char
 	}
 	catch(std::bad_alloc& exc)
 	{
-		cout << "Error: double string array allocation failed while allocating multi board; " <<exc.what() << endl;
+		cout << "Error: double string array allocation failed while allocating multi board; " << exc.what() << endl;
 		return 1;
 	}
 
-	try {
-		(*out_board)[0] = new char*[numRows];
-	}
-	catch (std::bad_alloc& exc)
-	{
-		delete[] *out_board;
-		cout << "Error: string array allocation failed for player A while allocating board; " << exc.what() << endl;
+	if (Utils::copyBoard(board, numRows, numCols, &(*out_board)[0]) == -1){
+		delete[] * out_board;
+		cout << "Error: string array allocation failed for player A while allocating board; " << endl;
 		return 1;
 	}
 
-	try {
-		(*out_board)[1] = new char*[numRows];
-	}
-	catch (std::bad_alloc& exc)
-	{
-		delete[] (*out_board)[0];
-		delete[] *out_board;
-		cout << "Error: string array allocation failed for player B while allocating board; " << exc.what() << endl;
+	if (Utils::copyBoard(board, numRows, numCols, &(*out_board)[1]) == -1) {
+		delete[] * out_board;
+		cout << "Error: string array allocation failed for player B while allocating board; "  << endl;
 		return 1;
 	}
-
 	
 	for (int row = 0; row < numRows; row++)
 	{
-		try {
-			(*out_board)[0][row] = new char[numCols + 1];
-		}
-		catch (std::bad_alloc& exc)
-		{
-			cout << "Error: string array allocation failed for player B while allocating row strings; " << exc.what() << endl;
-			for (int delete_row = 0; delete_row < row; delete_row++)
-				delete[](*out_board)[0][delete_row];
-			delete[] (*out_board)[0];
-			delete[] (*out_board)[1];
-			delete[] *out_board;
-			return 1;
-		}
-		try {
-			(*out_board)[1][row] = new char[numCols + 1];
-		}
-		catch (std::bad_alloc& exc)
-		{
-			cout << "Error: string array allocation failed for player A while allocating row strings; " << exc.what() << endl;
-			for (int delete_row = 0; delete_row < numRows; delete_row++)
-				delete[](*out_board)[0][delete_row];
-			for (int delete_row = 0; delete_row < row; delete_row++)
-				delete[](*out_board)[1][delete_row];
-			delete[](*out_board)[0];
-			delete[](*out_board)[1];
-			delete[] * out_board;
-			return 1;
-		}
-		
-		if (strcpy_s((*out_board)[0][row], (rsize_t) numCols+1, board[row])) {
-			cout << "Error: copy failed failed for boards separating" << endl;
-			return 1;
-		}
-
-		if (strcpy_s((*out_board)[1][row], (rsize_t) numCols+1, board[row]))
-		{
-			cout << "Error: memory allocation failed for boards separating" << endl;
-			return 1;
-		}
-		
-
 		for (int col = 0; col < numCols; col++) {
 			if (this->playerA.myLetters.find(board[row][col]) == this->playerA.myLetters.end())
 			{

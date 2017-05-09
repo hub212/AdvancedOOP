@@ -108,7 +108,7 @@ bool Utils::search_left(char** boards, int x, int y, char curr)
 }
 
 
- int Utils::copyBoard(char** in_board, int numCols, int numRows, char*** out_board) 
+ int Utils::copyBoard(const char** in_board, int numCols, int numRows, char*** out_board) 
 {
 
 	try {
@@ -142,4 +142,5 @@ bool Utils::search_left(char** boards, int x, int y, char curr)
 			return 1;
 		}
 	}
+	return 0;
 }

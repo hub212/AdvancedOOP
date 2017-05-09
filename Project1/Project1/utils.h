@@ -19,6 +19,6 @@ public:
 
 	static bool is_sink(char** boards, int x, int y, int curr);
 
-	static int copyBoard(char** in_board, int numCols, int numRows, char*** out_board);
+	static int copyBoard(const char** in_board, int numCols, int numRows, char*** out_board);
 
 };
