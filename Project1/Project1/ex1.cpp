@@ -73,4 +73,3 @@ int main(int argc, char* argv[])
 	del(&game_master, &bc);
 	return 0;
 }
-

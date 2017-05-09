@@ -1,5 +1,6 @@
 #include "IBattleshipGameAlgo.h"
 #include "Game.h"
+#include "utils.h"
 #include <set>
 #include <vector>
 
@@ -41,12 +42,15 @@ Vessel_ID::Vessel_ID() {};
 ////--------------------------
 
 // copy the relevant vessels
-void Player::setBoard(const char** board, int numRows, int numCols)
+void Player::setBoard(int player, const char** board, int numRows, int numCols)
 {
 	this->dim = make_pair(numRows, numCols);
+	this->player_num = player;
 }
 
-
+bool Player::init(const std::string& path) {
+	return true;
+};
 
 std::pair<int, int> Player::attack() {
 
@@ -252,8 +256,8 @@ void GameMaster::setBoards(const char** board, int numRows, int numCols)
 		cout << "Error: setBoards failed due to player boards allocations" << endl;
 	}
 	else {
-		playerA.setBoard(const_cast<const char**>(boards[0]), numRows, numCols);
-		playerB.setBoard(const_cast<const char**>(boards[1]), numRows, numCols);
+		playerA.setBoard(1,const_cast<const char**>(boards[0]), numRows, numCols);
+		playerB.setBoard(2,const_cast<const char**>(boards[1]), numRows, numCols);
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++)
 				delete[] boards[i][j];
@@ -402,111 +406,5 @@ pair<Vessel_ID, AttackResult> GameMaster::attack_results(pair<int,int> move)
 	cout << "Player B: " << ("%d", scores[1]) << endl;
 
 }
-////-------------------------
-////		Utils
-////-------------------------
 
-
-Vessel_ID Utils::get_vessel(char curr, Player playerA, Player playerB)
-{
-	Vessel_ID vessel;
-
-	if (playerA.myLetters.find(curr) != playerA.myLetters.end())
-	{
-		if (curr == 'B')
-		{
-			vessel = Vessel_ID::Vessel_ID(VesselType::Boat, Players::PlayerA);
-		}
-		else if (curr == 'P')
-		{
-			vessel = Vessel_ID::Vessel_ID(VesselType::Missiles, Players::PlayerA);
-		}
-		else if (curr == 'M')
-		{
-			vessel = Vessel_ID::Vessel_ID(VesselType::Sub, Players::PlayerA);
-		}
-		else if (curr == 'D')
-		{
-			vessel = Vessel_ID::Vessel_ID(VesselType::War, Players::PlayerA);
-		}
-	}
-	else if (playerB.myLetters.find(curr) != playerB.myLetters.end())
-	{
-		// it's Players B vessel
-		if (curr == 'b')
-		{
-			vessel = Vessel_ID::Vessel_ID(VesselType::Boat, Players::PlayerB);
-		}
-		else if (curr == 'p')
-		{
-			vessel = Vessel_ID::Vessel_ID(VesselType::Missiles, Players::PlayerB);
-		}
-		else if (curr == 'm')
-		{
-			vessel = Vessel_ID::Vessel_ID(VesselType::Sub, Players::PlayerB);
-		}
-		else if (curr == 'd')
-		{
-			vessel = Vessel_ID::Vessel_ID(VesselType::War, Players::PlayerB);
-		}
-	}
-
-	return vessel;
-}
-
-bool Utils::is_sink(char** boards, int x, int y, int curr)
-{
-	bool up, down, left, right;
-
-	up = Utils::search_up(boards, x, y, curr);
-	down = Utils::search_down(boards, x, y, curr);
-	right = Utils::search_right(boards, x, y, curr);
-	left = Utils::search_left(boards, x, y, curr);
-
-	return up&down&right&left;
-}
-
-bool Utils::search_up(char** boards, int x, int y, char curr)
-{
-	//search up
-	while (--x >= 0 && boards[x][y] != ' ')
-	{
-		if (boards[x][y] == '@') continue;
-		if (boards[x][y] == curr) return false;
-	}
-	return true;
-}
-
-bool Utils::search_down(char** boards, int x, int y, char curr)
-{
-	//search down
-	while (++x < 10 && boards[x][y] != ' ')
-	{
-		if (boards[x][y] == '@') continue;
-		if (boards[x][y] == curr) return false;
-	}
-	return true;
-}
-
-bool Utils::search_right(char** boards, int x, int y, char curr)
-{
-	//search right
-	while (++y < 10 && boards[x][y] != ' ')
-	{
-		if (boards[x][y] == '@') continue;
-		if (boards[x][y] == curr) return false;
-	}
-	return true;
-}
-
-bool Utils::search_left(char** boards, int x, int y, char curr)
-{
-	//search left
-	while (--y >= 0 && boards[x][y] != ' ')
-	{
-		if (boards[x][y] == '@') continue;
-		if (boards[x][y] == curr) return false;
-	}
-	return true;
-}
 

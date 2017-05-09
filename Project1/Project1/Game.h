@@ -82,7 +82,7 @@ public:
 	 * \param numRows 
 	 * \param numCols 
 	 */
-	void setBoard(const char** board, int numRows, int numCols);
+	void setBoard(int player, const char** board, int numRows, int numCols);
 
 	/**
 	 * \brief executing the next move. exctracting the next move from move files.
@@ -90,6 +90,8 @@ public:
 	 * \return pair of int - (row,col) tuple. (-1,-1) for failure, (0,0) -EOF.
 	 */
 	std::pair<int, int> attack();
+	int player;
+
 
 	/**
 	 * \brief converting string to int and handles exceptions.
@@ -99,17 +101,17 @@ public:
 	 */
 	int str2int(const std::string str, int* num);
 
-
 	void notifyOnAttackResult(int player, int row, int col, AttackResult result);
 	
+	bool init(const std::string& path);
+
 	/**
 	 * \brief initilze all internal variables.
 	 * \param player_num 
 	 * \param letters 
 	 * \param moves 
 	 */
-	Player(int player_num, char* letters,const  char* moves);
-
+	Player(int player_num, char* letters, const  char* moves);
 
 	Player() = default;
 
@@ -165,25 +167,4 @@ public:
 	int play();
 };
 
-
-class Utils
-{
-	////-------------------------
-	////		Utils
-	////-------------------------
-public:
-
-	static Vessel_ID Utils::get_vessel(const char curr, Player playerA, Player playerB);
-
-	static bool Utils::search_up(char** boards, int x, int y, char curr);
-
-	static bool Utils::search_down(char** boards, int x, int y, char curr);
-
-	static bool Utils::search_right(char** boards, int x, int y, char curr);
-
-	static bool Utils::search_left(char** boards, int x, int y, char curr);
-
-	static bool is_sink(char** boards, int x, int y, int curr);
-
-};
 #endif
