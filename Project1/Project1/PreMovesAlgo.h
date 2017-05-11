@@ -6,12 +6,13 @@
 
 using namespace std;
 
+// this class is the read from file algo implemetation
 class PreMovesAlgo : public CommonAlgo {
 public: 
-	// read file variables
-	int				read_pos;
-	int				line_num;
-	std::string		moves;
+	// read file variables 
+	int				read_pos;	// heler for readinf method
+	int				line_num;	// indication for actual current line
+	std::string		moves_path;  
 
 
 	PreMovesAlgo(int player_num, char* letters, const  char* moves);

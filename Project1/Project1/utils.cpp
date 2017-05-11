@@ -55,7 +55,7 @@ Vessel_ID Utils::get_vessel(char curr, CommonAlgo playerA, CommonAlgo playerB)
 	return vessel;
 }
 
-bool Utils::is_sink(char** boards, int x, int y, int curr)
+bool Utils::is_sink(char** boards, int x, int y, char curr)
 {
 	bool up, down, left, right;
 

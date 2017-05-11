@@ -1,11 +1,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-enum class Search
-{
-	Down,
-	Right
-};
+// common types 
 
 enum class Players {
 	PlayerA = 0,
@@ -34,6 +30,7 @@ enum class Length
 };
 
 
+// this class type is being used for getting back the attack results
 class Vessel_ID
 {
 public:

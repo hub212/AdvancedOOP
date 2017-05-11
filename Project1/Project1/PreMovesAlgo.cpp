@@ -11,9 +11,9 @@ std::pair<int, int> PreMovesAlgo::attack() {
 		int row_int;
 		int curr_line = 0;
 
-		ifstream inputFile = ifstream(moves);
+		ifstream inputFile = ifstream(moves_path);
 		if (!inputFile.is_open()) {
-			cout << "Error: unable to open player " << player_num << "move files from path:\n" << (this->moves).c_str() << endl;
+			cout << "Error: unable to open player " << player_num << "move files from path:\n" << (this->moves_path).c_str() << endl;
 			return make_pair(0, 0);
 		}
 
@@ -68,6 +68,6 @@ int PreMovesAlgo::str2int(const string str, int* num)
 	return 0;
 }
 
-PreMovesAlgo::PreMovesAlgo(int player_num, char* letters, const  char* moves) : CommonAlgo(player_num, letters), moves(moves), read_pos(0), line_num(0) {}
+PreMovesAlgo::PreMovesAlgo(int player_num, char* letters, const  char* moves) : CommonAlgo(player_num, letters), moves_path(moves), read_pos(0), line_num(0) {}
 
 PreMovesAlgo::PreMovesAlgo() : CommonAlgo() {};

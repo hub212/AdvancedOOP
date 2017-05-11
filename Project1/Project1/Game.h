@@ -8,7 +8,7 @@
 #include <set>
 #include <vector>
 
-
+// this class is the game managment class
 class GameMaster
 {
 
