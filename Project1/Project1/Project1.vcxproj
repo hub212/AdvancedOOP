@@ -33,6 +33,7 @@
   <ItemGroup>
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="BoardChecker.cpp" />
+    <ClCompile Include="CommonAlgo.cpp" />
     <ClCompile Include="ex1.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="PreMovesAlgo.cpp" />

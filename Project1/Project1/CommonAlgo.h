@@ -3,22 +3,24 @@
 #include "IBattleshipGameAlgo.h"
 #include <set>
 #include <string>
+using namespace std;
 
 class CommonAlgo : IBattleshipGameAlgo
 {
 public:
 
-	std::string		*board = NULL;
-	std::string		moves;
-	int				player_num;
-	int				read_pos;
-	int				line_num;
-	int				done;
-
+	std::string			*board = NULL;	// will hold the board after copy is done
 	std::pair<int, int>	dim = std::make_pair(-1, -1);
 	std::set<char>		myLetters;
-	int player;
 
+	int					player_num;		
+
+	int					done;			//this is an indication for no more moves (NEED to be turned on when moves are done)
+	int					focused_search;
+	std::pair<int, int>	last_coor;		// coor are in range of (1,10)
+
+
+	
 
 	/**
 	* \brief copying the relevant board and updating data set.
@@ -41,7 +43,7 @@ public:
 	* \param letters
 	* \param moves
 	*/
-	CommonAlgo(int player_num, char* letters, const  char* moves);
+	CommonAlgo(int player_num, char* letters);
 
 	CommonAlgo() = default;
 

@@ -68,6 +68,6 @@ int PreMovesAlgo::str2int(const string str, int* num)
 	return 0;
 }
 
-PreMovesAlgo::PreMovesAlgo(int player_num, char* letters, const  char* moves) : CommonAlgo(player_num, letters, moves) {}
+PreMovesAlgo::PreMovesAlgo(int player_num, char* letters, const  char* moves) : CommonAlgo(player_num, letters), moves(moves), read_pos(0), line_num(0) {}
 
 PreMovesAlgo::PreMovesAlgo() : CommonAlgo() {};
