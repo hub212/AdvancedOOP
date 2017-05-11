@@ -12,6 +12,13 @@
 #include <string>
 #include <fstream>
 
+#if(TEST == 1)
+#define DEBUG 1
+#else
+#define DEBUG 0
+#endif
+
+
 using namespace std;
 #ifdef _UNICODE
 typedef wchar_t TCHAR;

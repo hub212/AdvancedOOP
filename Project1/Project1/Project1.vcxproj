@@ -21,10 +21,13 @@
   <ItemGroup>
     <ClInclude Include="Board.h" />
     <ClInclude Include="BoardChecker.h" />
+    <ClInclude Include="CommonAlgo.h" />
     <ClInclude Include="ex1.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="IBattleshipGameAlgo.h" />
+    <ClInclude Include="PreMovesAlgo.h" />
     <ClInclude Include="Tests.h" />
+    <ClInclude Include="Types.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
@@ -32,7 +35,9 @@
     <ClCompile Include="BoardChecker.cpp" />
     <ClCompile Include="ex1.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="PreMovesAlgo.cpp" />
     <ClCompile Include="Tests.cpp" />
+    <ClCompile Include="Types.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

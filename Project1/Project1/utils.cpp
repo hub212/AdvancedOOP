@@ -1,10 +1,14 @@
 #include "utils.h"
+#include <iostream>
+
 ////-------------------------
 ////		Utils
 ////-------------------------
 
+using namespace std;
 
-Vessel_ID Utils::get_vessel(char curr, Player playerA, Player playerB)
+
+Vessel_ID Utils::get_vessel(char curr, CommonAlgo playerA, CommonAlgo playerB)
 {
 	Vessel_ID vessel;
 

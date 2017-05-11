@@ -1,6 +1,5 @@
 #include "IBattleshipGameAlgo.h"
 #include "Game.h"
-#include "utils.h"
 #include <sstream>
 #include <set>
 #include <vector>
@@ -8,129 +7,36 @@
 using namespace std;
 
 ////--------------------------
-////		Vessels
-////--------------------------
-
-Vessel_ID::Vessel_ID(VesselType type, Players player) : type(type), player(player)
-{
-	switch(type)
-	{
-	case VesselType::Boat:
-		score = (int) Scores::BScore;
-		break;
-
-	case VesselType::Missiles:
-		score = (int)Scores::MScore;
-		break;
-
-	case VesselType::Sub:
-		score = (int)Scores::SScore;
-		break;
-
-	case VesselType::War:
-		score = (int)Scores::WScore;
-		break;
-	}
-};
-
-Vessel_ID::Vessel_ID() {};
-
-
-
-
-////--------------------------
-////		Player
+////		CommonAlgo
 ////--------------------------
 
 // copy the relevant vessels
-void Player::setBoard(int player, const char** board, int numRows, int numCols)
+void CommonAlgo::setBoard(int player, const char** board, int numRows, int numCols)
 {
 	this->dim = make_pair(numRows, numCols);
 	this->player_num = player;
 }
 
-bool Player::init(const std::string& path) {
+bool CommonAlgo::init(const std::string& path) {
 	return true;
 };
 
-std::pair<int, int> Player::attack() {
 
-	string line;
-	string col;
-	string row;
-	size_t	pos;
-	int col_int;
-	int row_int;
-	int curr_line = 0;
+void CommonAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult result)
+{
+}
 
-	ifstream inputFile = ifstream(moves);
-	if (!inputFile.is_open()) {
-		cout << "Error: unable to open player " << player_num << "move files from path:\n" << (this->moves).c_str() << endl;
-		return make_pair(-1,-1);
-	}
-
-		
-	while (getline(inputFile, line) ) {
-		if (curr_line < read_pos) {
-			curr_line++;
-			continue;
-		}
-		read_pos += 1;
-		if (line.size() && line[line.size() - 1] == '\r') {
-			line = line.substr(0, line.size() - 1);
-		}
-			
-		pos = line.find(",");
-		if  (pos == (unsigned long long) (line.length() - 1)) continue;
-
-		row = line.substr(0, pos);
-		col = line.substr(pos + 1,line.length());
-		
-
-		if ((str2int(row, &row_int) != 0) || (str2int(col, &col_int)) != 0) continue;
-			
-		if (row_int > dim.first || col_int > dim.second) continue;
-
-		inputFile.close();
-		return make_pair(row_int - 1, col_int - 1);
-	}
-	done = 1;
+std::pair<int, int> CommonAlgo::attack()
+{
 	return make_pair(0, 0);
 }
 
-
-int Player::str2int(const string str, int* num)
-{
-
-	try
-	{
-		*num = stoi(str);
-	}
-	catch (invalid_argument&)
-	{
-		if (DEBUG)
-			cout << "Error(Debug only): none number input; "<< str << endl;
-		return -1;
-	}
-	catch (out_of_range&)
-	{
-		if(DEBUG)
-			cout << "Error(Debug only): input number is out of range; " << str << endl;
-		return -1;
-	}
-	return 0;
-}
-
-void Player::notifyOnAttackResult(int player, int row, int col, AttackResult result)
-{
-}
-
 // decising letters for each player
-Player::Player(int player_num, char* letters,const char* moves) : moves(moves), player_num(player_num), read_pos(0), line_num(0), done(0), myLetters(letters, letters + strlen(letters)) {};
+CommonAlgo::CommonAlgo(int player_num, char* letters,const char* moves) : moves(moves), player_num(player_num), read_pos(0), line_num(0), done(0), myLetters(letters, letters + strlen(letters)) {};
 
 
 
-Player::~Player() 
+CommonAlgo::~CommonAlgo() 
 {
 	if (board != nullptr) {
 		delete[] board;
@@ -233,13 +139,13 @@ pair<int, int> GameMaster::attack()
 		curr_move = playerB.attack();
 		break;
 	default:
-		return make_pair(-1, -1);
+		return make_pair(0, 0);
 	}
 
-	if (curr_move == make_pair(-1, -1))
+	if (curr_move == make_pair(0, 0))
 	{
 		cout << "Error: attack() failed on " << ("%s", Players::PlayerA == turn ? "player A" : "player B") << "turn" << endl;
-		return make_pair(-1, -1);
+		return make_pair(0, 0);
 	} else if (curr_move != make_pair(0, 0) && DEBUG)
 		cout << ("%s", Players::PlayerA == turn ? "player A move:\t" : "player B move:\t") << "(" << curr_move.first+1 << "," << curr_move.second+1 << ")" << endl;
 	return curr_move;
@@ -257,13 +163,13 @@ int GameMaster::play()
 	{
 		 move = attack();
 
-		 if (move == make_pair(-1, -1))
+		 if (move == make_pair(0, 0))
 		 {
 			 // failure 
 			 return -1;
 		 }
 
-		if (move == make_pair(0, 0))
+		if (move == make_pair(-1, -1))
 		{
 			// the player has no more moves
 			turn = (turn == Players::PlayerA) ? Players::PlayerB : Players::PlayerA;
@@ -296,8 +202,8 @@ int GameMaster::play()
 
 pair<Vessel_ID, AttackResult> GameMaster::attack_results(pair<int,int> move)
 {
-	int x = move.first;
-	int y = move.second;
+	int x = move.first - 1;
+	int y = move.second - 1;
 	char curr = boards[x][y];
 	Vessel_ID vessel;
 
@@ -319,7 +225,7 @@ pair<Vessel_ID, AttackResult> GameMaster::attack_results(pair<int,int> move)
 
  void GameMaster::update_state(pair<int,int> move, pair<Vessel_ID, AttackResult> results)
 {
-	 boards[move.first][move.second] = '@';
+	 boards[move.first - 1][move.second - 1] = '@';
 	if (results.second == AttackResult::Sink)
 		scores[(int) (results.first.player == Players::PlayerA ? Players::PlayerB : Players::PlayerA)] += results.first.score;
 }

@@ -1,5 +1,8 @@
+#ifndef UTILS_H
+#define UTILS_H
+#include "Types.h"
+#include "CommonAlgo.h"
 #include "Game.h"
-
 class Utils
 {
 	////-------------------------
@@ -7,7 +10,7 @@ class Utils
 	////-------------------------
 public:
 
-	static Vessel_ID get_vessel(const char curr, Player playerA, Player playerB);
+	static Vessel_ID get_vessel(const char curr, CommonAlgo playerA, CommonAlgo playerB);
 
 	static bool search_up(char** boards, int x, int y, char curr);
 
@@ -22,3 +25,5 @@ public:
 	static int copyBoard(const char** in_board, int numCols, int numRows, char*** out_board);
 
 };
+
+#endif

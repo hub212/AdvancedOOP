@@ -2,129 +2,20 @@
 #define GAMEMASTER_H
 
 #include "ex1.h"
-#include "IBattleshipGameAlgo.h"
+#include "utils.h"
+#include "Types.h"
+#include "PreMovesAlgo.h"
 #include <set>
 #include <vector>
 
-#if(TEST == 1)
-#define DEBUG 1
-#else
-#define DEBUG 0
-#endif
-
-// foreward decleration
-class Vessel_ID;
-
-enum class Search
-{
-	Down,
-	Right
-};
-
-enum class Players {
-	PlayerA = 0,
-	PlayerB = 1
-};
-
-enum class VesselType
-{
-	Boat, Missiles, Sub, War
-};
-
-enum class Scores
-{
-	BScore = 2,
-	MScore = 3,
-	SScore = 7,
-	WScore = 8
-};
-
-enum class Length
-{
-	BLength = 1,
-	MLength = 2,
-	SLength = 3,
-	WLength = 4
-};
-
-
-class Vessel_ID
-{
-public:
-	VesselType type;
-	Players player;
-	int score;
-
-	Vessel_ID(VesselType type, Players player);
-	Vessel_ID();
-};
-
-class Player : IBattleshipGameAlgo
-{
-public:
-
-	std::string		*board = NULL;
-	std::string		moves;
-	int				player_num;
-	int				read_pos;
-	int				line_num;
-	int				done;
-
-	std::pair<int, int>	dim = std::make_pair(-1,-1);
-
-	std::set<char>		myLetters;
-
-	
-	/**
-	 * \brief copying the relevant board and updating data set.
-	 *		  being called by setBoards from GameMaster
-	 * \param board 
-	 * \param numRows 
-	 * \param numCols 
-	 */
-	void setBoard(int player, const char** board, int numRows, int numCols);
-
-	/**
-	 * \brief executing the next move. exctracting the next move from move files.
-	 *		  being called by GameMaster attack().
-	 * \return pair of int - (row,col) tuple. (-1,-1) for failure, (0,0) -EOF.
-	 */
-	std::pair<int, int> attack();
-	int player;
-
-
-	/**
-	 * \brief converting string to int and handles exceptions.
-	 * \param str 
-	 * \param num 
-	 * \return 
-	 */
-	int str2int(const std::string str, int* num);
-
-	void notifyOnAttackResult(int player, int row, int col, AttackResult result);
-	
-	bool init(const std::string& path);
-
-	/**
-	 * \brief initilze all internal variables.
-	 * \param player_num 
-	 * \param letters 
-	 * \param moves 
-	 */
-	Player(int player_num, char* letters, const  char* moves);
-
-	Player() = default;
-
-	~Player();
-};
 
 class GameMaster
 {
 
 private:
 
-	Player playerA;
-	Player playerB;
+	PreMovesAlgo playerA;
+	PreMovesAlgo playerB;
 
 	char**	boards;
 	std::pair<int, int> dim;
