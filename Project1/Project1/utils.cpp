@@ -148,3 +148,24 @@ bool Utils::search_left(char** boards, int x, int y, char curr)
 	}
 	return 0;
 }
+
+
+ void Utils::gotoxy(int x, int y)
+ {
+	 static HANDLE h = NULL;
+	 if (!h)
+		 h = GetStdHandle(STD_OUTPUT_HANDLE);
+	 COORD c = {(short) x, (short) y };
+	 SetConsoleCursorPosition(h, c);
+ }
+
+ void Utils::ShowConsoleCursor(bool showFlag)
+ {
+	 HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	 CONSOLE_CURSOR_INFO     cursorInfo;
+
+	 GetConsoleCursorInfo(out, &cursorInfo);
+	 cursorInfo.bVisible = showFlag; // set the cursor visibility
+	 SetConsoleCursorInfo(out, &cursorInfo);
+ }

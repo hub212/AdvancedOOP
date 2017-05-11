@@ -5,6 +5,7 @@
 #include "utils.h"
 #include "Types.h"
 #include "PreMovesAlgo.h"
+#include <windows.h>
 #include <set>
 #include <vector>
 
@@ -24,6 +25,8 @@ private:
 	int		scores[2];
 	Players turn;
 
+	int delay = 400;
+
 
 
 	std::pair<Vessel_ID, AttackResult> attack_results(std::pair<int, int> move);
@@ -40,6 +43,8 @@ private:
 
 	void print_results();
 
+	void print_board(int x,int y,int delay);
+
 
 public:
 	/**
@@ -49,7 +54,7 @@ public:
 	* \param numRows
 	* \param numCols
 	*/
-	GameMaster(char** boards, std::vector<const char*>& players_moves, int numRows, int numCols);
+	GameMaster(char** boards, std::vector<const char*>& players_moves, int numRows, int numCols, int delay);
 
 	/**
 	* \brief impliments the game running phase.

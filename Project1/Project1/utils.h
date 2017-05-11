@@ -1,5 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
+#include <Windows.h>
 #include "Types.h"
 #include "CommonAlgo.h"
 #include "Game.h"
@@ -46,6 +47,12 @@ public:
 
 	static int copyBoard(const char** in_board, int numCols, int numRows, char*** out_board);
 
+
+	// the function set the printf function to x,y coords
+	static void gotoxy(int x, int y);
+
+	static void ShowConsoleCursor(bool showFlag);
 };
+
 
 #endif
