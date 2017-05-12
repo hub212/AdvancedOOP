@@ -1,29 +1,47 @@
 #ifndef COM_ALGO_H
 #define COM_ALGO_H
 #include "IBattleshipGameAlgo.h"
+#define DOWN 0
+#define RIGHT 1
+#define UP 2
+#define LEFT 3
+#define HERE 4
+#define NOT_TARGET 1
+#define TARGET 0
 #include <set>
 #include <string>
 using namespace std;
 
-// this class is the most common Algo class - ALL algo classes shuld inherite it
 class CommonAlgo : IBattleshipGameAlgo
 {
 public:
 
-	std::string			*board = NULL;					// will hold the board after copy is done
-	std::pair<int, int>	dim = std::make_pair(-1, -1);	// (MAX_ROW,MAX_COL)
-	std::set<char>		myLetters;						// the battle ships representation (BPMD vs. bpmd)
+	//michael 12/5/17 08:19 added start
+	void				setNextAttack();
+	bool				removeFromRandomTargets(int direction);
+	void				markAdjacentCells();
 
-	int					player_num;		
+	std::pair<int, int>	attackPair;
+	int					currentRow = 0; //the row coordinate of currently attacked cell
+	int					currentCol = 0; //the column coordinate of currently attacked cell
+	int**				possible_targets = NULL;	// will hold the board after copy is done
+	int					rows; //number of rows in the game table
+	int					cols; //number of columns in the game table
+	//michael 12/5/17 08:19 added end
 
-	int					done;			// this is an indication for no more moves (NEED to be turned on when moves are done)
-	int					focused_search;	// flag for random vs. focused search - only for none reading from file algo.
+
+	std::string			*board = NULL;	// will hold the board after copy is done
+	std::pair<int, int>	dim = std::make_pair(-1, -1);
+	std::set<char>		myLetters;
+
+	int					player_num;
+
+	int					done;			//this is an indication for no more moves (NEED to be turned on when moves are done)
+	int					focused_search;
 	std::pair<int, int>	last_coor;		// coor are in range of (1,10)
 
-	/// NOTE - the coordiantes are board associated - [1,MAX_ROW/COL] and not array associated [1, MAX_ROW/COL-1]
 
 
-	
 
 	/**
 	* \brief copying the relevant board and updating data set.
@@ -36,10 +54,8 @@ public:
 
 	std::pair<int, int> attack();
 
-	// empty implementation by default
 	void notifyOnAttackResult(int player, int row, int col, AttackResult result);
 
-	// empty implementation by default
 	bool init(const std::string& path);
 
 	/**

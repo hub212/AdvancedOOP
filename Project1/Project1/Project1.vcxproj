@@ -26,6 +26,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="IBattleshipGameAlgo.h" />
     <ClInclude Include="PreMovesAlgo.h" />
+    <ClInclude Include="SmartAlgo.h" />
     <ClInclude Include="Tests.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="utils.h" />
@@ -37,6 +38,7 @@
     <ClCompile Include="ex1.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="PreMovesAlgo.cpp" />
+    <ClCompile Include="SmartAlgo.cpp" />
     <ClCompile Include="Tests.cpp" />
     <ClCompile Include="Types.cpp" />
     <ClCompile Include="utils.cpp" />
