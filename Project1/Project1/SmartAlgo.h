@@ -1,6 +1,6 @@
 #pragma once
 #include "CommonAlgo.h"
-
+#include <random>
 
 class SmartAlgo :
 	public CommonAlgo
@@ -13,7 +13,6 @@ class SmartAlgo :
 	bool axisFound = false;
 	bool attackSucceeded = false;
 	bool shipSinked = false;
-	int horizontalAxisScore = 0;
 	int firstHitRow = -1;
 	int firstHitCol = -1;
 	int aimDirection = -1;
@@ -22,6 +21,7 @@ class SmartAlgo :
 	int** randomSpots = nullptr;
 	int randomSpotIndex = 0;
 
+	int randomGen(int min, int max);
 	void initRandomTargets();
 	void pickRandTarget();
 	void calcStateAfterAttack();

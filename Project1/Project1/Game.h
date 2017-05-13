@@ -1,19 +1,26 @@
 #ifndef GAMEMASTER_H
 #define GAMEMASTER_H
-
-#include "ex1.h"
-#include "PreMovesAlgo.h"
-#include "utils.h"
-#include "Types.h"
 #include <windows.h>
 #include <set>
 #include <vector>
+#include "ex1.h"
+#include "PreMovesAlgo.h"
+#include "SmartAlgo.h"
+#include "utils.h"
+#include "Types.h"
+#include "Board.h"
+
 
 // this class is the game managment class
 class GameMaster
 {
 
 private:
+
+	Board *boardCopy;
+
+	SmartAlgo player0;
+	CommonAlgo player1;
 
 	PreMovesAlgo playerA;
 	PreMovesAlgo playerB;
@@ -68,7 +75,7 @@ public:
 	* \param numRows
 	* \param numCols
 	*/
-	GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet);
+	GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet, Board *boardCopy);
 
 	/**
 	* \brief impliments the game running phase.

@@ -147,11 +147,19 @@ int main(int argc, char* argv[])
 
 	char** boards = bc->board;
 
-	game_master = new GameMaster(boards, pwd, NUM_ROWS, NUM_COLS, delay, quiet);
+	Board *boardCopy = new Board(NUM_ROWS, NUM_COLS);
+	for (int i = 0; i < NUM_ROWS; i++) {
+		for (int j = 0; j < NUM_COLS; j++) {
+			boardCopy->set(i, j, boards[i][j]);
+		}
+	}
+
+	game_master = new GameMaster(boards, pwd, NUM_ROWS, NUM_COLS, delay, quiet, boardCopy);
 	if (game_master->play() != 0) {
 		del(&game_master, &bc);
 		return -1;
 	}
+	delete boardCopy;
 	del(&game_master, &bc);
 	return 0;
 }

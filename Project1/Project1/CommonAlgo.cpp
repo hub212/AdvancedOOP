@@ -34,7 +34,8 @@ void CommonAlgo::setBoard(int player, const char** board, int numRows, int numCo
 
 bool CommonAlgo::init(const std::string& path) {
 
-	setNextAttack();//michael 12/5/17 08:19 - added this line
+	currentCol = currentRow = -2;//michael 12/5/17 08:19 - added this line
+	setNextAttack();
 	return true;
 };
 
@@ -54,8 +55,12 @@ std::pair<int, int> CommonAlgo::attack()
 	//michael 12/5/17 08:19 added code start
 	attackPair.first = currentRow;
 	attackPair.second = currentCol;
-	return attackPair;
 	//michael 12/5/17 08:19 added code end
+	if (attackPair.first >= 0 && attackPair.second >= 0) {
+		attackPair.first++;
+		attackPair.second++;
+	}
+	return attackPair;
 }
 
 // decising letters for each player
@@ -106,9 +111,13 @@ void CommonAlgo::setNextAttack() {
 		currentCol = currentRow = -1;
 		return;
 	}
+	if (currentCol == -2 || currentRow == -2) {
+		currentRow = 0;
+		currentCol = -1;
+	}
 	do {
 		currentCol++;
-		if (currentCol == cols) {
+		if (currentCol >= cols) {
 			currentCol = 0;
 			currentRow++;
 		}
