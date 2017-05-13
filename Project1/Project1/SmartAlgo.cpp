@@ -22,6 +22,7 @@ bool SmartAlgo::init(const std::string& path) {
 
 void SmartAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult result) {
 	if (this->player_num != player) {
+		possible_targets[row-1][col-1] = NOT_TARGET;
 		return;
 	}
 	if (result == AttackResult::Miss) {
