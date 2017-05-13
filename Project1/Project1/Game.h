@@ -1,14 +1,18 @@
 #ifndef GAMEMASTER_H
 #define GAMEMASTER_H
-
-#include "ex1.h"
-#include "PreMovesAlgo.h"
-#include "utils.h"
-#include "Types.h"
+#include <windows.h>
+#include <set>
+#include <vector>
 #include <tuple>
 #include <windows.h>
 #include <set>
 #include <vector>
+#include "ex1.h"
+#include "PreMovesAlgo.h"
+#include "SmartAlgo.h"
+#include "utils.h"
+#include "Types.h"
+#include "Board.h"
 
 // this class is the game managment class
 class GameMaster
@@ -16,8 +20,9 @@ class GameMaster
 
 private:
 
-	IBattleshipGameAlgo* playerA;
-	IBattleshipGameAlgo* playerB;
+	PreMovesAlgo player0;
+	PreMovesAlgo player1;
+	Board *boardCopy;
 
 	std::set<char>		lettersA = {'B','P','M','D' };
 	std::set<char>		lettersB = {'b','p','m','d' };
@@ -74,7 +79,7 @@ public:
 	* \param numRows
 	* \param numCols
 	*/
-	GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet);
+	GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet, Board *boardCopy);
 
 	/**
 	* \brief init all internal variables - paths and boards. intansiating the Player intances.

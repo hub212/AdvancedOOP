@@ -15,9 +15,10 @@ using namespace std;
 GameMaster::GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet) :
 	boards(boards), players_moves(players_moves), rows(numRows), cols(numCols),delay(delay), quiet(quiet), turn(Players::PlayerA)
 {
+	this->boardCopy = boardCopy;
 	setBoards(const_cast<const char**>(boards), rows, cols);
-	playerA->init(players_moves);
-	playerB->init(players_moves);
+	player0.init(players_moves);
+	player1.init(players_moves);
 	scores[0] = 0;
 	scores[1] = 0;
 	Utils::ShowConsoleCursor(0);
@@ -88,8 +89,8 @@ void GameMaster::setBoards(const char** board, int numRows, int numCols)
 		cout << "Error: setBoards failed due to player boards allocations					" << endl;
 	}
 	else {
-		playerA->setBoard(0,const_cast<const char**>(boards[0]), numRows, numCols);
-		playerB->setBoard(1,const_cast<const char**>(boards[1]), numRows, numCols);
+		player0.setBoard(0,const_cast<const char**>(boards[0]), numRows, numCols);
+		player1.setBoard(1,const_cast<const char**>(boards[1]), numRows, numCols);
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++)
 				delete[] boards[i][j];
@@ -107,21 +108,21 @@ pair<int, int> GameMaster::attack()
 	switch (turn)
 	{
 	case(Players::PlayerA):
-		curr_move = playerA->attack();
+		curr_move = player0->attack();
 		break;
 
 	case(Players::PlayerB):
-		curr_move = playerB->attack();
+		curr_move = player1->attack();
 		break;
 	default:
-		return make_pair(0, 0);
+		return make_pair(-2, -2);
 	}
 
-	if (curr_move == make_pair(0, 0))
+	if (curr_move == make_pair(-2, -2))
 	{
 		cout << "Error: attack() failed on " << ("%s", Players::PlayerA == turn ? "player A's " : "player B's ") << "turn					" << endl;
-		return make_pair(0, 0);
-	} else if (curr_move != make_pair(0, 0) && DEBUG)
+		return make_pair(-2, -2);
+	} else if (curr_move != make_pair(-2, -2) && DEBUG)
 		cout << ("%s", Players::PlayerA == turn ? "player A move:\t" : "player B move:\t") << "(" << curr_move.first+1 << "," << curr_move.second+1 << ")					" << endl;
 	return curr_move;
 }
@@ -134,17 +135,20 @@ int GameMaster::play()
 	turn = Players::PlayerA;
 	pair<int, int> move;
 
-	int playerA_done = 0;
-	int playerB_done = 0;
+	pair<int, int> move;
+	pair<int, int> prevMove = make_pair(-3, -3);
+	int player0_done = 0;
+	int player1_done = 0;
 
 	print_board(-1, -1, delay);
 
 	while(!playerA_done || !playerB_done)
 	{
 
+		 prevMove = move;
 		 move = attack();
 
-		 if (move == make_pair(0, 0))
+		 if (move == make_pair(-2, -2))
 		 {
 			 // failure 
 			 return -1;
@@ -164,6 +168,9 @@ int GameMaster::play()
 			continue;
 		}
 		pair<Vessel_ID, AttackResult> results = attack_results(move);
+		int activePlayerIndex = turn == Players::PlayerA ? 0 : 1;
+		player0.notifyOnAttackResult(activePlayerIndex, move.first, move.second, results.second);
+		player1.notifyOnAttackResult(activePlayerIndex, move.first, move.second, results.second);
 
 		update_state(move, results);
 		if (DEBUG && results.second != AttackResult::Miss)
@@ -171,12 +178,13 @@ int GameMaster::play()
 			
 		if (is_defeat())
 		{
+			print_board(move.first, move.second, delay);
 			break;
 		}
 
 		if (results.second != AttackResult::Miss)
 		{
-			turn = (results.first.player == Players::PlayerA) ? Players::PlayerB : Players::PlayerA;
+			turn = (turn == Players::PlayerA) ? Players::PlayerA : Players::PlayerB;
 		}
 		else {
 			turn = (turn == Players::PlayerA) ? Players::PlayerB : Players::PlayerA;
@@ -205,11 +213,16 @@ pair<Vessel_ID, AttackResult> GameMaster::attack_results(pair<int,int> move)
 
 	vessel = GameMaster::get_vessel(curr, playerA, playerB);
 
-	if (Utils::is_sink(boards ,x,y, curr))
+
+
+	Board *onlyOriginalShipBoard = new Board(*boardCopy, x, y);
+	if (Utils::is_sink(boards ,x,y, curr, onlyOriginalShipBoard->getboard(), rows, cols))
 	{
+		delete onlyOriginalShipBoard;
 		return make_pair(vessel, AttackResult::Sink);
 	} else
 	{
+		delete onlyOriginalShipBoard;
 		return make_pair(vessel, AttackResult::Hit);
 	}
 }

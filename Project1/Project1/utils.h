@@ -33,7 +33,7 @@ public:
 	static bool search_left(char** boards, int x, int y, char curr);
 
 	// the function uses search_* functions and returns whether the current attack result is sink or not
-	static bool is_sink(char** boards, int x, int y, char curr);
+	static bool is_sink(char** boards, int x, int y, char curr, char** boardCopy, int numRows, int numCols);
 
 
 	static int copyBoard(const char** in_board, int numCols, int numRows, char*** out_board);

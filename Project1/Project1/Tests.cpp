@@ -36,6 +36,12 @@ int Tests::moves_check()
 		moves.push_back(moves_list[i].c_str());
 		moves.push_back(moves_list[i + 1].c_str());
 		if (i != 0) newBoards();
+		Board *boardCopy = new Board(NUM_ROWS, NUM_COLS);
+		for (int i = 0; i < NUM_ROWS; i++) {
+			for (int j = 0; j < NUM_COLS; j++) {
+				boardCopy->set(i, j, fixed_board[i][j]);
+			}
+		}
 		GameMaster *game_master;
 		if (DLL_TEST) {
 			HINSTANCE hDll = LoadLibraryA("C:\\Users\\Shlomi\\Source\\Repos\\AdvancedOOP2\\Project1\\x64\\Release\\PreMovesAlgo.dll");

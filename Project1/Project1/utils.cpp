@@ -8,8 +8,21 @@
 using namespace std;
 
 
-bool Utils::is_sink(char** boards, int x, int y, char curr)
+bool Utils::is_sink(char** boards, int x, int y, char curr, char** boardCopy, int numRows, int numCols)
 {
+	for (int i = 0; i < numRows; i++) {
+		for (int j = 0; j < numCols; j++) {
+			if (boardCopy[i][j] != ' ') {
+				if (boards[i][j] != '@') {
+					if (x != i || y != j) {
+						return false;
+					}
+				}
+			}
+		}
+	}
+	return true;
+	/*
 	bool up, down, left, right;
 
 	up = Utils::search_up(boards, x, y, curr);
@@ -18,6 +31,7 @@ bool Utils::is_sink(char** boards, int x, int y, char curr)
 	left = Utils::search_left(boards, x, y, curr);
 
 	return up&down&right&left;
+	*/
 }
 
 bool Utils::search_up(char** boards, int x, int y, char curr)

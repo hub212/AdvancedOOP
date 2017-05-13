@@ -1,6 +1,18 @@
 #include "SmartAlgo.h"
 
+
+int SmartAlgo::randomGen(int min, int max) {
+	std::random_device rd;     // only used once to initialise (seed) engine
+	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+	std::uniform_int_distribution<int> uni(min, max); // guaranteed unbiased
+
+	int random_integer = uni(rng);
+	return random_integer;
+}
+
 bool SmartAlgo::init(const std::string& path) {
+
+
 
 	aimRange = new int[4]{};
 	initRandomTargets();
@@ -10,11 +22,35 @@ bool SmartAlgo::init(const std::string& path) {
 
 void SmartAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult result) {
 	if (this->player_num != player) {
+		int tmpRow = currentRow;
+		int tmpCol = currentCol;
+		currentRow = row-1;
+		currentCol = col-1;
+		removeFromRandomTargets(HERE);
+		if (result == AttackResult::Sink && possible_targets[currentRow][currentCol] != NOT_TARGET) {
+			markAdjacentCells();
+		}
+		if (result == AttackResult::Hit && possible_targets[currentRow][currentCol] != NOT_TARGET) {
+			targetBank.resize(targetBank.size()+1, std::vector<int>(2, 0));
+			targetBank[targetBank.size() - 1][0] = currentRow;
+			targetBank[targetBank.size() - 1][1] = currentCol;
+			removeFromRandomTargets(HERE);
+		}
+		currentRow = tmpRow;
+		currentCol = tmpCol;
 		return;
 	}
 	if (result == AttackResult::Miss) {
-		shipSinked = false;
-		attackSucceeded = false;
+		if (!seekAndDestroy && targetBank.size()>0) {
+			attackSucceeded = true;
+			currentRow = targetBank[targetBank.size()][0]; //the next attacks will be centered around these coordinates
+			currentCol = targetBank[targetBank.size()][1]; //the next attacks will be centered around these coordinates
+			targetBank.resize(targetBank.size()-1);
+		}
+		else {
+			shipSinked = false;
+			attackSucceeded = false;
+		}
 	}
 	else if (result == AttackResult::Hit) {
 		shipSinked = false;
@@ -34,11 +70,12 @@ SmartAlgo::SmartAlgo()
 
 SmartAlgo::~SmartAlgo()
 {
+	targetBank.clear();
 	if (randomSpots != nullptr) {
 		for (int i = 0; i < rows*cols; i++) {
-			delete[] possible_targets[i];
+			delete[] randomSpots[i];
 		}
-		delete[] possible_targets;
+		delete[] randomSpots;
 		randomSpots = nullptr;
 	}
 	if (aimRange != nullptr) {
@@ -50,18 +87,20 @@ SmartAlgo::~SmartAlgo()
 void SmartAlgo::initRandomTargets() {
 	int cnt = 0;
 	int row, col;
-	randomSpots = new int*[rows*cols];
+	int tmp = rows*cols;
+	randomSpots = new int*[tmp];
 	for (row = 0; row<rows; row++) {
 		for (col = 0; col<cols; col++) {
-			cnt++;
+
 			randomSpots[cnt] = new int[2];
 			randomSpots[cnt][0] = row;
 			randomSpots[cnt][1] = col;
+			cnt++;
 		}
 	}
 	int tmpPair[2] = {};
 	for (int shuffleIndex = rows*cols - 1; shuffleIndex > 0; shuffleIndex--) {
-		randVar = rand() % (shuffleIndex + 1);
+		randVar = randomGen(0, shuffleIndex);
 		tmpPair[0] = randomSpots[randVar][0];
 		tmpPair[1] = randomSpots[randVar][1];
 		randomSpots[randVar][0] = randomSpots[shuffleIndex][0];
@@ -77,7 +116,8 @@ void SmartAlgo::pickRandTarget() {
 		iters++;
 		currentRow = randomSpots[randomSpotIndex][0];
 		currentCol = randomSpots[randomSpotIndex][1];
-		randomSpotIndex = randomSpotIndex<rows*cols - 1 ? randomSpotIndex++ : 0;
+		int spotValue = possible_targets[currentRow][currentCol];
+		randomSpotIndex = randomSpotIndex<rows*cols - 1 ? ++randomSpotIndex : 0;
 	} while (possible_targets[currentRow][currentCol] == NOT_TARGET && iters <= rows*cols);
 }
 
@@ -106,6 +146,9 @@ void SmartAlgo::calcStateAfterAttack() {
 	}
 	else if (!attackSucceeded && seekAndDestroy) {
 		aimRange[aimDirection] = 0;
+	}
+	if (aimRange[UP] == 0 && aimRange[DOWN] == 0 && aimRange[RIGHT] == 0 && aimRange[LEFT] == 0) {
+		seekAndDestroy = false;
 	}
 	setNextAttack();
 }
@@ -139,10 +182,7 @@ void SmartAlgo::determineAimDirection() {
 		horizontalAxis = aimRange[RIGHT] || aimRange[LEFT];
 		axisFound = !verticalAxis || !horizontalAxis;
 	}
-	if (!axisFound) {
-		horizontalAxisScore = aimRange[RIGHT] + aimRange[LEFT] - (aimRange[UP] + aimRange[DOWN]); //all elements in "aimRange" are either 0 or 1 here
-	}
-	bool chooseHorizontalAxis = (axisFound && horizontalAxis) || (!axisFound && (horizontalAxisScore > 0 || (horizontalAxisScore == 0 && (rand() % 2))));
+	bool chooseHorizontalAxis = (axisFound && horizontalAxis) || (!axisFound && randomGen(0, 1));
 	if (chooseHorizontalAxis) {
 		helpDetermineAimDirection(LEFT, RIGHT);
 	}
@@ -153,7 +193,7 @@ void SmartAlgo::determineAimDirection() {
 
 void SmartAlgo::helpDetermineAimDirection(int direction1, int direction2) {
 	if (aimRange[direction1] && aimRange[direction2]) {
-		randVar = rand() % 2;
+		randVar = randomGen(0, 1);
 		aimDirection = randVar == 0 ? direction1 : direction2;
 	}
 	else {
