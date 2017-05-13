@@ -1,5 +1,5 @@
 #include "utils.h"
-#include <iostream>
+#include <vector>
 
 ////-------------------------
 ////		Utils
@@ -7,53 +7,6 @@
 
 using namespace std;
 
-
-Vessel_ID Utils::get_vessel(char curr, CommonAlgo playerA, CommonAlgo playerB)
-{
-	Vessel_ID vessel;
-
-	if (playerA.myLetters.find(curr) != playerA.myLetters.end())
-	{
-		if (curr == 'B')
-		{
-			vessel = Vessel_ID::Vessel_ID(VesselType::Boat, Players::PlayerA);
-		}
-		else if (curr == 'P')
-		{
-			vessel = Vessel_ID::Vessel_ID(VesselType::Missiles, Players::PlayerA);
-		}
-		else if (curr == 'M')
-		{
-			vessel = Vessel_ID::Vessel_ID(VesselType::Sub, Players::PlayerA);
-		}
-		else if (curr == 'D')
-		{
-			vessel = Vessel_ID::Vessel_ID(VesselType::War, Players::PlayerA);
-		}
-	}
-	else if (playerB.myLetters.find(curr) != playerB.myLetters.end())
-	{
-		// it's Players B vessel
-		if (curr == 'b')
-		{
-			vessel = Vessel_ID::Vessel_ID(VesselType::Boat, Players::PlayerB);
-		}
-		else if (curr == 'p')
-		{
-			vessel = Vessel_ID::Vessel_ID(VesselType::Missiles, Players::PlayerB);
-		}
-		else if (curr == 'm')
-		{
-			vessel = Vessel_ID::Vessel_ID(VesselType::Sub, Players::PlayerB);
-		}
-		else if (curr == 'd')
-		{
-			vessel = Vessel_ID::Vessel_ID(VesselType::War, Players::PlayerB);
-		}
-	}
-
-	return vessel;
-}
 
 bool Utils::is_sink(char** boards, int x, int y, char curr)
 {
@@ -168,4 +121,29 @@ bool Utils::search_left(char** boards, int x, int y, char curr)
 	 GetConsoleCursorInfo(out, &cursorInfo);
 	 cursorInfo.bVisible = showFlag; // set the cursor visibility
 	 SetConsoleCursorInfo(out, &cursorInfo);
+ }
+
+
+ void Utils::GetFileNamesInDirectory(vector<string> *names, string folder)
+{
+	 string search_path = folder + "/*.*";
+	 WIN32_FIND_DATAA  fd;
+	 HANDLE hFind = FindFirstFileA(search_path.c_str(), &fd);
+	 if (hFind != INVALID_HANDLE_VALUE) {
+		 do {
+			 // read all (real) files in current folder
+			 // , delete '!' read other 2 default folder . and ..
+			 if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+				 (*names).push_back(folder + "\\" + fd.cFileName);
+			 }
+		 } while (::FindNextFileA(hFind, &fd));
+		 ::FindClose(hFind);
+	 }
+ }
+
+
+ bool Utils::string_has_suffix(const std::string &str, const std::string &suffix)
+ {
+	 return str.size() >= suffix.size() &&
+		 str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
  }

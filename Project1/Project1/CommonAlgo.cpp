@@ -34,8 +34,6 @@ void CommonAlgo::setBoard(int player, const char** board, int numRows, int numCo
 
 bool CommonAlgo::init(const std::string& path) {
 
-
-
 	setNextAttack();//michael 12/5/17 08:19 - added this line
 	return true;
 };

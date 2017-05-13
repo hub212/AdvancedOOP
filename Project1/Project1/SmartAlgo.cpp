@@ -2,8 +2,6 @@
 
 bool SmartAlgo::init(const std::string& path) {
 
-
-
 	aimRange = new int[4]{};
 	initRandomTargets();
 	setNextAttack();

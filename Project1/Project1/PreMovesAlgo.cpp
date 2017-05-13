@@ -1,4 +1,5 @@
 #include "PreMovesAlgo.h"
+#include "utils.h"
 
 
 std::pair<int, int> PreMovesAlgo::attack() {
@@ -45,6 +46,49 @@ std::pair<int, int> PreMovesAlgo::attack() {
 		done = 1;
 		return make_pair(-1, -1);
 	}
+
+bool PreMovesAlgo::init(const std::string& path) {
+
+	char pwd[MY_MAX_PATH];
+	string moves_dir;
+	vector<string> moves_list;
+
+	// getting paths to moves dir
+	GetCurrentDirectoryA(MY_MAX_PATH, pwd);
+	moves_dir = pwd;
+
+
+	// builds moves vector list
+	Utils::GetFileNamesInDirectory(&moves_list, moves_dir);
+
+	// FIXME - replace attack-a with attack 
+	// removing not '*.attack files from list
+	moves_list.erase(remove_if(moves_list.begin(), moves_list.end(), [](string str) { return !Utils::string_has_suffix(str, ".attack-a"); }), moves_list.end());
+
+	std::sort(moves_list.begin(), moves_list.end());
+	
+	if (static_cast<int> (moves_list.size()) ==  0){
+		cout << "Algorithm initializatoin failed for dll: TODO add full path for this dll" << endl;
+		return false;
+	}
+
+	if (static_cast<int>(moves_list.size()) == 1) {
+		moves_path = moves_list[0];
+		return true;
+	}
+
+	moves_path = moves_list[player_num];
+
+	if (DEBUG) {
+		cout << "Paths Print:" << endl;
+		for (const auto item : moves_list)
+			cout << item << endl;
+		cout << "-----------------------------------------" << endl;
+		cout << "Player: " << player_num << " moves_path: " << moves_path << endl;
+	}
+
+	return true;
+}
 
 
 void PreMovesAlgo::setBoard(int player, const char** board, int numRows, int numCols)

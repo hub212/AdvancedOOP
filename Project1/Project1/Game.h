@@ -2,9 +2,9 @@
 #define GAMEMASTER_H
 
 #include "ex1.h"
+#include "PreMovesAlgo.h"
 #include "utils.h"
 #include "Types.h"
-#include "PreMovesAlgo.h"
 #include <windows.h>
 #include <set>
 #include <vector>
@@ -21,7 +21,7 @@ private:
 	char**	boards;
 	int rows;
 	int cols;
-	std::vector<const char*> players_moves;
+	const char* players_moves;
 
 	int		scores[2];
 	Players turn;
@@ -43,6 +43,18 @@ private:
 
 	bool is_defeat();
 
+	// input - 
+	//		const char curr - (@,' ', BPMD, bpmd) a charecter representation of board point
+	//		CommonAlgo PlayerA/B - two players with different char representation (BPMD vs. BPMD)
+	//
+	// output - 
+	//		the function return the vessel type of the given char (transforming from char to vessel type)
+	//
+	// given a charecter representation of board point (@,' ', BPMD, bpmd) and two players with 
+	// different char representation (BPMD vs. bpmd) the functino nill return the vessel on board (common game master board)
+	// the function is being used for updating the game master board and for later (opt.) for complex algorithms
+	static Vessel_ID get_vessel(const char curr, CommonAlgo playerA, CommonAlgo playerB);
+
 	void print_results();
 
 	void print_board(int x,int y,int delay);
@@ -56,7 +68,7 @@ public:
 	* \param numRows
 	* \param numCols
 	*/
-	GameMaster(char** boards, std::vector<const char*>& players_moves, int numRows, int numCols, int delay, int quiet);
+	GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet);
 
 	/**
 	* \brief impliments the game running phase.

@@ -2,6 +2,7 @@
 #define BOARD_CH_H
 
 #include "ex1.h"
+#include "utils.h"
 
 class BoardChecker
 {
@@ -15,7 +16,6 @@ public:
 	ifstream* checkPath(char* path);
 	BoardChecker();
 	void printIllegalShapeError(string illegalShips, char ch);
-	bool string_has_suffix(const std::string &str, const std::string &suffix);
 	static int shipSize(char ch);
 	bool checkBoard(char* path);
 	~BoardChecker();

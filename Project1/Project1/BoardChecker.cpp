@@ -55,12 +55,6 @@ int BoardChecker::shipSize(char ch) {
 	return -1;
 }
 
-bool BoardChecker::string_has_suffix(const std::string &str, const std::string &suffix)
-{
-	return str.size() >= suffix.size() &&
-		str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
-}
-
 
 bool dirExists(const std::string& dirName_in)
 {
@@ -137,20 +131,20 @@ ifstream* BoardChecker::checkPath(char* path) {
 	string str;
 	while (!Board::safeGetline(files_stream, str).eof()) {
 
-		if (!isBoardFound && string_has_suffix(str, ".sboard")) {
+		if (!isBoardFound && Utils::string_has_suffix(str, ".sboard")) {
 			boardName.append(str);
 			isBoardFound = true;
 			boardStream = new ifstream(boardName);
 		}
 
-		if (!isPlayerA_fileFound && string_has_suffix(str, ".attack-a")) {
+		if (!isPlayerA_fileFound && Utils::string_has_suffix(str, ".attack-a")) {
 			playerA_fileName.append(str);
 			isPlayerA_fileFound = true;
 			movesA_file = playerA_fileName;
 			playerA_Stream = new ifstream(playerA_fileName);
 		}
 
-		if (!isPlayerB_fileFound && string_has_suffix(str, ".attack-b")) {
+		if (!isPlayerB_fileFound && Utils::string_has_suffix(str, ".attack-b")) {
 			playerB_fileName.append(str);
 			isPlayerB_fileFound = true;
 			movesB_file = playerB_fileName;

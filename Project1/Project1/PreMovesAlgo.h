@@ -2,6 +2,10 @@
 #define PRE_ALGO
 #include "ex1.h"
 #include "CommonAlgo.h"
+#include "windows.h"
+#include <vector>
+#include <iostream>
+#include <algorithm>
 
 
 using namespace std;
@@ -18,6 +22,9 @@ public:
 	PreMovesAlgo(int player_num, char* letters, const  char* moves);
 	PreMovesAlgo();
 	std::pair<int, int> attack();
+	
+	// Overrides the Common's function
+	bool init(const std::string& path);
 	// Overrides the Common's function
 	void setBoard(int player, const char** board, int numRows, int numCols);
 	int str2int(const string str, int* num);

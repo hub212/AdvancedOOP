@@ -16,7 +16,6 @@ class Tests {
 	char* fixed_board[NUM_ROWS];
 	vector<string> moves_list;
 
-	void GetFileNamesInDirectory(std::vector<string> *names, std::string folder);
 	int newBoards();
 	int deleteBoards();
 
