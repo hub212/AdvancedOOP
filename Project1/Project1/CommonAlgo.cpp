@@ -7,7 +7,6 @@
 // copy the relevant vessels
 void CommonAlgo::setBoard(int player, const char** board, int numRows, int numCols)
 {
-	this->dim = make_pair(numRows, numCols);
 	this->player_num = player;
 
 	//michael 12/5/17 08:19 added code start
@@ -59,7 +58,6 @@ std::pair<int, int> CommonAlgo::attack()
 	attackPair.second = currentCol;
 	return attackPair;
 	//michael 12/5/17 08:19 added code end
-	//return make_pair(0, 0); - michael 12/5/17 08:19 - commented out line
 }
 
 // decising letters for each player
@@ -72,9 +70,9 @@ CommonAlgo::~CommonAlgo()
 	//michael 12/5/17 08:19 added code start
 	if (possible_targets != NULL) {
 		for (int i = 0; i < rows; i++) {
-			//delete[] possible_targets[i];
+			delete[] possible_targets[i];
 		}
-		//delete[] possible_targets;
+		delete[] possible_targets;
 		possible_targets = NULL;
 	}
 	//michael 12/5/17 08:19 added code end

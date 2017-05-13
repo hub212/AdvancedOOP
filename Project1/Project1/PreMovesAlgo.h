@@ -18,6 +18,8 @@ public:
 	PreMovesAlgo(int player_num, char* letters, const  char* moves);
 	PreMovesAlgo();
 	std::pair<int, int> attack();
+	// Overrides the Common's function
+	void setBoard(int player, const char** board, int numRows, int numCols);
 	int str2int(const string str, int* num);
 };
 

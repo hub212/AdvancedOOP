@@ -36,7 +36,7 @@ int Tests::moves_check()
 		moves.push_back(moves_list[i].c_str());
 		moves.push_back(moves_list[i + 1].c_str());
 		if (i != 0) newBoards();
-		GameMaster *game_master = new GameMaster(fixed_board, moves, NUM_ROWS, NUM_COLS, 400);
+		GameMaster *game_master = new GameMaster(fixed_board, moves, NUM_ROWS, NUM_COLS, 100, 0);
 		if (game_master->play() != 0)
 		{
 			cout << "Error: checking moves failed on files " << (" %s ", moves_list[i]) << ("; %s", moves_list[i + 1]) << endl;

@@ -37,7 +37,7 @@ std::pair<int, int> PreMovesAlgo::attack() {
 
 			if ((str2int(row, &row_int) != 0) || (str2int(col, &col_int)) != 0) continue;
 
-			if (row_int > dim.first || col_int > dim.second) continue;
+			if (row_int > rows || col_int > cols) continue;
 
 			inputFile.close();
 			return make_pair(row_int , col_int );
@@ -45,6 +45,14 @@ std::pair<int, int> PreMovesAlgo::attack() {
 		done = 1;
 		return make_pair(-1, -1);
 	}
+
+
+void PreMovesAlgo::setBoard(int player, const char** board, int numRows, int numCols)
+{
+	this->player_num = player;
+	rows = numRows;
+	cols = numCols;
+}
 
 int PreMovesAlgo::str2int(const string str, int* num)
 {

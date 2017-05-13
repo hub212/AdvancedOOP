@@ -11,16 +11,14 @@ using namespace std;
 ////--------------------------
 
 
-GameMaster::GameMaster(char** boards, vector<const char*>& players_moves, int numRows, int numCols, int delay) : playerA(0, "BPMD", players_moves[0]),
-playerB(1, "bpmd", players_moves[1]), boards(boards), players_moves(players_moves), dim(make_pair(numRows, numCols))
+GameMaster::GameMaster(char** boards, vector<const char*>& players_moves, int numRows, int numCols, int delay, int quiet) : playerA(0, "BPMD", players_moves[0]),
+playerB(1, "bpmd", players_moves[1]), boards(boards), players_moves(players_moves), rows(numRows), cols(numCols),delay(delay), quiet(quiet), turn(Players::PlayerA)
 {
-	setBoards(const_cast<const char**>(boards), dim.first, dim.second);
+	setBoards(const_cast<const char**>(boards), rows, cols);
 	scores[0] = 0;
 	scores[1] = 0;
-	delay = delay;
-	turn = Players::PlayerA;
 	Utils::ShowConsoleCursor(0);
-};
+}
 
 
 int GameMaster::extractBoards(const char** board, int numRows, int numCols, char**** out_board)
@@ -66,8 +64,6 @@ int GameMaster::extractBoards(const char** board, int numRows, int numCols, char
 void GameMaster::setBoards(const char** board, int numRows, int numCols)
 {
 	char*** boards = nullptr;
-
-
 
 	if (extractBoards(board, numRows, numCols, &boards) != 0)
 	{
@@ -201,9 +197,9 @@ pair<Vessel_ID, AttackResult> GameMaster::attack_results(pair<int,int> move)
 {
 	 bool boolA = false;
 	 bool boolB = false;
-	 for(int i = 0; i < dim.first ; i++)
+	 for(int i = 0; i < rows ; i++)
 	 {
-		 for(int j = 0; j < dim.second && (!boolA || !boolB); j++)
+		 for(int j = 0; j < cols && (!boolA || !boolB); j++)
 		 {
 			 if(playerA.myLetters.find(boards[i][j]) != playerA.myLetters.end())
 			 {
@@ -233,42 +229,45 @@ pair<Vessel_ID, AttackResult> GameMaster::attack_results(pair<int,int> move)
 
  void GameMaster::print_board(int x,int y,int delay)
  {
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (!quiet) {
+
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	
-	for (int i = 0; i< dim.first; i++) {
-		for (int j = 0; j < dim.second; j++) {
-			Utils::gotoxy(i, j);
-			if (x-1 == i && y-1 == j) {
-				SetConsoleTextAttribute(hConsole, 14);
-				cout << '*';
-			}
-			else {
-				if (boards[i][j] == '@') {
-					SetConsoleTextAttribute(hConsole, 8);
+		for (int i = 0; i< rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				Utils::gotoxy(i, j);
+				if (x-1 == i && y-1 == j) {
+					SetConsoleTextAttribute(hConsole, 14);
+					cout << '*';
 				}
 				else {
-					SetConsoleTextAttribute(hConsole, (boards[i][j] > 96 ? ((boards[i][j] % 8) + 2) : (boards[i][j] % 5) + 9));
+					if (boards[i][j] == '@') {
+						SetConsoleTextAttribute(hConsole, 8);
+					}
+					else {
+						SetConsoleTextAttribute(hConsole, (boards[i][j] > 96 ? ((boards[i][j] % 8) + 2) : (boards[i][j] % 5) + 9));
+					}
+					cout << boards[i][j];
 				}
-				cout << boards[i][j];
 			}
 		}
-	}
 
-	if (x-1>=0 && y-1>=0){
-		 Sleep(delay);
-		 Utils::gotoxy(x-1, y-1);
-		 if (boards[x-1][y-1] == '@') {
-			 SetConsoleTextAttribute(hConsole, 8);
-		 }
-		 else {
-			 SetConsoleTextAttribute(hConsole, (boards[x - 1][y - 1] > 96 ? ((boards[x - 1][y - 1] % 8) + 2) : (boards[x - 1][y - 1] % 5) + 9));
-		 }
-			cout << boards[x-1][y-1];
+		if (x-1>=0 && y-1>=0){
+			 Sleep(delay);
+			 Utils::gotoxy(x-1, y-1);
+			 if (boards[x-1][y-1] == '@') {
+				 SetConsoleTextAttribute(hConsole, 8);
+			 }
+			 else {
+				 SetConsoleTextAttribute(hConsole, (boards[x - 1][y - 1] > 96 ? ((boards[x - 1][y - 1] % 8) + 2) : (boards[x - 1][y - 1] % 5) + 9));
+			 }
+				cout << boards[x-1][y-1];
+		}
+		Utils::gotoxy(rows, cols);
+		cout << endl;
+		Sleep(delay);
+		SetConsoleTextAttribute(hConsole, 7);
 	}
-	Utils::gotoxy(dim.first, dim.second);
-	cout << endl;
-	Sleep(delay);
-	SetConsoleTextAttribute(hConsole, 7);
  }
 
 

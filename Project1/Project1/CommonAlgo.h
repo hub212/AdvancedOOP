@@ -31,7 +31,6 @@ public:
 
 
 	std::string			*board = NULL;	// will hold the board after copy is done
-	std::pair<int, int>	dim = std::make_pair(-1, -1);
 	std::set<char>		myLetters;
 
 	int					player_num;

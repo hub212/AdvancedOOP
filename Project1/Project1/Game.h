@@ -19,13 +19,15 @@ private:
 	PreMovesAlgo playerB;
 
 	char**	boards;
-	std::pair<int, int> dim;
+	int rows;
+	int cols;
 	std::vector<const char*> players_moves;
 
 	int		scores[2];
 	Players turn;
 
-	int delay = 400;
+	int delay;
+	int quiet;
 
 
 
@@ -54,7 +56,7 @@ public:
 	* \param numRows
 	* \param numCols
 	*/
-	GameMaster(char** boards, std::vector<const char*>& players_moves, int numRows, int numCols, int delay);
+	GameMaster(char** boards, std::vector<const char*>& players_moves, int numRows, int numCols, int delay, int quiet);
 
 	/**
 	* \brief impliments the game running phase.

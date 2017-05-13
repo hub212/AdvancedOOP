@@ -2,11 +2,13 @@
 //
 #include <vector>
 #include <Windows.h>
+#include <sstream>
+#include <string>
 #include "ex1.h"
 #include "Game.h"
 #include "BoardChecker.h"
 #include "Tests.h"
-//test push michael
+
 
 void createPath(int argc, char* argv[], char* pwd) {
 
@@ -72,6 +74,32 @@ void del(GameMaster** game_master, BoardChecker** bc) {
 
 int main(int argc, char* argv[])
 {
+	int delay = 300;
+	int quiet = 0;
+
+	for (int i = 0; i < argc; i++) {
+		if (!string("-delay").compare(argv[i])) {
+			if (i == argc - 1) {
+				cout << "Error: usage " << argv[0] << "[path] -delay <delay in ms> -quiet" << endl;
+					return -1;
+			}
+			istringstream iss(argv[i+1]);
+
+			if (!(iss >> delay).fail()) {
+				if (DEBUG)
+					cout << "delay was set to " << delay << " ms" << endl;
+			}
+			else {
+				cout << "Error: was expecting to get integer after -delay opt. but got '" << argv[i + 1] << "' instead" << endl;
+				return -1;
+			}
+		}
+
+		if (!string("-quiet").compare(argv[i])) {
+			quiet = 1;
+			cout << "quit on" << endl;
+		}
+	}
 
 	if (TEST)
 	{
@@ -91,7 +119,7 @@ int main(int argc, char* argv[])
 
 	char pwd[MY_MAX_PATH];
 
-	if (argc > 1) {
+	if (argc > 1 && !string("-quiet").compare(argv[1]) && !string("-delay").compare(argv[1])) {
 		createPath(argc, argv, pwd);
 		isInputOk = bc->checkBoard(pwd);
 	}
@@ -119,8 +147,7 @@ int main(int argc, char* argv[])
 
 	char** boards = bc->board;
 
-	int delay = 400;
-	game_master = new GameMaster(boards, players_moves, NUM_ROWS, NUM_COLS, delay);
+	game_master = new GameMaster(boards, players_moves, NUM_ROWS, NUM_COLS, delay, quiet);
 	if (game_master->play() != 0) {
 		del(&game_master, &bc);
 		return -1;
