@@ -28,13 +28,14 @@ void SmartAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult 
 		currentCol = col-1;
 		removeFromRandomTargets(HERE);
 		if (result == AttackResult::Sink && possible_targets[currentRow][currentCol] != NOT_TARGET) {
+			//the other player sinked his own ship. the cells around it are empty.
 			markAdjacentCells();
 		}
 		if (result == AttackResult::Hit && possible_targets[currentRow][currentCol] != NOT_TARGET) {
+			//the other player hit his own ship but didn't sink it. add it to the target bank.
 			targetBank.resize(targetBank.size()+1, std::vector<int>(2, 0));
 			targetBank[targetBank.size() - 1][0] = currentRow;
 			targetBank[targetBank.size() - 1][1] = currentCol;
-			removeFromRandomTargets(HERE);
 		}
 		currentRow = tmpRow;
 		currentCol = tmpCol;
@@ -42,6 +43,7 @@ void SmartAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult 
 	}
 	if (result == AttackResult::Miss) {
 		if (!seekAndDestroy && targetBank.size()>0) {
+			//we are not busy chasing after a ship, so load a target from the target bank.
 			attackSucceeded = true;
 			currentRow = targetBank[targetBank.size()][0]; //the next attacks will be centered around these coordinates
 			currentCol = targetBank[targetBank.size()][1]; //the next attacks will be centered around these coordinates
