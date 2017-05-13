@@ -3,6 +3,10 @@
 #include <windows.h>
 #include <set>
 #include <vector>
+#include <tuple>
+#include <windows.h>
+#include <set>
+#include <vector>
 #include "ex1.h"
 #include "PreMovesAlgo.h"
 #include "SmartAlgo.h"
@@ -10,20 +14,19 @@
 #include "Types.h"
 #include "Board.h"
 
-
 // this class is the game managment class
 class GameMaster
 {
 
 private:
 
+	PreMovesAlgo player0;
+	PreMovesAlgo player1;
 	Board *boardCopy;
 
-	SmartAlgo player0;
-	CommonAlgo player1;
+	std::set<char>		lettersA = {'B','P','M','D' };
+	std::set<char>		lettersB = {'b','p','m','d' };
 
-	PreMovesAlgo playerA;
-	PreMovesAlgo playerB;
 
 	char**	boards;
 	int rows;
@@ -36,6 +39,7 @@ private:
 	int delay;
 	int quiet;
 
+	vector<tuple<string, HINSTANCE, GetAlgoType>> dll_vec;
 
 
 	std::pair<Vessel_ID, AttackResult> attack_results(std::pair<int, int> move);
@@ -60,7 +64,7 @@ private:
 	// given a charecter representation of board point (@,' ', BPMD, bpmd) and two players with 
 	// different char representation (BPMD vs. bpmd) the functino nill return the vessel on board (common game master board)
 	// the function is being used for updating the game master board and for later (opt.) for complex algorithms
-	static Vessel_ID get_vessel(const char curr, CommonAlgo playerA, CommonAlgo playerB);
+	Vessel_ID get_vessel(const char curr, IBattleshipGameAlgo* playerA, IBattleshipGameAlgo* playerB);
 
 	void print_results();
 
@@ -76,6 +80,15 @@ public:
 	* \param numCols
 	*/
 	GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet, Board *boardCopy);
+
+	/**
+	* \brief init all internal variables - paths and boards. intansiating the Player intances.
+	* \param boards
+	* \param players_moves
+	* \param numRows
+	* \param numCols
+	*/
+	GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet, vector<tuple<string, HINSTANCE, GetAlgoType>> dll_vec);
 
 	/**
 	* \brief impliments the game running phase.

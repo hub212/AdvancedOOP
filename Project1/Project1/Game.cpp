@@ -3,6 +3,7 @@
 #include <sstream>
 #include <set>
 #include <vector>
+#include <tuple>
 
 using namespace std;
 
@@ -11,13 +12,28 @@ using namespace std;
 ////--------------------------
 
 
-GameMaster::GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet, Board *boardCopy) : playerA(0, "BPMD", players_moves),
-playerB(1, "bpmd", players_moves), boards(boards), players_moves(players_moves), rows(numRows), cols(numCols),delay(delay), quiet(quiet), turn(Players::PlayerA)
+GameMaster::GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet) :
+	boards(boards), players_moves(players_moves), rows(numRows), cols(numCols),delay(delay), quiet(quiet), turn(Players::PlayerA)
 {
 	this->boardCopy = boardCopy;
 	setBoards(const_cast<const char**>(boards), rows, cols);
 	player0.init(players_moves);
 	player1.init(players_moves);
+	scores[0] = 0;
+	scores[1] = 0;
+	Utils::ShowConsoleCursor(0);
+}
+
+GameMaster::GameMaster(char ** boards, const char * players_moves, int numRows, int numCols, int delay, int quiet, vector<tuple<string, HINSTANCE, GetAlgoType>> dll_vec) :
+	boards(boards), players_moves(players_moves), rows(numRows), cols(numCols), delay(delay), quiet(quiet), turn(Players::PlayerA)
+{
+
+	dll_vec = dll_vec;
+	playerA = get<2>(dll_vec[0])();
+	playerB = get<2>(dll_vec[0])();
+	setBoards(const_cast<const char**>(boards), rows, cols);
+	playerA->init(players_moves);
+	playerB->init(players_moves);
 	scores[0] = 0;
 	scores[1] = 0;
 	Utils::ShowConsoleCursor(0);
@@ -50,11 +66,11 @@ int GameMaster::extractBoards(const char** board, int numRows, int numCols, char
 	for (int row = 0; row < numRows; row++)
 	{
 		for (int col = 0; col < numCols; col++) {
-			if (this->playerA.myLetters.find(board[row][col]) == this->playerA.myLetters.end())
+			if (lettersA.find(board[row][col]) == lettersA.end())
 			{
 				(*out_board)[0][row][col] =  ' ';
 			}
-			if (this->playerB.myLetters.find(board[row][col]) == this->playerB.myLetters.end())
+			if (lettersB.find(board[row][col]) == lettersB.end())
 			{
 				(*out_board)[1][row][col] = ' ';
 			}
@@ -92,11 +108,11 @@ pair<int, int> GameMaster::attack()
 	switch (turn)
 	{
 	case(Players::PlayerA):
-		curr_move = player0.attack();
+		curr_move = player0->attack();
 		break;
 
 	case(Players::PlayerB):
-		curr_move = player1.attack();
+		curr_move = player1->attack();
 		break;
 	default:
 		return make_pair(-2, -2);
@@ -112,17 +128,21 @@ pair<int, int> GameMaster::attack()
 }
 
 
+
 int GameMaster::play()
 {
 	// Player A starts
 	turn = Players::PlayerA;
+	pair<int, int> move;
 
 	pair<int, int> move;
 	pair<int, int> prevMove = make_pair(-3, -3);
+	int player0_done = 0;
+	int player1_done = 0;
 
 	print_board(-1, -1, delay);
 
-	while(!playerA.done || !playerB.done)
+	while(!playerA_done || !playerB_done)
 	{
 
 		 prevMove = move;
@@ -134,15 +154,19 @@ int GameMaster::play()
 			 return -1;
 		 }
 
-		 if (move == make_pair(-1, -1))
-		 {
-			 if (prevMove == make_pair(-1, -1)) {
-				 break;
-			 }
-			 // the player has no more moves
-			 turn = (turn == Players::PlayerA) ? Players::PlayerB : Players::PlayerA;
-			 continue;
-		 }
+		if (move == make_pair(-1, -1))
+		{
+			// the player has no more moves
+			if (turn == Players::PlayerA) {
+				turn = Players::PlayerB;
+				playerA_done = 1;
+			}
+			else {
+				turn = Players::PlayerA;
+				playerB_done = 1;
+			}
+			continue;
+		}
 		pair<Vessel_ID, AttackResult> results = attack_results(move);
 		int activePlayerIndex = turn == Players::PlayerA ? 0 : 1;
 		player0.notifyOnAttackResult(activePlayerIndex, move.first, move.second, results.second);
@@ -218,12 +242,12 @@ pair<Vessel_ID, AttackResult> GameMaster::attack_results(pair<int,int> move)
 	 {
 		 for(int j = 0; j < cols && (!boolA || !boolB); j++)
 		 {
-			 if(playerA.myLetters.find(boards[i][j]) != playerA.myLetters.end())
+			 if(lettersA.find(boards[i][j]) != lettersA.end())
 			 {
 				 boolA = true;
 			 }
 
-			 if (playerB.myLetters.find(boards[i][j]) != playerB.myLetters.end())
+			 if (lettersB.find(boards[i][j]) != lettersB.end())
 			 {
 				 boolB = true;
 			 }
@@ -234,11 +258,11 @@ pair<Vessel_ID, AttackResult> GameMaster::attack_results(pair<int,int> move)
 }
 
 
- Vessel_ID GameMaster::get_vessel(char curr, CommonAlgo playerA, CommonAlgo playerB)
+ Vessel_ID GameMaster::get_vessel(char curr, IBattleshipGameAlgo* playerA, IBattleshipGameAlgo* playerB)
  {
 	 Vessel_ID vessel;
 
-	 if (playerA.myLetters.find(curr) != playerA.myLetters.end())
+	 if (lettersA.find(curr) != lettersA.end())
 	 {
 		 if (curr == 'B')
 		 {
@@ -257,7 +281,7 @@ pair<Vessel_ID, AttackResult> GameMaster::attack_results(pair<int,int> move)
 			 vessel = Vessel_ID::Vessel_ID(VesselType::War, Players::PlayerA);
 		 }
 	 }
-	 else if (playerB.myLetters.find(curr) != playerB.myLetters.end())
+	 else if (lettersB.find(curr) != lettersB.end())
 	 {
 		 // it's Players B vessel
 		 if (curr == 'b')

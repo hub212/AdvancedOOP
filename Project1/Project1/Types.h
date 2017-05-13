@@ -1,6 +1,6 @@
 #ifndef TYPES_H
 #define TYPES_H
-
+#include "IBattleshipGameAlgo.h"
 // common types 
 
 enum class Players {
@@ -41,5 +41,7 @@ public:
 	Vessel_ID(VesselType type, Players player);
 	Vessel_ID();
 };
+
+typedef IBattleshipGameAlgo *(*GetAlgoType)();
 
 #endif

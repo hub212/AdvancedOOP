@@ -53,6 +53,17 @@ bool PreMovesAlgo::init(const std::string& path) {
 	string moves_dir;
 	vector<string> moves_list;
 
+	// when using get_algo() we nned to specify the letters of each player expicitly
+	if (myLetters.empty()) {
+		if (player_num == 0) {
+			char* letters = "BPMD";
+			myLetters.insert(letters, letters + strlen(letters));
+		}
+		else {
+			char* letters = "bpmd";
+			myLetters.insert(letters, letters + strlen(letters));
+		}
+	}
 	// getting paths to moves dir
 	GetCurrentDirectoryA(MY_MAX_PATH, pwd);
 	moves_dir = pwd;
@@ -122,4 +133,10 @@ int PreMovesAlgo::str2int(const string str, int* num)
 
 PreMovesAlgo::PreMovesAlgo(int player_num, char* letters, const  char* moves) : CommonAlgo(player_num, letters), moves_path(moves), read_pos(0), line_num(0) {}
 
-PreMovesAlgo::PreMovesAlgo() : CommonAlgo() {};
+PreMovesAlgo::PreMovesAlgo() : read_pos(0), line_num(0) {};
+
+
+IBattleshipGameAlgo* GetAlgorithm() {
+	return (IBattleshipGameAlgo*) new PreMovesAlgo;
+}
+

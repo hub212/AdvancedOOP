@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <string>
 #include <iostream>
+#include <tuple>
 #include "Game.h"
 
 Tests::Tests()
@@ -15,7 +16,6 @@ Tests::Tests()
 	string boards_dir = files;
 	good_boards_dir = boards_dir + "\\GoodBoards";
 	bad_boards_dir = boards_dir + "\\BadBoards";
-	
 
 	// init fixed board for moves checking
 	newBoards();
@@ -36,15 +36,36 @@ int Tests::moves_check()
 		moves.push_back(moves_list[i].c_str());
 		moves.push_back(moves_list[i + 1].c_str());
 		if (i != 0) newBoards();
-
 		Board *boardCopy = new Board(NUM_ROWS, NUM_COLS);
 		for (int i = 0; i < NUM_ROWS; i++) {
 			for (int j = 0; j < NUM_COLS; j++) {
 				boardCopy->set(i, j, fixed_board[i][j]);
 			}
 		}
+		GameMaster *game_master;
+		if (DLL_TEST) {
+			HINSTANCE hDll = LoadLibraryA("C:\\Users\\Shlomi\\Source\\Repos\\AdvancedOOP2\\Project1\\x64\\Release\\PreMovesAlgo.dll");
+			if (!hDll){
+				std::cout << "could not load the dynamic library" << std::endl;
+				return EXIT_FAILURE;
+			}
 
-		GameMaster *game_master = new GameMaster(fixed_board, pwd, NUM_ROWS, NUM_COLS, 100, 0, boardCopy);
+			GetAlgoType getAlgo;
+			getAlgo = (GetAlgoType)GetProcAddress(hDll, "GetAlgorithm");
+			if (!getAlgo)
+			{
+				std::cout << "could not load function GetShape()" << std::endl;
+				return EXIT_FAILURE;
+			}
+			string AlgoName = "PreMovesAlgo";
+			dll_vec.push_back(make_tuple(AlgoName, hDll, getAlgo));
+			dll_vec.push_back(make_tuple(AlgoName, hDll, getAlgo));
+			//GameMaster *game_master = new GameMaster(fixed_board, pwd, NUM_ROWS, NUM_COLS, 100, 0);
+			game_master = new GameMaster(fixed_board, pwd, NUM_ROWS, NUM_COLS, 100, 0, dll_vec);
+		}
+		else {
+			game_master = new GameMaster(fixed_board, pwd, NUM_ROWS, NUM_COLS, 100, 0);
+		}
 		if (game_master->play() != 0)
 		{
 			cout << "Error: checking moves failed on files " << (" %s ", moves_list[i]) << ("; %s", moves_list[i + 1]) << endl;
