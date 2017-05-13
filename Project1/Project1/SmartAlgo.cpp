@@ -22,12 +22,35 @@ bool SmartAlgo::init(const std::string& path) {
 
 void SmartAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult result) {
 	if (this->player_num != player) {
-		possible_targets[row-1][col-1] = NOT_TARGET;
+		int tmpRow = currentRow;
+		int tmpCol = currentCol;
+		currentRow = row-1;
+		currentCol = col-1;
+		removeFromRandomTargets(HERE);
+		if (result == AttackResult::Sink && possible_targets[currentRow][currentCol] != NOT_TARGET) {
+			markAdjacentCells();
+		}
+		if (result == AttackResult::Hit && possible_targets[currentRow][currentCol] != NOT_TARGET) {
+			targetBank.resize(targetBank.size()+1, std::vector<int>(2, 0));
+			targetBank[targetBank.size() - 1][0] = currentRow;
+			targetBank[targetBank.size() - 1][1] = currentCol;
+			removeFromRandomTargets(HERE);
+		}
+		currentRow = tmpRow;
+		currentCol = tmpCol;
 		return;
 	}
 	if (result == AttackResult::Miss) {
-		shipSinked = false;
-		attackSucceeded = false;
+		if (!seekAndDestroy && targetBank.size()>0) {
+			attackSucceeded = true;
+			currentRow = targetBank[targetBank.size()][0]; //the next attacks will be centered around these coordinates
+			currentCol = targetBank[targetBank.size()][1]; //the next attacks will be centered around these coordinates
+			targetBank.resize(targetBank.size()-1);
+		}
+		else {
+			shipSinked = false;
+			attackSucceeded = false;
+		}
 	}
 	else if (result == AttackResult::Hit) {
 		shipSinked = false;
@@ -47,6 +70,7 @@ SmartAlgo::SmartAlgo()
 
 SmartAlgo::~SmartAlgo()
 {
+	targetBank.clear();
 	if (randomSpots != nullptr) {
 		for (int i = 0; i < rows*cols; i++) {
 			delete[] randomSpots[i];
@@ -122,6 +146,9 @@ void SmartAlgo::calcStateAfterAttack() {
 	}
 	else if (!attackSucceeded && seekAndDestroy) {
 		aimRange[aimDirection] = 0;
+	}
+	if (aimRange[UP] == 0 && aimRange[DOWN] == 0 && aimRange[RIGHT] == 0 && aimRange[LEFT] == 0) {
+		seekAndDestroy = false;
 	}
 	setNextAttack();
 }

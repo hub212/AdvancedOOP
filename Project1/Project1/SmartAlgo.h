@@ -19,6 +19,7 @@ class SmartAlgo :
 	int randVar = -1;
 	int *aimRange = nullptr;
 	int** randomSpots = nullptr;
+	std::vector<std::vector<int>> targetBank;
 	int randomSpotIndex = 0;
 
 	int randomGen(int min, int max);
