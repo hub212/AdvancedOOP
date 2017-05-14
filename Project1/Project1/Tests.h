@@ -5,9 +5,6 @@
 #include <vector>
 #include "windows.h"
 
-
-
-
 class Tests {
 
 	char pwd[MY_MAX_PATH];

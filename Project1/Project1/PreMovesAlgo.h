@@ -27,6 +27,7 @@ public:
 	bool init(const std::string& path);
 	// Overrides the Common's function
 	void setBoard(int player, const char** board, int numRows, int numCols);
+	void notifyOnAttackResult(int player, int row, int col, AttackResult result);
 	int str2int(const string str, int* num);
 };
 

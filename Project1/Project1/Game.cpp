@@ -12,26 +12,27 @@ using namespace std;
 ////--------------------------
 
 
-GameMaster::GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet) :
+GameMaster::GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet, Board *boardCopy) :
 	boards(boards), players_moves(players_moves), rows(numRows), cols(numCols),delay(delay), quiet(quiet), turn(Players::PlayerA)
 {
 	this->boardCopy = boardCopy;
 	setBoards(const_cast<const char**>(boards), rows, cols);
-	player0.init(players_moves);
-	player1.init(players_moves);
+	playerA->init(players_moves);
+	playerB->init(players_moves);
 	scores[0] = 0;
 	scores[1] = 0;
 	Utils::ShowConsoleCursor(0);
 }
 
-GameMaster::GameMaster(char ** boards, const char * players_moves, int numRows, int numCols, int delay, int quiet, vector<tuple<string, HINSTANCE, GetAlgoType>> dll_vec) :
+GameMaster::GameMaster(char ** boards, const char * players_moves, int numRows, int numCols, int delay, int quiet, vector<tuple<string, HINSTANCE, GetAlgoType>> dll_vec, Board *boardCopy) :
 	boards(boards), players_moves(players_moves), rows(numRows), cols(numCols), delay(delay), quiet(quiet), turn(Players::PlayerA)
 {
 
 	dll_vec = dll_vec;
 	playerA = get<2>(dll_vec[0])();
-	playerB = get<2>(dll_vec[0])();
+	playerB = get<2>(dll_vec[1])();
 	setBoards(const_cast<const char**>(boards), rows, cols);
+	this->boardCopy = boardCopy;
 	playerA->init(players_moves);
 	playerB->init(players_moves);
 	scores[0] = 0;
@@ -89,8 +90,8 @@ void GameMaster::setBoards(const char** board, int numRows, int numCols)
 		cout << "Error: setBoards failed due to player boards allocations					" << endl;
 	}
 	else {
-		player0.setBoard(0,const_cast<const char**>(boards[0]), numRows, numCols);
-		player1.setBoard(1,const_cast<const char**>(boards[1]), numRows, numCols);
+		playerA->setBoard(0,const_cast<const char**>(boards[0]), numRows, numCols);
+		playerB->setBoard(1,const_cast<const char**>(boards[1]), numRows, numCols);
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++)
 				delete[] boards[i][j];
@@ -108,11 +109,11 @@ pair<int, int> GameMaster::attack()
 	switch (turn)
 	{
 	case(Players::PlayerA):
-		curr_move = player0->attack();
+		curr_move = playerA->attack();
 		break;
 
 	case(Players::PlayerB):
-		curr_move = player1->attack();
+		curr_move = playerB->attack();
 		break;
 	default:
 		return make_pair(-2, -2);
@@ -135,10 +136,9 @@ int GameMaster::play()
 	turn = Players::PlayerA;
 	pair<int, int> move;
 
-	pair<int, int> move;
 	pair<int, int> prevMove = make_pair(-3, -3);
-	int player0_done = 0;
-	int player1_done = 0;
+	int playerA_done = 0;
+	int playerB_done = 0;
 
 	print_board(-1, -1, delay);
 
@@ -168,9 +168,8 @@ int GameMaster::play()
 			continue;
 		}
 		pair<Vessel_ID, AttackResult> results = attack_results(move);
-		int activePlayerIndex = turn == Players::PlayerA ? 0 : 1;
-		player0.notifyOnAttackResult(activePlayerIndex, move.first, move.second, results.second);
-		player1.notifyOnAttackResult(activePlayerIndex, move.first, move.second, results.second);
+		playerA->notifyOnAttackResult((int)turn, move.first, move.second, results.second);
+		playerB->notifyOnAttackResult((int)turn, move.first, move.second, results.second);
 
 		update_state(move, results);
 		if (DEBUG && results.second != AttackResult::Miss)

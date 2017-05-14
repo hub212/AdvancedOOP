@@ -61,10 +61,10 @@ int Tests::moves_check()
 			dll_vec.push_back(make_tuple(AlgoName, hDll, getAlgo));
 			dll_vec.push_back(make_tuple(AlgoName, hDll, getAlgo));
 			//GameMaster *game_master = new GameMaster(fixed_board, pwd, NUM_ROWS, NUM_COLS, 100, 0);
-			game_master = new GameMaster(fixed_board, pwd, NUM_ROWS, NUM_COLS, 100, 0, dll_vec);
+			game_master = new GameMaster(fixed_board, pwd, NUM_ROWS, NUM_COLS, 100, 0 ,dll_vec, boardCopy);
 		}
 		else {
-			game_master = new GameMaster(fixed_board, pwd, NUM_ROWS, NUM_COLS, 100, 0);
+			game_master = new GameMaster(fixed_board, pwd, NUM_ROWS, NUM_COLS, 100, 0, boardCopy);
 		}
 		if (game_master->play() != 0)
 		{

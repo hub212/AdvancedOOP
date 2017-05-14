@@ -7,8 +7,7 @@
 class BoardChecker
 {
 public:
-	string movesA_file;
-	string movesB_file;
+	vector<string> dllVec = {};
 	char** board;
 	int num_rows;
 	int num_cols;

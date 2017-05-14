@@ -20,8 +20,8 @@ class GameMaster
 
 private:
 
-	PreMovesAlgo player0;
-	PreMovesAlgo player1;
+	IBattleshipGameAlgo* playerA;
+	IBattleshipGameAlgo* playerB;
 	Board *boardCopy;
 
 	std::set<char>		lettersA = {'B','P','M','D' };
@@ -88,7 +88,7 @@ public:
 	* \param numRows
 	* \param numCols
 	*/
-	GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet, vector<tuple<string, HINSTANCE, GetAlgoType>> dll_vec);
+	GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet, vector<tuple<string, HINSTANCE, GetAlgoType>> dll_vec, Board *boardCopy);
 
 	/**
 	* \brief impliments the game running phase.
