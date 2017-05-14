@@ -149,8 +149,8 @@ int main(int argc, char* argv[])
 	
 
 	//FIXME: shlomi - remove it before submission
-	bc->dllVec.push_back("C:\\Users\\Shlomi\\Source\\Repos\\AdvancedOOP2\\Project1\\x64\\Release\\PreMovesAlgo.dll");
-	bc->dllVec.push_back("C:\\Users\\Shlomi\\Source\\Repos\\AdvancedOOP2\\Project1\\x64\\Release\\PreMovesAlgo.dll");
+	bc->dllVec.push_back("C:\\Users\\User7\\Source\\Repos\\AdvancedOOP\\Project1\\x64\\Debug\\NaiiveAlgo.dll");
+	bc->dllVec.push_back("C:\\Users\\User7\\Source\\Repos\\AdvancedOOP\\Project1\\x64\\Debug\\SmartAlgo.dll");
 
 	std::sort(bc->dllVec.begin(), bc->dllVec.end());
 

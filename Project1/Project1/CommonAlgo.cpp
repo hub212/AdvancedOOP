@@ -23,7 +23,7 @@ void CommonAlgo::setBoard(int player, const char** board, int numRows, int numCo
 			for (currentCol = 0; currentCol < cols; currentCol++) {
 				char c = board[currentRow][currentCol];
 				if ((player_num == 0 && isupper(c)) || (player_num == 1 && islower(c))) {
-					removeFromRandomTargets(HERE);
+					removeFromRandomTargets(HERE, true);
 					markAdjacentCells();
 				}
 			}
@@ -70,11 +70,13 @@ CommonAlgo::~CommonAlgo()
 }
 
 //michael 12/5/17 08:19 added code start
-bool CommonAlgo::removeFromRandomTargets(int direction) {
+bool CommonAlgo::removeFromRandomTargets(int direction, bool remove) {
 	int row = direction == UP ? currentRow + 1 : (direction == DOWN ? currentRow - 1 : currentRow);
 	int col = direction == RIGHT ? currentCol + 1 : (direction == LEFT ? currentCol - 1 : currentCol);
 	if (row >= 0 && row < rows && col >= 0 && col < cols && possible_targets[row][col] != NOT_TARGET) {
-		possible_targets[row][col] = NOT_TARGET;
+		if (remove) {
+			possible_targets[row][col] = NOT_TARGET;
+		}
 		return true;
 	}
 	else {
@@ -83,9 +85,9 @@ bool CommonAlgo::removeFromRandomTargets(int direction) {
 }
 
 void CommonAlgo::markAdjacentCells() {
-	removeFromRandomTargets(UP);
-	removeFromRandomTargets(DOWN);
-	removeFromRandomTargets(LEFT);
-	removeFromRandomTargets(RIGHT);
+	removeFromRandomTargets(UP, true);
+	removeFromRandomTargets(DOWN, true);
+	removeFromRandomTargets(LEFT, true);
+	removeFromRandomTargets(RIGHT, true);
 }
 //michael 12/5/17 08:19 added code end

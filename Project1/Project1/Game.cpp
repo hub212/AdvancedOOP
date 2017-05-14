@@ -168,16 +168,19 @@ int GameMaster::play()
 		}
 		pair<Vessel_ID, AttackResult> results = attack_results(move);
 		int activePlayerIndex = turn == Players::PlayerA ? 0 : 1;
+
+		update_state(move, results);
+
+		print_board(move.first, move.second, delay);
+
 		player0->notifyOnAttackResult(activePlayerIndex, move.first, move.second, results.second);
 		player1->notifyOnAttackResult(activePlayerIndex, move.first, move.second, results.second);
 
-		update_state(move, results);
 		if (DEBUG && results.second != AttackResult::Miss)
 				cout << ("%s ", turn == Players::PlayerA ? "player A move results " : "player B move results ") << ("%s", results.second == AttackResult::Hit ? "Hit " : "Sink ") << ("%s ", results.first.player == Players::PlayerA ? "player A's " : "player B's ") << ("%s", results.first.type == VesselType::Boat ? "Boat				" : results.first.type == VesselType::Missiles ? "Missiles			" : results.first.type == VesselType::Sub ? "Sub				" : "War				") << endl << "Score " << scores[0] << ":" << scores[1] << "					" << endl;
 			
 		if (is_defeat())
 		{
-			print_board(move.first, move.second, delay);
 			break;
 		}
 
@@ -189,7 +192,7 @@ int GameMaster::play()
 			turn = (turn == Players::PlayerA) ? Players::PlayerB : Players::PlayerA;
 		}
 
-		print_board(move.first, move.second, delay);
+		
 	}
 
 	print_results();

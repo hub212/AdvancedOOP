@@ -18,7 +18,7 @@ class CommonAlgo : public IBattleshipGameAlgo
 public:
 
 	//michael 12/5/17 08:19 added start
-	bool				removeFromRandomTargets(int direction);
+	bool				removeFromRandomTargets(int direction, bool remove);
 	void				markAdjacentCells();
 
 	std::pair<int, int>	attackPair;
