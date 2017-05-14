@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <sstream>
 #include <string>
+#include <algorithm>
 #include "ex1.h"
 #include "Game.h"
 #include "BoardChecker.h"
@@ -120,65 +121,73 @@ int main(int argc, char* argv[])
 	BoardChecker::isDebug = false;
 	BoardChecker* bc = new BoardChecker();
 	bool isInputOk;
+	bool isDllFound = false;
 
 	char pwd[MY_MAX_PATH];
 
 	if (argc > 1 && !string("-quiet").compare(argv[1]) && !string("-delay").compare(argv[1])) {
 		createPath(argc, argv, pwd);
-		isInputOk = bc->checkBoard(pwd);
+		isInputOk = bc->checkBoard(pwd, isDllFound);
 	}
 	else {
 		GetCurrentDirectoryA(MY_MAX_PATH, pwd);
-		isInputOk = bc->checkBoard(pwd);
-	}
-
-	if (!isInputOk) {
-		del(&game_master, &bc);
-		return 1;
+		isInputOk = bc->checkBoard(pwd, isDllFound);
 	}
 
 
 	char** boards = bc->board;
 
 	Board *boardCopy = new Board(NUM_ROWS, NUM_COLS);
-	for (int i = 0; i < NUM_ROWS; i++) {
-		for (int j = 0; j < NUM_COLS; j++) {
-			boardCopy->set(i, j, boards[i][j]);
+	if (isInputOk) {
+		for (int i = 0; i < NUM_ROWS; i++) {
+			for (int j = 0; j < NUM_COLS; j++) {
+				boardCopy->set(i, j, boards[i][j]);
+			}
 		}
 	}
 	
-
-	//FIXME: shlomi - remove it before submission
-	bc->dllVec.push_back("C:\\Users\\User7\\Source\\Repos\\AdvancedOOP\\Project1\\x64\\Debug\\PreMovesAlgo.dll");
-	bc->dllVec.push_back("C:\\Users\\User7\\Source\\Repos\\AdvancedOOP\\Project1\\x64\\Debug\\SmartAlgo.dll");
-
-	std::sort(bc->dllVec.begin(), bc->dllVec.end());
-
 	// dlls handling
 	vector<tuple<string, HINSTANCE, GetAlgoType>> dllVec; // vector of <Shape Name, dll handle, GetShape function ptr>
 
-	for (const auto dll: bc->dllVec) {
+	if (isDllFound) {
+		std::sort(bc->dllVec.begin(), bc->dllVec.end());
+		
+		for (const auto dll : bc->dllVec) {
 
-		HINSTANCE hDll = LoadLibraryA(dll.c_str());
-		if (!hDll) {
-			std::cout << "could not load the dynamic library" << std::endl;
-			return 1;
+			string AlgoName = dll.substr(dll.find_last_of("\\") == string::npos ? 0 : dll.find_last_of("\\") + 1, dll.find_first_of('.'));
+			HINSTANCE hDll = LoadLibraryA(dll.c_str());
+			bool dllOk = true;
+			if (!hDll) {
+				cout << "Cannot not load dll: " << dll << std::endl;
+				dllOk = false;
+				isInputOk = false;
+			}
+
+			GetAlgoType getAlgo;
+			getAlgo = (GetAlgoType)GetProcAddress(hDll, "GetAlgorithm");
+			if (!getAlgo)
+			{
+				if (dllOk) {
+					cout << "Cannot not load dll: " << dll << std::endl;
+					dllOk = false;
+					isInputOk = false;
+				}
+			}
+			if (isInputOk) {
+				dllVec.push_back(make_tuple(AlgoName, hDll, getAlgo));
+			}
+
 		}
-
-		GetAlgoType getAlgo;
-		getAlgo = (GetAlgoType)GetProcAddress(hDll, "GetAlgorithm");
-		if (!getAlgo)
-		{
-			std::cout << "could not load function GetShape()" << std::endl;
-			return 1;
-		}
-
-		string AlgoName = dll.substr(0, dll.find("."));
-
-		dllVec.push_back(make_tuple(AlgoName, hDll, getAlgo));
 	}
 
-	game_master = new GameMaster(boards, pwd, NUM_ROWS, NUM_COLS, delay, quiet, dllVec,boardCopy->getboard());
+	if (!isInputOk) {
+		delete boardCopy;
+		del(&game_master, &bc);
+		return 1;
+	}
+	game_master = new GameMaster(boards, pwd, NUM_ROWS, NUM_COLS, delay, quiet, dllVec ,boardCopy->getboard());
+	if (!game_master->init(pwd))
+		return 1;
 	if (game_master->play() != 0) {
 		del(&game_master, &bc);
 		return -1;

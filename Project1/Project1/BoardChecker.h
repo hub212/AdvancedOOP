@@ -12,11 +12,12 @@ public:
 	int num_rows;
 	int num_cols;
 	static bool isDebug;
-	ifstream* checkPath(char* path);
+	ifstream* checkPath(char * path, bool & isDllFound);
 	BoardChecker();
 	void printIllegalShapeError(string illegalShips, char ch);
 	static int shipSize(char ch);
-	bool checkBoard(char* path);
+	bool checkBoard(char* path, bool& isDllFound);
+
 	~BoardChecker();
 };
 #endif

@@ -41,7 +41,6 @@ public:
 
 
 
-
 	/**
 	* \brief copying the relevant board and updating data set.
 	*		  being called by setBoards from GameMaster

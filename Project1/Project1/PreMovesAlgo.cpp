@@ -15,7 +15,7 @@ std::pair<int, int> PreMovesAlgo::attack() {
 		ifstream inputFile = ifstream(moves_path);
 		if (!inputFile.is_open()) {
 			cout << "Error: unable to open player " << player_num << "move files from path:\n" << (this->moves_path).c_str() << endl;
-			return make_pair(0, 0);
+			return make_pair(-2, -2);
 		}
 
 
@@ -60,8 +60,7 @@ bool PreMovesAlgo::init(const std::string& path) {
 		if (player_num == 0) {
 			char* letters = "BPMD";
 			myLetters.insert(letters, letters + strlen(letters));
-		}
-		else {
+		}else {
 			char* letters = "bpmd";
 			myLetters.insert(letters, letters + strlen(letters));
 		}
@@ -74,14 +73,11 @@ bool PreMovesAlgo::init(const std::string& path) {
 	// builds moves vector list
 	Utils::GetFileNamesInDirectory(&moves_list, moves_dir);
 
-	// FIXME - replace attack-a with attack 
-	// removing not '*.attack files from list
-	moves_list.erase(remove_if(moves_list.begin(), moves_list.end(), [](string str) { return !Utils::string_has_suffix(str, ".attack-a"); }), moves_list.end());
+	moves_list.erase(remove_if(moves_list.begin(), moves_list.end(), [](string str) { return !Utils::string_has_suffix(str, ".attack"); }), moves_list.end());
 
 	std::sort(moves_list.begin(), moves_list.end());
 	
 	if (static_cast<int> (moves_list.size()) ==  0){
-		cout << "Algorithm initializatoin failed for dll: TODO add full path for this dll" << endl;
 		return false;
 	}
 

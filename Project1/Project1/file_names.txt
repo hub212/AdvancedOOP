@@ -1,2 +1,3 @@
-board.sboard
-good_board_0.sboard
+board_8.sboard
+NaiiveAlgo.dll
+SmartAlgo.dll

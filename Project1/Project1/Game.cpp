@@ -28,12 +28,11 @@ GameMaster::GameMaster(char ** boards, const char * players_moves, int numRows, 
 	boards(boards), players_moves(players_moves), rows(numRows), cols(numCols), delay(delay), quiet(quiet), turn(Players::PlayerA)
 {
 	this->boardCopy = boardCopy;
-	dll_vec = dll_vec;
+	// dll init
+	this->dll_vec = dll_vec;
 	player0 = get<2>(dll_vec[0])();
 	player1 = get<2>(dll_vec[1])();
 	setBoards(const_cast<const char**>(boards), rows, cols);
-	player0->init(players_moves);
-	player1->init(players_moves);
 	scores[0] = 0;
 	scores[1] = 0;
 	Utils::ShowConsoleCursor(0);
@@ -123,7 +122,7 @@ pair<int, int> GameMaster::attack()
 		cout << "Error: attack() failed on " << ("%s", Players::PlayerA == turn ? "player A's " : "player B's ") << "turn					" << endl;
 		return make_pair(-2, -2);
 	} else if (curr_move != make_pair(-2, -2) && DEBUG)
-		cout << ("%s", Players::PlayerA == turn ? "player A move:\t" : "player B move:\t") << "(" << curr_move.first+1 << "," << curr_move.second+1 << ")					" << endl;
+		cout << ("%s", Players::PlayerA == turn ? "player A move:\t" : "player B move:\t") << "(" << curr_move.first << "," << curr_move.second << ")					" << endl;
 	return curr_move;
 }
 
@@ -176,9 +175,14 @@ int GameMaster::play()
 		player0->notifyOnAttackResult(activePlayerIndex, move.first, move.second, results.second);
 		player1->notifyOnAttackResult(activePlayerIndex, move.first, move.second, results.second);
 
-		if (DEBUG && results.second != AttackResult::Miss)
-				cout << ("%s ", turn == Players::PlayerA ? "player A move results " : "player B move results ") << ("%s", results.second == AttackResult::Hit ? "Hit " : "Sink ") << ("%s ", results.first.player == Players::PlayerA ? "player A's " : "player B's ") << ("%s", results.first.type == VesselType::Boat ? "Boat				" : results.first.type == VesselType::Missiles ? "Missiles			" : results.first.type == VesselType::Sub ? "Sub				" : "War				") << endl << "Score " << scores[0] << ":" << scores[1] << "					" << endl;
-			
+		if (DEBUG) {
+			cout << ("%s ", turn == Players::PlayerA ? "player A move results " : "player B move results ");
+			if (results.second != AttackResult::Miss)
+				cout << ("%s", results.second == AttackResult::Hit ? "Hit " : "Sink ") << ("%s ", results.first.player == Players::PlayerA ? "player A's " : "player B's ") << ("%s", results.first.type == VesselType::Boat ? "Boat				" : results.first.type == VesselType::Missiles ? "Missiles			" : results.first.type == VesselType::Sub ? "Sub				" : "War				") << endl;
+			else
+				cout << "Miss					"<< endl;
+			cout << "Score " << scores[0] << ":" << scores[1] << "					" << endl;
+		}
 		if (is_defeat())
 		{
 			break;
@@ -200,6 +204,19 @@ int GameMaster::play()
 	return 0;
 }
 
+bool GameMaster::init(string path) {
+	bool ret = true;
+	if (!player0->init(players_moves)) {
+		cout << "Algorithm initializatoin failed for dll: " << players_moves << '\\' << get<0>(dll_vec[0]) << endl;
+		ret = false;
+	}
+	if (!player1->init(players_moves)) {
+		cout << "Algorithm initializatoin failed for dll: " << players_moves << '\\' << get<0>(dll_vec[1]) << endl;
+		ret = false;
+	}
+
+	return ret;
+}
 
 pair<Vessel_ID, AttackResult> GameMaster::attack_results(pair<int,int> move)
 {
@@ -323,43 +340,43 @@ pair<Vessel_ID, AttackResult> GameMaster::attack_results(pair<int,int> move)
 
 }
 
- void GameMaster::print_board(int x,int y,int delay)
+ void GameMaster::print_board(int row_in,int col_in,int delay)
  {
 	if (!quiet) {
 
 		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	
-		for (int i = 0; i< rows; i++) {
-			for (int j = 0; j < cols; j++) {
-				Utils::gotoxy(i, j);
-				if (x-1 == i && y-1 == j) {
+		for (int row = 0; row< rows; row++) {
+			for (int col = 0; col < cols; col++) {
+				Utils::gotoxy(col, row);
+				if (row_in-1 == row && col_in-1 == col) {
 					SetConsoleTextAttribute(hConsole, 14);
 					cout << '*';
 				}
 				else {
-					if (boards[i][j] == '@') {
+					if (boards[row][col] == '@') {
 						SetConsoleTextAttribute(hConsole, 8);
 					}
 					else {
-						SetConsoleTextAttribute(hConsole, (boards[i][j] > 96 ? ((boards[i][j] % 8) + 2) : (boards[i][j] % 5) + 9));
+						SetConsoleTextAttribute(hConsole, (boards[row][col] > 96 ? ((boards[row][col] % 8) + 2) : (boards[row][col] % 5) + 9));
 					}
-					cout << boards[i][j];
+					cout << boards[row][col];
 				}
 			}
 		}
 
-		if (x-1>=0 && y-1>=0){
+		if (row_in-1>=0 && col_in-1>=0){
 			 Sleep(delay);
-			 Utils::gotoxy(x-1, y-1);
-			 if (boards[x-1][y-1] == '@') {
+			 Utils::gotoxy(col_in-1, row_in-1);
+			 if (boards[row_in-1][col_in-1] == '@') {
 				 SetConsoleTextAttribute(hConsole, 8);
 			 }
 			 else {
-				 SetConsoleTextAttribute(hConsole, (boards[x - 1][y - 1] > 96 ? ((boards[x - 1][y - 1] % 8) + 2) : (boards[x - 1][y - 1] % 5) + 9));
+				 SetConsoleTextAttribute(hConsole, (boards[row_in - 1][col_in - 1] > 96 ? ((boards[row_in - 1][col_in - 1] % 8) + 2) : (boards[row_in - 1][col_in - 1] % 5) + 9));
 			 }
-				cout << boards[x-1][y-1];
+				cout << boards[row_in-1][col_in-1];
 		}
-		Utils::gotoxy(rows, cols);
+		Utils::gotoxy(cols, rows);
 		cout << endl;
 		Sleep(delay);
 		SetConsoleTextAttribute(hConsole, 7);

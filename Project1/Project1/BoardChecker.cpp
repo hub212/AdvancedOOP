@@ -8,6 +8,7 @@ char** board = NULL;
 int num_rows = 0;
 int num_cols = 0;
 
+
 BoardChecker::BoardChecker()
 {
 }
@@ -68,16 +69,17 @@ bool dirExists(const std::string& dirName_in)
 	return false;    // this is not a directory!
 }
 
-ifstream* BoardChecker::checkPath(char* path) {
 
-	
+ifstream* BoardChecker::checkPath(char* path, bool& isDllFound) {
+
+
 
 	char dir[MY_MAX_PATH];
 	strcpy_s(dir, MY_MAX_PATH, path);
 	dir[MY_MAX_PATH - 1] = '\0';
+	// dlls handling	
 
 
-	
 	string dirStr(dir);
 	if (!dirExists(dirStr)) {
 		std::cout << "Wrong path: " << dir << std::endl;
@@ -107,7 +109,7 @@ ifstream* BoardChecker::checkPath(char* path) {
 
 	files.append("\\file_names.txt");
 	system(command.c_str());
-	
+
 	ifstream files_stream(files);
 	string boardName = "";
 	boardName.append(dir);
@@ -121,7 +123,6 @@ ifstream* BoardChecker::checkPath(char* path) {
 
 	bool isBoardFound = false;
 	bool isAttackFound = false;
-	bool isDllFound = false;
 
 	string str;
 	while (!Board::safeGetline(files_stream, str).eof()) {
@@ -132,7 +133,7 @@ ifstream* BoardChecker::checkPath(char* path) {
 			boardStream = new ifstream(boardName);
 		}
 
-		if (Utils::string_has_suffix(str, ".dll")) {;
+		if (Utils::string_has_suffix(str, ".dll")) {
 			string curr_dll_filename = dll_fileName;
 			curr_dll_filename.append(str);
 			dllVec.push_back(curr_dll_filename);
@@ -144,7 +145,7 @@ ifstream* BoardChecker::checkPath(char* path) {
 	if (!isBoardFound || !boardStream) {
 		std::cout << "Missing board file (*.sboard) looking in path: " << dir << std::endl;
 	}
-	
+
 	if (isDllFound) {
 		for (int i = 0; i < dllVec.size(); i++) {
 			std::ifstream* dllStream = 0;
@@ -158,23 +159,24 @@ ifstream* BoardChecker::checkPath(char* path) {
 				dllStream = NULL;
 			}
 		}
-
-		if (dllVec.size() < 2) {
-			cout << "Missing an algorithm (dll) file looking in path: " << path << endl;
-			isDllFound = false;
-		}
 	}
 
-	if (!boardStream || isDllFound) {
+	if (dllVec.size() < 2) {
+		cout << "Missing an algorithm (dll) file looking in path: " << path << endl;
+		isDllFound = false;
+	}
+
+	if (!boardStream || !isDllFound || !isBoardFound) {
 		return NULL;
 	}
 
 	return boardStream;
 }
 
-bool BoardChecker::checkBoard(char* path) {
+
+bool BoardChecker::checkBoard(char* path, bool& isDllFound) {
 	
-	ifstream* boardStream = checkPath(path);
+	ifstream* boardStream = checkPath(path ,isDllFound);
 	if (boardStream == NULL) {
 		return false;
 	}
