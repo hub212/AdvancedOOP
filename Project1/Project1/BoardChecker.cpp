@@ -91,11 +91,11 @@ ifstream* BoardChecker::checkPath(char* path) {
 
 	command.append("\"");
 	command.append(dir);
-	command.append("\\*.attack-a\" ");
+	command.append("\\*.attack\" ");
 
 	command.append("\"");
 	command.append(dir);
-	command.append("\\*.attack-b\" ");
+	command.append("\\*.dll\" ");
 
 	command.append(" /b /a-d > file_names.txt  2>&1");
 
@@ -114,19 +114,14 @@ ifstream* BoardChecker::checkPath(char* path) {
 	boardName.append("\\");
 	std::ifstream* boardStream = 0;
 
-	std::string playerA_fileName = "";
-	playerA_fileName.append(dir);
-	playerA_fileName.append("\\");
-	std::ifstream* playerA_Stream = 0;
+	std::string dll_fileName = "";
+	dll_fileName.append(dir);
+	dll_fileName.append("\\");
 
-	std::string playerB_fileName = "";
-	playerB_fileName.append(dir);
-	playerB_fileName.append("\\");
-	std::ifstream* playerB_Stream = 0;
 
 	bool isBoardFound = false;
-	bool isPlayerA_fileFound = false;
-	bool isPlayerB_fileFound = false;
+	bool isAttackFound = false;
+	bool isDllFound = false;
 
 	string str;
 	while (!Board::safeGetline(files_stream, str).eof()) {
@@ -137,50 +132,40 @@ ifstream* BoardChecker::checkPath(char* path) {
 			boardStream = new ifstream(boardName);
 		}
 
-		if (!isPlayerA_fileFound && Utils::string_has_suffix(str, ".attack-a")) {
-			playerA_fileName.append(str);
-			isPlayerA_fileFound = true;
-			movesA_file = playerA_fileName;
-			playerA_Stream = new ifstream(playerA_fileName);
+		if (Utils::string_has_suffix(str, ".dll")) {;
+			string curr_dll_filename = dll_fileName;
+			curr_dll_filename.append(str);
+			dllVec.push_back(curr_dll_filename);
+			isDllFound = true;
 		}
 
-		if (!isPlayerB_fileFound && Utils::string_has_suffix(str, ".attack-b")) {
-			playerB_fileName.append(str);
-			isPlayerB_fileFound = true;
-			movesB_file = playerB_fileName;
-			playerB_Stream = new ifstream(playerB_fileName);
-		}
 	}
 
 	if (!isBoardFound || !boardStream) {
 		std::cout << "Missing board file (*.sboard) looking in path: " << dir << std::endl;
 	}
+	
+	if (isDllFound) {
+		for (int i = 0; i < dllVec.size(); i++) {
+			std::ifstream* dllStream = 0;
+			dllStream = new ifstream(dllVec[i]);
+			if (!dllStream) {
+				dllVec.erase(dllVec.begin() + i);
+			}
+			else {
+				dllStream->close();
+				delete dllStream;
+				dllStream = NULL;
+			}
+		}
 
-	if (!isPlayerA_fileFound || !playerA_Stream) {
-		std::cout << "Missing attack file for player A (*.attack-a) looking in path: " << dir << std::endl;
-	}
-	if (playerA_Stream) {
-		playerA_Stream->close();
-		delete playerA_Stream;
-		playerA_Stream = NULL;
-	}
-	else {
-		isPlayerA_fileFound = false;
-	}
-
-	if (!isPlayerB_fileFound || !playerB_Stream) {
-		std::cout << "Missing attack file for player B (*.attack-b) looking in path: " << dir << std::endl;
-	}
-	if (playerB_Stream) {
-		playerB_Stream->close();
-		delete playerB_Stream;
-		playerB_Stream = NULL;
-	}
-	else {
-		isPlayerB_fileFound = false;
+		if (dllVec.size() < 2) {
+			cout << "Missing an algorithm (dll) file looking in path: " << path << endl;
+			isDllFound = false;
+		}
 	}
 
-	if (!boardStream || !isPlayerA_fileFound || !isPlayerB_fileFound) {
+	if (!boardStream || isDllFound) {
 		return NULL;
 	}
 

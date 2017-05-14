@@ -92,14 +92,6 @@ bool PreMovesAlgo::init(const std::string& path) {
 
 	moves_path = moves_list[player_num];
 
-	if (DEBUG) {
-		cout << "Paths Print:" << endl;
-		for (const auto item : moves_list)
-			cout << item << endl;
-		cout << "-----------------------------------------" << endl;
-		cout << "Player: " << player_num << " moves_path: " << moves_path << endl;
-	}
-
 	return true;
 }
 
@@ -139,6 +131,8 @@ int PreMovesAlgo::str2int(const string str, int* num)
 	}
 	return 0;
 }
+
+void PreMovesAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult result) {}
 
 PreMovesAlgo::PreMovesAlgo(int player_num, char* letters, const  char* moves) : CommonAlgo(player_num, letters), moves_path(moves), read_pos(0), line_num(0) {}
 

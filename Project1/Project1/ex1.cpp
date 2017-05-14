@@ -16,7 +16,11 @@ void createPath(int argc, char* argv[], char* pwd) {
 
 	for (int i = 1; i < argc; i++) {
 
-		if (cnt == MY_MAX_PATH-1) {
+		if (cnt == MY_MAX_PATH - 1) {
+			break;
+		}
+
+		if (string("-delay").compare(argv[i]) || string("-quiet").compare(argv[i])) {
 			break;
 		}
 
@@ -124,7 +128,6 @@ int main(int argc, char* argv[])
 		isInputOk = bc->checkBoard(pwd);
 	}
 	else {
-		
 		GetCurrentDirectoryA(MY_MAX_PATH, pwd);
 		isInputOk = bc->checkBoard(pwd);
 	}
@@ -134,16 +137,6 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	char attackA[MY_MAX_PATH];
-	char attackB[MY_MAX_PATH];
-
-	strcpy_s(attackA, bc->movesA_file.c_str());
-	strcpy_s(attackB, bc->movesB_file.c_str());
-
-
-	vector<const char*> players_moves;
-	players_moves.push_back(attackA);
-	players_moves.push_back(attackB);
 
 	char** boards = bc->board;
 
@@ -153,8 +146,39 @@ int main(int argc, char* argv[])
 			boardCopy->set(i, j, boards[i][j]);
 		}
 	}
+	
 
-	game_master = new GameMaster(boards, pwd, NUM_ROWS, NUM_COLS, delay, quiet, boardCopy->getboard());
+	//FIXME: shlomi - remove it before submission
+	bc->dllVec.push_back("C:\\Users\\Shlomi\\Source\\Repos\\AdvancedOOP2\\Project1\\x64\\Release\\PreMovesAlgo.dll");
+	bc->dllVec.push_back("C:\\Users\\Shlomi\\Source\\Repos\\AdvancedOOP2\\Project1\\x64\\Release\\PreMovesAlgo.dll");
+
+	std::sort(bc->dllVec.begin(), bc->dllVec.end());
+
+	// dlls handling
+	vector<tuple<string, HINSTANCE, GetAlgoType>> dllVec; // vector of <Shape Name, dll handle, GetShape function ptr>
+
+	for (const auto dll: bc->dllVec) {
+
+		HINSTANCE hDll = LoadLibraryA(dll.c_str());
+		if (!hDll) {
+			std::cout << "could not load the dynamic library" << std::endl;
+			return 1;
+		}
+
+		GetAlgoType getAlgo;
+		getAlgo = (GetAlgoType)GetProcAddress(hDll, "GetAlgorithm");
+		if (!getAlgo)
+		{
+			std::cout << "could not load function GetShape()" << std::endl;
+			return 1;
+		}
+
+		string AlgoName = dll.substr(0, dll.find("."));
+
+		dllVec.push_back(make_tuple(AlgoName, hDll, getAlgo));
+	}
+
+	game_master = new GameMaster(boards, pwd, NUM_ROWS, NUM_COLS, delay, quiet, dllVec,boardCopy);
 	if (game_master->play() != 0) {
 		del(&game_master, &bc);
 		return -1;
