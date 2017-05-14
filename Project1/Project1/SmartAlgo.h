@@ -1,6 +1,8 @@
 #pragma once
 #include "CommonAlgo.h"
 #include <random>
+#define NOT_TRIED -1
+#define NONE -2
 
 class SmartAlgo :
 	public CommonAlgo
@@ -25,17 +27,19 @@ class SmartAlgo :
 	int randomGen(int min, int max);
 	void initRandomTargets();
 	void pickRandTarget();
-	void calcStateAfterAttack();
-	void tryToExpandAimRange(int direction);
+	void calcAttack();
+	bool tryToExpandAimRange(int direction);
 	void setNextAttack();
 	void determineAimDirection();
-	void helpDetermineAimDirection(int direction1, int direction2);
 	void blockIrrelevantDirections();
+	void calcCurrentCoords(int direction);
 
 public:
 	SmartAlgo();
+	
 	bool init(const std::string& path);
 	void notifyOnAttackResult(int player, int row, int col, AttackResult result);
+	std::pair<int, int> attack();
 	~SmartAlgo();
 };
 

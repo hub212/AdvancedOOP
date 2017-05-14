@@ -13,13 +13,12 @@
 #include <string>
 using namespace std;
 
-class CommonAlgo : IBattleshipGameAlgo
+class CommonAlgo : public IBattleshipGameAlgo
 {
 public:
 
 	//michael 12/5/17 08:19 added start
-	void				setNextAttack();
-	bool				removeFromRandomTargets(int direction);
+	bool				removeFromRandomTargets(int direction, bool remove);
 	void				markAdjacentCells();
 
 	std::pair<int, int>	attackPair;
@@ -53,10 +52,6 @@ public:
 	void setBoard(int player, const char** board, int numRows, int numCols);
 
 	std::pair<int, int> attack();
-
-	void notifyOnAttackResult(int player, int row, int col, AttackResult result);
-
-	bool init(const std::string& path);
 
 	/**
 	* \brief initilze all internal variables.

@@ -149,8 +149,8 @@ int main(int argc, char* argv[])
 	
 
 	//FIXME: shlomi - remove it before submission
-	bc->dllVec.push_back("C:\\Users\\Shlomi\\Source\\Repos\\AdvancedOOP2\\Project1\\x64\\Release\\PreMovesAlgo.dll");
-	bc->dllVec.push_back("C:\\Users\\Shlomi\\Source\\Repos\\AdvancedOOP2\\Project1\\x64\\Release\\PreMovesAlgo.dll");
+	bc->dllVec.push_back("C:\\Users\\User7\\Source\\Repos\\AdvancedOOP\\Project1\\x64\\Debug\\NaiiveAlgo.dll");
+	bc->dllVec.push_back("C:\\Users\\User7\\Source\\Repos\\AdvancedOOP\\Project1\\x64\\Debug\\SmartAlgo.dll");
 
 	std::sort(bc->dllVec.begin(), bc->dllVec.end());
 
@@ -178,7 +178,7 @@ int main(int argc, char* argv[])
 		dllVec.push_back(make_tuple(AlgoName, hDll, getAlgo));
 	}
 
-	game_master = new GameMaster(boards, pwd, NUM_ROWS, NUM_COLS, delay, quiet, dllVec,boardCopy);
+	game_master = new GameMaster(boards, pwd, NUM_ROWS, NUM_COLS, delay, quiet, dllVec,boardCopy->getboard());
 	if (game_master->play() != 0) {
 		del(&game_master, &bc);
 		return -1;

@@ -55,6 +55,27 @@ std::istream& Board::safeGetline(std::istream& is, std::string& t)
 	}
 }
 
+Board::Board(char** arr, int num_rows, int num_cols) {
+	
+	this->num_rows = num_rows;
+	this->num_cols = num_cols;
+	this->num_taken_cells = 0;
+	
+	
+	board = new char*[num_rows];
+
+	if (BoardChecker::isDebug)
+		std::cout << "creating a fresh board" << std::endl;
+
+	for (int row_index = 0; row_index < num_rows; row_index++)
+	{
+		board[row_index] = new char[num_cols];
+		for (int col_index = 0; col_index < num_cols; col_index++) {
+			board[row_index][col_index] = arr[row_index][col_index];
+		}
+	}
+}
+
 Board::Board(std::ifstream& file, int num_rows, int num_cols) {
 	
 	this->num_rows = num_rows;

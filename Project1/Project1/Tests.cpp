@@ -44,7 +44,7 @@ int Tests::moves_check()
 		}
 		GameMaster *game_master;
 		if (DLL_TEST) {
-			HINSTANCE hDll = LoadLibraryA("C:\\Users\\Shlomi\\Source\\Repos\\AdvancedOOP2\\Project1\\x64\\Release\\PreMovesAlgo.dll");
+			HINSTANCE hDll = LoadLibraryA("C:\\Users\\User7\\Source\\Repos\\AdvancedOOP\\Project1\\x64\\Debug\\NaiiveAlgo.dll");
 			if (!hDll){
 				std::cout << "could not load the dynamic library" << std::endl;
 				return EXIT_FAILURE;
@@ -57,20 +57,43 @@ int Tests::moves_check()
 				std::cout << "could not load function GetShape()" << std::endl;
 				return EXIT_FAILURE;
 			}
-			string AlgoName = "PreMovesAlgo";
+			string AlgoName = "NaiiveAlgo";
 			dll_vec.push_back(make_tuple(AlgoName, hDll, getAlgo));
-			dll_vec.push_back(make_tuple(AlgoName, hDll, getAlgo));
+
+
+
+
+			HINSTANCE hDll2 = LoadLibraryA("C:\\Users\\User7\\Source\\Repos\\AdvancedOOP\\Project1\\x64\\Debug\\SmartAlgo.dll");
+			if (!hDll2) {
+				std::cout << "could not load the dynamic library" << std::endl;
+				return EXIT_FAILURE;
+			}
+
+			GetAlgoType getAlgo2;
+			getAlgo2 = (GetAlgoType)GetProcAddress(hDll2, "GetAlgorithm");
+			if (!getAlgo2)
+			{
+				std::cout << "could not load function GetShape()" << std::endl;
+				return EXIT_FAILURE;
+			}
+			string AlgoName2 = "SmartAlgo";
+
+
+
+
+			dll_vec.push_back(make_tuple(AlgoName2, hDll2, getAlgo2));
 			//GameMaster *game_master = new GameMaster(fixed_board, pwd, NUM_ROWS, NUM_COLS, 100, 0);
-			game_master = new GameMaster(fixed_board, pwd, NUM_ROWS, NUM_COLS, 100, 0 ,dll_vec, boardCopy);
+			game_master = new GameMaster(fixed_board, pwd, NUM_ROWS, NUM_COLS, 100, 0, dll_vec, boardCopy->getboard());
 		}
 		else {
-			game_master = new GameMaster(fixed_board, pwd, NUM_ROWS, NUM_COLS, 100, 0, boardCopy);
+			game_master = new GameMaster(fixed_board, pwd, NUM_ROWS, NUM_COLS, 100, 0, boardCopy->getboard());
 		}
 		if (game_master->play() != 0)
 		{
 			cout << "Error: checking moves failed on files " << (" %s ", moves_list[i]) << ("; %s", moves_list[i + 1]) << endl;
 			return -1;
 		}
+		delete boardCopy;
 		delete game_master;
 		deleteBoards();
 	}

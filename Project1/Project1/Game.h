@@ -9,6 +9,7 @@
 #include <vector>
 #include "ex1.h"
 #include "PreMovesAlgo.h"
+#include "IBattleshipGameAlgo.h"
 #include "SmartAlgo.h"
 #include "utils.h"
 #include "Types.h"
@@ -20,9 +21,9 @@ class GameMaster
 
 private:
 
-	IBattleshipGameAlgo* playerA;
-	IBattleshipGameAlgo* playerB;
-	Board *boardCopy;
+	IBattleshipGameAlgo* player0;
+	IBattleshipGameAlgo* player1;
+	char **boardCopy;
 
 	std::set<char>		lettersA = {'B','P','M','D' };
 	std::set<char>		lettersB = {'b','p','m','d' };
@@ -79,7 +80,7 @@ public:
 	* \param numRows
 	* \param numCols
 	*/
-	GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet, Board *boardCopy);
+	GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet, char **boardCopy);
 
 	/**
 	* \brief init all internal variables - paths and boards. intansiating the Player intances.
@@ -88,7 +89,7 @@ public:
 	* \param numRows
 	* \param numCols
 	*/
-	GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet, vector<tuple<string, HINSTANCE, GetAlgoType>> dll_vec, Board *boardCopy);
+	GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet, vector<tuple<string, HINSTANCE, GetAlgoType>> dll_vec, char **boardCopy);
 
 	/**
 	* \brief impliments the game running phase.
