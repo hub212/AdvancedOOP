@@ -1,1 +1,3 @@
-bad_board_0.sboard
+board_8.sboard
+NaiiveAlgo.dll
+SmartAlgo.dll

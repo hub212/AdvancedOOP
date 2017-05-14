@@ -96,6 +96,8 @@ public:
 	*		  responsible for attack() and notifyOnAttackResult() and updating current state.
 	*/
 	int play();
+
+	bool init(string path);
 };
 
 #endif
