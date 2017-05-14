@@ -1,2 +1,1 @@
-board.sboard
-good_board_0.sboard
+bad_board_0.sboard

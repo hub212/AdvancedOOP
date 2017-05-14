@@ -27,7 +27,7 @@ GameMaster::GameMaster(char** boards, const char* players_moves, int numRows, in
 GameMaster::GameMaster(char ** boards, const char * players_moves, int numRows, int numCols, int delay, int quiet, vector<tuple<string, HINSTANCE, GetAlgoType>> dll_vec, Board *boardCopy) :
 	boards(boards), players_moves(players_moves), rows(numRows), cols(numCols), delay(delay), quiet(quiet), turn(Players::PlayerA)
 {
-
+	// dll init
 	dll_vec = dll_vec;
 	playerA = get<2>(dll_vec[0])();
 	playerB = get<2>(dll_vec[1])();

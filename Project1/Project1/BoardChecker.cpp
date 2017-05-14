@@ -158,14 +158,14 @@ ifstream* BoardChecker::checkPath(char* path) {
 				dllStream = NULL;
 			}
 		}
-
-		if (dllVec.size() < 2) {
-			cout << "Missing an algorithm (dll) file looking in path: " << path << endl;
-			isDllFound = false;
-		}
 	}
 
-	if (!boardStream || isDllFound) {
+	if (dllVec.size() < 2) {
+		cout << "Missing an algorithm (dll) file looking in path: " << path << endl;
+		isDllFound = false;
+	}
+
+	if (!boardStream || !isDllFound) {
 		return NULL;
 	}
 
