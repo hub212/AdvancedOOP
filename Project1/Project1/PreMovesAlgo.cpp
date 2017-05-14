@@ -132,7 +132,6 @@ int PreMovesAlgo::str2int(const string str, int* num)
 	return 0;
 }
 
-void PreMovesAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult result) {}
 
 PreMovesAlgo::PreMovesAlgo(int player_num, char* letters, const  char* moves) : CommonAlgo(player_num, letters), moves_path(moves), read_pos(0), line_num(0) {}
 

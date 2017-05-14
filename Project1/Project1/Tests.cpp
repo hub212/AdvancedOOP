@@ -64,7 +64,7 @@ int Tests::moves_check()
 
 
 			HINSTANCE hDll2 = LoadLibraryA("C:\\Users\\User7\\Source\\Repos\\AdvancedOOP\\Project1\\x64\\Debug\\SmartAlgo.dll");
-			if (!hDll) {
+			if (!hDll2) {
 				std::cout << "could not load the dynamic library" << std::endl;
 				return EXIT_FAILURE;
 			}

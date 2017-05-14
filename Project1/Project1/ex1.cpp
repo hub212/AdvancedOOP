@@ -178,7 +178,7 @@ int main(int argc, char* argv[])
 		dllVec.push_back(make_tuple(AlgoName, hDll, getAlgo));
 	}
 
-	game_master = new GameMaster(boards, pwd, NUM_ROWS, NUM_COLS, delay, quiet, dllVec,boardCopy);
+	game_master = new GameMaster(boards, pwd, NUM_ROWS, NUM_COLS, delay, quiet, dllVec,boardCopy->getboard());
 	if (game_master->play() != 0) {
 		del(&game_master, &bc);
 		return -1;
