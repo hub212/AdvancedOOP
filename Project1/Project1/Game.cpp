@@ -184,7 +184,7 @@ int GameMaster::play()
 			break;
 		}
 
-		if (results.second != AttackResult::Miss)
+		if (results.second != AttackResult::Miss && turn != results.first.player)
 		{
 			turn = (turn == Players::PlayerA) ? Players::PlayerA : Players::PlayerB;
 		}

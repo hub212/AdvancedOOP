@@ -16,7 +16,6 @@ bool SmartAlgo::init(const std::string& path) {
 
 	aimRange = new int[4]{};
 	initRandomTargets();
-	setNextAttack();
 	return true;
 }
 
@@ -26,8 +25,8 @@ void SmartAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult 
 		int tmpCol = currentCol;
 		currentRow = row-1;
 		currentCol = col-1;
-		removeFromRandomTargets(HERE, true);
-		if (result == AttackResult::Sink && possible_targets[currentRow][currentCol] != NOT_TARGET) {
+		int cell = possible_targets[currentRow][currentCol];
+		if (result == AttackResult::Sink && cell != NOT_TARGET) {
 			//the other player sinked his own ship. the cells around it are empty.
 			markAdjacentCells();
 		}
@@ -37,40 +36,46 @@ void SmartAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult 
 			targetBank[targetBank.size() - 1][0] = currentRow;
 			targetBank[targetBank.size() - 1][1] = currentCol;
 		}
+		removeFromRandomTargets(HERE, true);
 		currentRow = tmpRow;
 		currentCol = tmpCol;
 		return;
 	}
 	removeFromRandomTargets(HERE, true);
 	if (result == AttackResult::Miss) {
-		if (!seekAndDestroy && targetBank.size()>0) {
-			//we are not busy chasing after a ship, so load a target from the target bank.
-			attackSucceeded = true;
-			currentRow = targetBank[targetBank.size()][0]; //the next attacks will be centered around these coordinates
-			currentCol = targetBank[targetBank.size()][1]; //the next attacks will be centered around these coordinates
-			targetBank.resize(targetBank.size()-1);
-		}
-		else {
-			shipSinked = false;
-			attackSucceeded = false;
-		}
+		attackSucceeded = false;
 	}
 	else if (result == AttackResult::Hit) {
-		shipSinked = false;
 		attackSucceeded = true;
 	}
 	else if (result == AttackResult::Sink) {
-		shipSinked = true;
-		attackSucceeded = true;
+		attackSucceeded = false;
+		markAdjacentCells();
+		if (seekAndDestroy) {
+			currentRow = firstHitRow;
+			currentCol = firstHitCol;
+			markAdjacentCells();
+		}
+		seekAndDestroy = false;
 	}
-	calcAttack();
+	//calcAttack();
 }
 
 std::pair<int, int> SmartAlgo::attack()
 {
-	if (possible_targets[currentRow][currentCol] == NOT_TARGET) {
-		attackSucceeded = false;
+	if (seekAndDestroy || attackSucceeded) {
 		calcAttack();
+	}
+	while (!seekAndDestroy && targetBank.size() > 0) {
+		//we are not busy chasing after a ship, so load a target from the target bank.
+		attackSucceeded = true;
+		currentRow = targetBank[targetBank.size() - 1][0]; //the next attacks will be centered around these coordinates
+		currentCol = targetBank[targetBank.size() - 1][1]; //the next attacks will be centered around these coordinates
+		targetBank.resize(targetBank.size() - 1);
+		calcAttack();
+	}
+	if (!seekAndDestroy) {
+		pickRandTarget();
 	}
 	//michael 12/5/17 08:19 added code start
 	attackPair.first = currentRow;
@@ -142,16 +147,7 @@ void SmartAlgo::pickRandTarget() {
 }
 
 void SmartAlgo::calcAttack() {
-	if (shipSinked) {
-		markAdjacentCells();
-		if (seekAndDestroy) {
-			currentRow = firstHitRow;
-			currentCol = firstHitCol;
-			markAdjacentCells();
-		}
-		seekAndDestroy = false;
-	}
-	else if (attackSucceeded && !seekAndDestroy) {
+	if (attackSucceeded && !seekAndDestroy) {
 		seekAndDestroy = true; //we hit a ship and didn't sink it - continue to target it
 		firstHitRow = currentRow; //the next attacks will be centered around these coordinates
 		firstHitCol = currentCol; //the next attacks will be centered around these coordinates
@@ -163,7 +159,8 @@ void SmartAlgo::calcAttack() {
 	else if (!attackSucceeded && seekAndDestroy) {
 		aimRange[aimDirection] = 0;
 	}
-	setNextAttack();
+	determineAimDirection();
+	calcCurrentCoords(aimDirection);
 }
 
 void SmartAlgo::blockIrrelevantDirections() {
@@ -176,19 +173,6 @@ void SmartAlgo::blockIrrelevantDirections() {
 		aimRange[LEFT] = aimRange[RIGHT] = 0;
 		removeFromRandomTargets(LEFT, true);
 		removeFromRandomTargets(RIGHT, true);
-	}
-}
-
-void SmartAlgo::setNextAttack() {
-	if (seekAndDestroy) {
-		determineAimDirection();
-	}
-	if (seekAndDestroy)
-	{
-		calcCurrentCoords(aimDirection);
-	}
-	else {
-		pickRandTarget();
 	}
 }
 
