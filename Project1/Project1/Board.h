@@ -21,6 +21,7 @@ public:
 	Board(const Board &other, int row, int col);
 	Board(const Board &other);
 	Board(int num_rows, int num_cols);
+	Board(char** arr, int num_rows, int num_cols);
 	void add(const Board &other);
 	void fillShape(int row, int col, const Board &other, char currChar);
 	bool areAdjacentShapes();

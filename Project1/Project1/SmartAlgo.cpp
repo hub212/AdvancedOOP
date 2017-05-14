@@ -213,3 +213,6 @@ void SmartAlgo::blockIrrelevantDirections() {
 }
 
 
+IBattleshipGameAlgo* GetAlgorithm() {
+	return (IBattleshipGameAlgo*) new SmartAlgo();
+}

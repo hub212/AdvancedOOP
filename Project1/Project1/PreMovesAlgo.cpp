@@ -47,6 +47,8 @@ std::pair<int, int> PreMovesAlgo::attack() {
 		return make_pair(-1, -1);
 	}
 
+
+
 bool PreMovesAlgo::init(const std::string& path) {
 
 	char pwd[MY_MAX_PATH];
@@ -109,6 +111,13 @@ void PreMovesAlgo::setBoard(int player, const char** board, int numRows, int num
 	cols = numCols;
 }
 
+
+void PreMovesAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult result)
+{
+
+}
+
+
 int PreMovesAlgo::str2int(const string str, int* num)
 {
 
@@ -137,6 +146,6 @@ PreMovesAlgo::PreMovesAlgo() : read_pos(0), line_num(0) {};
 
 
 IBattleshipGameAlgo* GetAlgorithm() {
-	return (IBattleshipGameAlgo*) new PreMovesAlgo;
+	return (IBattleshipGameAlgo*) new PreMovesAlgo();
 }
 

@@ -154,7 +154,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	game_master = new GameMaster(boards, pwd, NUM_ROWS, NUM_COLS, delay, quiet, boardCopy);
+	game_master = new GameMaster(boards, pwd, NUM_ROWS, NUM_COLS, delay, quiet, boardCopy->getboard());
 	if (game_master->play() != 0) {
 		del(&game_master, &bc);
 		return -1;

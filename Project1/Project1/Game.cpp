@@ -1,4 +1,3 @@
-#include "IBattleshipGameAlgo.h"
 #include "Game.h"
 #include <sstream>
 #include <set>
@@ -12,28 +11,29 @@ using namespace std;
 ////--------------------------
 
 
-GameMaster::GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet) :
+GameMaster::GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet, char **boardCopy) :
 	boards(boards), players_moves(players_moves), rows(numRows), cols(numCols),delay(delay), quiet(quiet), turn(Players::PlayerA)
 {
 	this->boardCopy = boardCopy;
 	setBoards(const_cast<const char**>(boards), rows, cols);
-	player0.init(players_moves);
-	player1.init(players_moves);
+	player0->init(players_moves);
+	player1->init(players_moves);
 	scores[0] = 0;
 	scores[1] = 0;
 	Utils::ShowConsoleCursor(0);
 }
 
-GameMaster::GameMaster(char ** boards, const char * players_moves, int numRows, int numCols, int delay, int quiet, vector<tuple<string, HINSTANCE, GetAlgoType>> dll_vec) :
+GameMaster::GameMaster(char ** boards, const char * players_moves, int numRows, int numCols, int delay, int quiet, vector<tuple<string, HINSTANCE, GetAlgoType>> dll_vec, char **boardCopy) :
+	
 	boards(boards), players_moves(players_moves), rows(numRows), cols(numCols), delay(delay), quiet(quiet), turn(Players::PlayerA)
 {
-
+	this->boardCopy = boardCopy;
 	dll_vec = dll_vec;
-	playerA = get<2>(dll_vec[0])();
-	playerB = get<2>(dll_vec[0])();
+	player0 = get<2>(dll_vec[0])();
+	player1 = get<2>(dll_vec[1])();
 	setBoards(const_cast<const char**>(boards), rows, cols);
-	playerA->init(players_moves);
-	playerB->init(players_moves);
+	player0->init(players_moves);
+	player1->init(players_moves);
 	scores[0] = 0;
 	scores[1] = 0;
 	Utils::ShowConsoleCursor(0);
@@ -89,8 +89,8 @@ void GameMaster::setBoards(const char** board, int numRows, int numCols)
 		cout << "Error: setBoards failed due to player boards allocations					" << endl;
 	}
 	else {
-		player0.setBoard(0,const_cast<const char**>(boards[0]), numRows, numCols);
-		player1.setBoard(1,const_cast<const char**>(boards[1]), numRows, numCols);
+		player0->setBoard(0,const_cast<const char**>(boards[0]), numRows, numCols);
+		player1->setBoard(1,const_cast<const char**>(boards[1]), numRows, numCols);
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++)
 				delete[] boards[i][j];
@@ -133,7 +133,6 @@ int GameMaster::play()
 {
 	// Player A starts
 	turn = Players::PlayerA;
-	pair<int, int> move;
 
 	pair<int, int> move;
 	pair<int, int> prevMove = make_pair(-3, -3);
@@ -142,7 +141,7 @@ int GameMaster::play()
 
 	print_board(-1, -1, delay);
 
-	while(!playerA_done || !playerB_done)
+	while(!player0_done || !player1_done)
 	{
 
 		 prevMove = move;
@@ -159,18 +158,18 @@ int GameMaster::play()
 			// the player has no more moves
 			if (turn == Players::PlayerA) {
 				turn = Players::PlayerB;
-				playerA_done = 1;
+				player0_done = 1;
 			}
 			else {
 				turn = Players::PlayerA;
-				playerB_done = 1;
+				player1_done = 1;
 			}
 			continue;
 		}
 		pair<Vessel_ID, AttackResult> results = attack_results(move);
 		int activePlayerIndex = turn == Players::PlayerA ? 0 : 1;
-		player0.notifyOnAttackResult(activePlayerIndex, move.first, move.second, results.second);
-		player1.notifyOnAttackResult(activePlayerIndex, move.first, move.second, results.second);
+		player0->notifyOnAttackResult(activePlayerIndex, move.first, move.second, results.second);
+		player1->notifyOnAttackResult(activePlayerIndex, move.first, move.second, results.second);
 
 		update_state(move, results);
 		if (DEBUG && results.second != AttackResult::Miss)
@@ -211,18 +210,22 @@ pair<Vessel_ID, AttackResult> GameMaster::attack_results(pair<int,int> move)
 		return make_pair(Vessel_ID::Vessel_ID(), AttackResult::Miss);
 	}
 
-	vessel = GameMaster::get_vessel(curr, playerA, playerB);
+	vessel = GameMaster::get_vessel(curr, player0, player1);
 
 
+	Board *copyOfOriginalBoard = new Board(boardCopy, rows, cols);
+	Board *onlyOriginalShipBoard = new Board(*copyOfOriginalBoard, x, y);
 
-	Board *onlyOriginalShipBoard = new Board(*boardCopy, x, y);
-	if (Utils::is_sink(boards ,x,y, curr, onlyOriginalShipBoard->getboard(), rows, cols))
+	bool isSink = Utils::is_sink(boards, x, y, curr, onlyOriginalShipBoard->getboard(), rows, cols);
+
+	delete onlyOriginalShipBoard;
+	delete copyOfOriginalBoard;
+
+	if (isSink)
 	{
-		delete onlyOriginalShipBoard;
 		return make_pair(vessel, AttackResult::Sink);
 	} else
 	{
-		delete onlyOriginalShipBoard;
 		return make_pair(vessel, AttackResult::Hit);
 	}
 }
