@@ -1,3 +1,7 @@
+board.sboard
 board_8.sboard
+good_board_0.sboard
+clean_movesA.attack
 NaiiveAlgo.dll
+PreMovesAlgo.dll
 SmartAlgo.dll

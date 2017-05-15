@@ -3,6 +3,7 @@
 #include <random>
 #define NOT_TRIED -1
 #define NONE -2
+#define MAX_SHIP_SIZE 4
 
 class SmartAlgo :
 	public CommonAlgo
@@ -18,6 +19,7 @@ class SmartAlgo :
 	int** randomSpots = nullptr;
 	std::vector<std::vector<int>> targetBank;
 	int randomSpotIndex = 0;
+	int currHits = 0;
 
 	int randomGen(int min, int max);
 	void initRandomTargets();
@@ -25,9 +27,10 @@ class SmartAlgo :
 	void calcAttack();
 	bool tryToExpandAimRange(int direction);
 	void determineAimDirection();
-	void blockIrrelevantDirections();
+	void blockIrrelevantDirections(int direction);
 	void calcCurrentCoords(int direction);
-
+	void spreadOnExistingHits();
+	void removeCoordFromBank();
 public:
 	SmartAlgo();
 	
