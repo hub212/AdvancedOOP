@@ -67,7 +67,7 @@ bool PreMovesAlgo::init(const std::string& path) {
 	}
 	// getting paths to moves dir
 	GetCurrentDirectoryA(MY_MAX_PATH, pwd);
-	moves_dir = pwd;
+	moves_dir = path;
 
 
 	// builds moves vector list

@@ -21,7 +21,7 @@ void createPath(int argc, char* argv[], char* pwd) {
 			break;
 		}
 
-		if (string("-delay").compare(argv[i]) || string("-quiet").compare(argv[i])) {
+		if (!string("-delay").compare(argv[i]) || !string("-quiet").compare(argv[i])) {
 			break;
 		}
 
@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
 
 	char pwd[MY_MAX_PATH];
 
-	if (argc > 1 && !string("-quiet").compare(argv[1]) && !string("-delay").compare(argv[1])) {
+	if (argc > 1 && string("-quiet").compare(argv[1]) && string("-delay").compare(argv[1])) {
 		createPath(argc, argv, pwd);
 		isInputOk = bc->checkBoard(pwd, isDllFound);
 	}
@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
 			if (isInputOk) {
 				dllVec.push_back(make_tuple(AlgoName, hDll, getAlgo));
 			}
-
+			//std::reverse(dllVec.begin(), dllVec.end());
 		}
 	}
 

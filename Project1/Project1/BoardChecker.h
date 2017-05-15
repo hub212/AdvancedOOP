@@ -1,6 +1,6 @@
 #ifndef BOARD_CH_H
 #define BOARD_CH_H
-
+#include <algorithm>
 #include "ex2.h"
 #include "utils.h"
 

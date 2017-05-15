@@ -30,6 +30,7 @@ GameMaster::GameMaster(char ** boards, const char * players_moves, int numRows, 
 	this->boardCopy = boardCopy;
 	// dll init
 	this->dll_vec = dll_vec;
+	size_t vecSize = dll_vec.size();
 	player0 = get<2>(dll_vec[0])();
 	player1 = get<2>(dll_vec[1])();
 	setBoards(const_cast<const char**>(boards), rows, cols);
