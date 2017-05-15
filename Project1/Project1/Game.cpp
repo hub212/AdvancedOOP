@@ -12,7 +12,7 @@ using namespace std;
 
 
 GameMaster::GameMaster(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet, char **boardCopy) :
-	boards(boards), players_moves(players_moves), rows(numRows), cols(numCols),delay(delay), quiet(quiet), turn(Players::PlayerA)
+	boards(boards), players_moves(players_moves), rows(numRows), cols(numCols), delay(delay), quiet(quiet), turn(Players::PlayerA)
 {
 	this->boardCopy = boardCopy;
 	setBoards(const_cast<const char**>(boards), rows, cols);
@@ -24,14 +24,14 @@ GameMaster::GameMaster(char** boards, const char* players_moves, int numRows, in
 }
 
 GameMaster::GameMaster(char ** boards, const char * players_moves, int numRows, int numCols, int delay, int quiet, vector<tuple<string, HINSTANCE, GetAlgoType>> dll_vec, char **boardCopy) :
-	
+
 	boards(boards), players_moves(players_moves), rows(numRows), cols(numCols), delay(delay), quiet(quiet), turn(Players::PlayerA)
 {
 	this->boardCopy = boardCopy;
 	// dll init
 	this->dll_vec = dll_vec;
-	player0 = get<2>(dll_vec[1])();
-	player1 = get<2>(dll_vec[2])();
+	player0 = get<2>(dll_vec[0])();
+	player1 = get<2>(dll_vec[1])();
 	setBoards(const_cast<const char**>(boards), rows, cols);
 	scores[0] = 0;
 	scores[1] = 0;
@@ -44,13 +44,13 @@ int GameMaster::extractBoards(const char** board, int numRows, int numCols, char
 	try {
 		*out_board = new char**[2];
 	}
-	catch(std::bad_alloc& exc)
+	catch (std::bad_alloc& exc)
 	{
 		cout << "Error: double string array allocation failed while allocating multi board;						" << exc.what() << endl;
 		return 1;
 	}
 
-	if (Utils::copyBoard(board, numRows, numCols, &(*out_board)[0]) == -1){
+	if (Utils::copyBoard(board, numRows, numCols, &(*out_board)[0]) == -1) {
 		delete[] * out_board;
 		cout << "Error: string array allocation failed for player A while allocating board;						" << endl;
 		return 1;
@@ -58,16 +58,16 @@ int GameMaster::extractBoards(const char** board, int numRows, int numCols, char
 
 	if (Utils::copyBoard(board, numRows, numCols, &(*out_board)[1]) == -1) {
 		delete[] * out_board;
-		cout << "Error: string array allocation failed for player B while allocating board;						"  << endl;
+		cout << "Error: string array allocation failed for player B while allocating board;						" << endl;
 		return 1;
 	}
-	
+
 	for (int row = 0; row < numRows; row++)
 	{
 		for (int col = 0; col < numCols; col++) {
 			if (lettersA.find(board[row][col]) == lettersA.end())
 			{
-				(*out_board)[0][row][col] =  ' ';
+				(*out_board)[0][row][col] = ' ';
 			}
 			if (lettersB.find(board[row][col]) == lettersB.end())
 			{
@@ -88,8 +88,8 @@ void GameMaster::setBoards(const char** board, int numRows, int numCols)
 		cout << "Error: setBoards failed due to player boards allocations					" << endl;
 	}
 	else {
-		player0->setBoard(0,const_cast<const char**>(boards[0]), numRows, numCols);
-		player1->setBoard(1,const_cast<const char**>(boards[1]), numRows, numCols);
+		player0->setBoard(0, const_cast<const char**>(boards[0]), numRows, numCols);
+		player1->setBoard(1, const_cast<const char**>(boards[1]), numRows, numCols);
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++)
 				delete[] boards[i][j];
@@ -121,7 +121,8 @@ pair<int, int> GameMaster::attack()
 	{
 		cout << "Error: attack() failed on " << ("%s", Players::PlayerA == turn ? "player A's " : "player B's ") << "turn					" << endl;
 		return make_pair(-2, -2);
-	} else if (curr_move != make_pair(-2, -2) && DEBUG)
+	}
+	else if (curr_move != make_pair(-2, -2) && DEBUG)
 		cout << ("%s", Players::PlayerA == turn ? "player A move:\t" : "player B move:\t") << "(" << curr_move.first << "," << curr_move.second << ")					" << endl;
 	return curr_move;
 }
@@ -140,17 +141,17 @@ int GameMaster::play()
 
 	print_board(-1, -1, delay);
 
-	while(!player0_done || !player1_done)
+	while (!player0_done || !player1_done)
 	{
 
-		 prevMove = move;
-		 move = attack();
+		prevMove = move;
+		move = attack();
 
-		 if (move == make_pair(-2, -2))
-		 {
-			 // failure 
-			 return -1;
-		 }
+		if (move == make_pair(-2, -2))
+		{
+			// failure 
+			return -1;
+		}
 
 		if (move == make_pair(-1, -1))
 		{
@@ -180,7 +181,7 @@ int GameMaster::play()
 			if (results.second != AttackResult::Miss)
 				cout << ("%s", results.second == AttackResult::Hit ? "Hit " : "Sink ") << ("%s ", results.first.player == Players::PlayerA ? "player A's " : "player B's ") << ("%s", results.first.type == VesselType::Boat ? "Boat				" : results.first.type == VesselType::Missiles ? "Missiles			" : results.first.type == VesselType::Sub ? "Sub				" : "War				") << endl;
 			else
-				cout << "Miss					"<< endl;
+				cout << "Miss					" << endl;
 			cout << "Score " << scores[0] << ":" << scores[1] << "					" << endl;
 		}
 		if (is_defeat())
@@ -196,7 +197,7 @@ int GameMaster::play()
 			turn = (turn == Players::PlayerA) ? Players::PlayerB : Players::PlayerA;
 		}
 
-		
+
 	}
 
 	print_results();
@@ -218,7 +219,7 @@ bool GameMaster::init(string path) {
 	return ret;
 }
 
-pair<Vessel_ID, AttackResult> GameMaster::attack_results(pair<int,int> move)
+pair<Vessel_ID, AttackResult> GameMaster::attack_results(pair<int, int> move)
 {
 	int x = move.first - 1;
 	int y = move.second - 1;
@@ -244,112 +245,113 @@ pair<Vessel_ID, AttackResult> GameMaster::attack_results(pair<int,int> move)
 	if (isSink)
 	{
 		return make_pair(vessel, AttackResult::Sink);
-	} else
+	}
+	else
 	{
 		return make_pair(vessel, AttackResult::Hit);
 	}
 }
 
- void GameMaster::update_state(pair<int,int> move, pair<Vessel_ID, AttackResult> results)
+void GameMaster::update_state(pair<int, int> move, pair<Vessel_ID, AttackResult> results)
 {
-	 boards[move.first - 1][move.second - 1] = '@';
+	boards[move.first - 1][move.second - 1] = '@';
 	if (results.second == AttackResult::Sink)
-		scores[(int) (results.first.player == Players::PlayerA ? Players::PlayerB : Players::PlayerA)] += results.first.score;
+		scores[(int)(results.first.player == Players::PlayerA ? Players::PlayerB : Players::PlayerA)] += results.first.score;
 }
 
- bool GameMaster::is_defeat()
+bool GameMaster::is_defeat()
 {
-	 bool boolA = false;
-	 bool boolB = false;
-	 for(int i = 0; i < rows ; i++)
-	 {
-		 for(int j = 0; j < cols && (!boolA || !boolB); j++)
-		 {
-			 if(lettersA.find(boards[i][j]) != lettersA.end())
-			 {
-				 boolA = true;
-			 }
+	bool boolA = false;
+	bool boolB = false;
+	for (int i = 0; i < rows; i++)
+	{
+		for (int j = 0; j < cols && (!boolA || !boolB); j++)
+		{
+			if (lettersA.find(boards[i][j]) != lettersA.end())
+			{
+				boolA = true;
+			}
 
-			 if (lettersB.find(boards[i][j]) != lettersB.end())
-			 {
-				 boolB = true;
-			 }
-		 }
-	 }
+			if (lettersB.find(boards[i][j]) != lettersB.end())
+			{
+				boolB = true;
+			}
+		}
+	}
 
-	 return boolA^boolB;
+	return boolA^boolB;
 }
 
 
- Vessel_ID GameMaster::get_vessel(char curr, IBattleshipGameAlgo* playerA, IBattleshipGameAlgo* playerB)
- {
-	 Vessel_ID vessel;
+Vessel_ID GameMaster::get_vessel(char curr, IBattleshipGameAlgo* playerA, IBattleshipGameAlgo* playerB)
+{
+	Vessel_ID vessel;
 
-	 if (lettersA.find(curr) != lettersA.end())
-	 {
-		 if (curr == 'B')
-		 {
-			 vessel = Vessel_ID::Vessel_ID(VesselType::Boat, Players::PlayerA);
-		 }
-		 else if (curr == 'P')
-		 {
-			 vessel = Vessel_ID::Vessel_ID(VesselType::Missiles, Players::PlayerA);
-		 }
-		 else if (curr == 'M')
-		 {
-			 vessel = Vessel_ID::Vessel_ID(VesselType::Sub, Players::PlayerA);
-		 }
-		 else if (curr == 'D')
-		 {
-			 vessel = Vessel_ID::Vessel_ID(VesselType::War, Players::PlayerA);
-		 }
-	 }
-	 else if (lettersB.find(curr) != lettersB.end())
-	 {
-		 // it's Players B vessel
-		 if (curr == 'b')
-		 {
-			 vessel = Vessel_ID::Vessel_ID(VesselType::Boat, Players::PlayerB);
-		 }
-		 else if (curr == 'p')
-		 {
-			 vessel = Vessel_ID::Vessel_ID(VesselType::Missiles, Players::PlayerB);
-		 }
-		 else if (curr == 'm')
-		 {
-			 vessel = Vessel_ID::Vessel_ID(VesselType::Sub, Players::PlayerB);
-		 }
-		 else if (curr == 'd')
-		 {
-			 vessel = Vessel_ID::Vessel_ID(VesselType::War, Players::PlayerB);
-		 }
-	 }
+	if (lettersA.find(curr) != lettersA.end())
+	{
+		if (curr == 'B')
+		{
+			vessel = Vessel_ID::Vessel_ID(VesselType::Boat, Players::PlayerA);
+		}
+		else if (curr == 'P')
+		{
+			vessel = Vessel_ID::Vessel_ID(VesselType::Missiles, Players::PlayerA);
+		}
+		else if (curr == 'M')
+		{
+			vessel = Vessel_ID::Vessel_ID(VesselType::Sub, Players::PlayerA);
+		}
+		else if (curr == 'D')
+		{
+			vessel = Vessel_ID::Vessel_ID(VesselType::War, Players::PlayerA);
+		}
+	}
+	else if (lettersB.find(curr) != lettersB.end())
+	{
+		// it's Players B vessel
+		if (curr == 'b')
+		{
+			vessel = Vessel_ID::Vessel_ID(VesselType::Boat, Players::PlayerB);
+		}
+		else if (curr == 'p')
+		{
+			vessel = Vessel_ID::Vessel_ID(VesselType::Missiles, Players::PlayerB);
+		}
+		else if (curr == 'm')
+		{
+			vessel = Vessel_ID::Vessel_ID(VesselType::Sub, Players::PlayerB);
+		}
+		else if (curr == 'd')
+		{
+			vessel = Vessel_ID::Vessel_ID(VesselType::War, Players::PlayerB);
+		}
+	}
 
-	 return vessel;
- }
+	return vessel;
+}
 
 
- void GameMaster::print_results()
+void GameMaster::print_results()
 {
 	if (scores[0] != scores[1])
-		cout << "Player " << ("%s", scores[0] > scores[1] ? "A " : "B ") << "won					"<< endl;
-	
+		cout << "Player " << ("%s", scores[0] > scores[1] ? "A " : "B ") << "won					" << endl;
+
 	cout << "Points:					" << endl;
-	cout << "Player A: " << ("%d", scores[0]) << "					"<< endl;
-	cout << "Player B: " << ("%d", scores[1]) << "					"<< endl;
+	cout << "Player A: " << ("%d", scores[0]) << "					" << endl;
+	cout << "Player B: " << ("%d", scores[1]) << "					" << endl;
 
 }
 
- void GameMaster::print_board(int row_in,int col_in,int delay)
- {
+void GameMaster::print_board(int row_in, int col_in, int delay)
+{
 	if (!quiet) {
 
 		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	
+
 		for (int row = 0; row< rows; row++) {
 			for (int col = 0; col < cols; col++) {
 				Utils::gotoxy(col, row);
-				if (row_in-1 == row && col_in-1 == col) {
+				if (row_in - 1 == row && col_in - 1 == col) {
 					SetConsoleTextAttribute(hConsole, 14);
 					cout << '*';
 				}
@@ -365,22 +367,22 @@ pair<Vessel_ID, AttackResult> GameMaster::attack_results(pair<int,int> move)
 			}
 		}
 
-		if (row_in-1>=0 && col_in-1>=0){
-			 Sleep(delay);
-			 Utils::gotoxy(col_in-1, row_in-1);
-			 if (boards[row_in-1][col_in-1] == '@') {
-				 SetConsoleTextAttribute(hConsole, 8);
-			 }
-			 else {
-				 SetConsoleTextAttribute(hConsole, (boards[row_in - 1][col_in - 1] > 96 ? ((boards[row_in - 1][col_in - 1] % 8) + 2) : (boards[row_in - 1][col_in - 1] % 5) + 9));
-			 }
-				cout << boards[row_in-1][col_in-1];
+		if (row_in - 1 >= 0 && col_in - 1 >= 0) {
+			Sleep(delay);
+			Utils::gotoxy(col_in - 1, row_in - 1);
+			if (boards[row_in - 1][col_in - 1] == '@') {
+				SetConsoleTextAttribute(hConsole, 8);
+			}
+			else {
+				SetConsoleTextAttribute(hConsole, (boards[row_in - 1][col_in - 1] > 96 ? ((boards[row_in - 1][col_in - 1] % 8) + 2) : (boards[row_in - 1][col_in - 1] % 5) + 9));
+			}
+			cout << boards[row_in - 1][col_in - 1];
 		}
 		Utils::gotoxy(cols, rows);
 		cout << endl;
 		Sleep(delay);
 		SetConsoleTextAttribute(hConsole, 7);
 	}
- }
+}
 
 

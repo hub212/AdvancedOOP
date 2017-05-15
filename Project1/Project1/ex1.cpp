@@ -37,10 +37,10 @@ void createPath(int argc, char* argv[], char* pwd) {
 				break;
 			}
 
-			if (j == arg.length()-1 && !(i == 1 && j==0) && ((arg.at(j)=='/') || (arg.at(j)=='\\'))) {
+			if (j == arg.length() - 1 && !(i == 1 && j == 0) && ((arg.at(j) == '/') || (arg.at(j) == '\\'))) {
 				continue;
 			}
-			
+
 			else if ((argc > 2 || arg.length() > 1) && j == 0 && i == 1 && ((arg.at(j) == '/') || (arg.at(j) == '\\'))) {
 				continue;
 			}
@@ -48,7 +48,7 @@ void createPath(int argc, char* argv[], char* pwd) {
 			else if (arg.at(j) == '\'' || arg.at(j) == '"') {
 				continue;
 			}
-			
+
 			else {
 				pwd[cnt++] = arg.at(j);
 			}
@@ -57,7 +57,7 @@ void createPath(int argc, char* argv[], char* pwd) {
 
 	pwd[cnt] = '\0';
 
-	for (int i=0; i < MY_MAX_PATH; i++) {
+	for (int i = 0; i < MY_MAX_PATH; i++) {
 
 		if (pwd[i] == '/') {
 			pwd[i] = '\\';
@@ -86,9 +86,9 @@ int main(int argc, char* argv[])
 		if (!string("-delay").compare(argv[i])) {
 			if (i == argc - 1) {
 				cout << "Error: usage " << argv[0] << "[path] -delay <delay in ms> -quiet" << endl;
-					return -1;
+				return -1;
 			}
-			istringstream iss(argv[i+1]);
+			istringstream iss(argv[i + 1]);
 
 			if (!(iss >> delay).fail()) {
 				if (DEBUG)
@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
 			return -1;
 		}
 		return 0;
-	} 
+	}
 
 	GameMaster* game_master = nullptr;
 	BoardChecker::isDebug = false;
@@ -145,13 +145,13 @@ int main(int argc, char* argv[])
 			}
 		}
 	}
-	
+
 	// dlls handling
 	vector<tuple<string, HINSTANCE, GetAlgoType>> dllVec; // vector of <Shape Name, dll handle, GetShape function ptr>
 
 	if (isDllFound) {
 		std::sort(bc->dllVec.begin(), bc->dllVec.end());
-		
+
 		for (const auto dll : bc->dllVec) {
 
 			string AlgoName = dll.substr(dll.find_last_of("\\") == string::npos ? 0 : dll.find_last_of("\\") + 1, dll.find_first_of('.'));
@@ -185,7 +185,7 @@ int main(int argc, char* argv[])
 		del(&game_master, &bc);
 		return 1;
 	}
-	game_master = new GameMaster(boards, pwd, NUM_ROWS, NUM_COLS, delay, quiet, dllVec ,boardCopy->getboard());
+	game_master = new GameMaster(boards, pwd, NUM_ROWS, NUM_COLS, delay, quiet, dllVec, boardCopy->getboard());
 	if (!game_master->init(pwd))
 		return 1;
 	if (game_master->play() != 0) {
