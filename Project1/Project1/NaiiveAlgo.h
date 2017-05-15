@@ -1,6 +1,6 @@
 #ifndef PRE_ALGO
 #define PRE_ALGO
-#include "ex1.h"
+#include "ex2.h"
 #include "CommonAlgo.h"
 #include "windows.h"
 #include <vector>

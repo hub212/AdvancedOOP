@@ -1,5 +1,5 @@
 #include "PreMovesAlgo.h"
-#include "utils.h"
+#include "Utils.h"
 
 
 std::pair<int, int> PreMovesAlgo::attack() {
@@ -51,41 +51,48 @@ std::pair<int, int> PreMovesAlgo::attack() {
 
 bool PreMovesAlgo::init(const std::string& path) {
 
-	char pwd[MY_MAX_PATH];
-	string moves_dir;
+	
+
+	char dir[MY_MAX_PATH];
+	strcpy_s(dir, MY_MAX_PATH, path.c_str());
+	dir[MY_MAX_PATH - 1] = '\0';
 	vector<string> moves_list;
 
+	string moves_dir(dir);
+
+	//char pwd[MY_MAX_PATH];
 	// when using get_algo() we nned to specify the letters of each player expicitly
 	if (myLetters.empty()) {
-		if (player_num == 0) {
-			char* letters = "BPMD";
-			myLetters.insert(letters, letters + strlen(letters));
-		}else {
-			char* letters = "bpmd";
-			myLetters.insert(letters, letters + strlen(letters));
-		}
+	if (player_num == 0) {
+	char* letters = "BPMD";
+	myLetters.insert(letters, letters + strlen(letters));
+	}else {
+	char* letters = "bpmd";
+	myLetters.insert(letters, letters + strlen(letters));
 	}
+	}
+	// getting paths to moves dir
+	//GetCurrentDirectoryA(MY_MAX_PATH, pwd);
+
 
 	// builds moves vector list
 	Utils::GetFileNamesInDirectory(&moves_list, moves_dir);
 
+
 	moves_list.erase(remove_if(moves_list.begin(), moves_list.end(), [](string str) { return !Utils::string_has_suffix(str, ".attack"); }), moves_list.end());
 
 	std::sort(moves_list.begin(), moves_list.end());
-	
+
 	if (static_cast<int> (moves_list.size()) ==  0){
-		if (DEBUG) {
-			cout << "Cannot identify any moves files in path: " << moves_dir << endl;
-		}
-		return false;
+	return false;
 	}
 
 	if (static_cast<int>(moves_list.size()) == 1) {
-		moves_path = moves_list[0];
-		return true;
+	moves_path = moves_list[0];
+	return true;
 	}
 
-	moves_path = moves_list[player_num];
+	moves_path = "C:\\Users\\User7\\Desktop\\oop_hw2\\dfdssss\\ccccc.attack";//moves_list[player_num];
 
 	return true;
 }

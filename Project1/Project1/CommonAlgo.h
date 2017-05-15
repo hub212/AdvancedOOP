@@ -1,7 +1,7 @@
 #ifndef COM_ALGO_H
 #define COM_ALGO_H
 #include "IBattleshipGameAlgo.h"
-#include "utils.h"
+#include "Utils.h"
 #define DOWN 0
 #define RIGHT 1
 #define UP 2
@@ -9,6 +9,8 @@
 #define HERE 4
 #define NOT_TARGET 1
 #define TARGET 0
+#define IS_HIT 2
+#define IS_SINK 3
 #include <set>
 #include <string>
 using namespace std;
@@ -18,7 +20,7 @@ class CommonAlgo : public IBattleshipGameAlgo
 public:
 
 	//michael 12/5/17 08:19 added start
-	bool				removeFromRandomTargets(int direction, bool remove);
+	bool				visitCell(int direction, int value, bool set);
 	void				markAdjacentCells();
 
 	std::pair<int, int>	attackPair;
@@ -27,7 +29,7 @@ public:
 	int**				possible_targets = NULL;	// will hold the board after copy is done
 	int					rows; //number of rows in the game table
 	int					cols; //number of columns in the game table
-	//michael 12/5/17 08:19 added end
+							  //michael 12/5/17 08:19 added end
 
 
 	std::string			*board = NULL;	// will hold the board after copy is done
@@ -41,13 +43,13 @@ public:
 
 
 
-	/**
-	* \brief copying the relevant board and updating data set.
-	*		  being called by setBoards from GameMaster
-	* \param board
-	* \param numRows
-	* \param numCols
-	*/
+										/**
+										* \brief copying the relevant board and updating data set.
+										*		  being called by setBoards from GameMaster
+										* \param board
+										* \param numRows
+										* \param numCols
+										*/
 	void setBoard(int player, const char** board, int numRows, int numCols);
 
 	std::pair<int, int> attack();

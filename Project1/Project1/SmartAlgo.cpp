@@ -2,9 +2,9 @@
 
 
 int SmartAlgo::randomGen(int min, int max) {
-	std::random_device rd;     // only used once to initialise (seed) engine
-	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
-	std::uniform_int_distribution<int> uni(min, max); // guaranteed unbiased
+	std::random_device rd;     
+	std::mt19937 rng(rd());   
+	std::uniform_int_distribution<int> uni(min, max);
 
 	int random_integer = uni(rng);
 	return random_integer;
@@ -16,61 +16,67 @@ bool SmartAlgo::init(const std::string& path) {
 
 	aimRange = new int[4]{};
 	initRandomTargets();
-	setNextAttack();
 	return true;
 }
 
 void SmartAlgo::notifyOnAttackResult(int player, int row, int col, AttackResult result) {
+	int attackResult = result == AttackResult::Miss ? NOT_TARGET : IS_HIT;
+	attackResult = result == AttackResult::Sink ? IS_SINK : attackResult;
 	if (this->player_num != player) {
 		int tmpRow = currentRow;
 		int tmpCol = currentCol;
-		currentRow = row-1;
-		currentCol = col-1;
-		removeFromRandomTargets(HERE, true);
-		if (result == AttackResult::Sink && possible_targets[currentRow][currentCol] != NOT_TARGET) {
+		currentRow = row - 1;
+		currentCol = col - 1;
+		int cell = possible_targets[currentRow][currentCol];
+		if (result == AttackResult::Sink && cell == TARGET) {
 			//the other player sinked his own ship. the cells around it are empty.
 			markAdjacentCells();
 		}
-		if (result == AttackResult::Hit && possible_targets[currentRow][currentCol] != NOT_TARGET) {
+		if (result == AttackResult::Hit && possible_targets[currentRow][currentCol] == TARGET) {
 			//the other player hit his own ship but didn't sink it. add it to the target bank.
-			targetBank.resize(targetBank.size()+1, std::vector<int>(2, 0));
+			targetBank.resize(targetBank.size() + 1, std::vector<int>(2, 0));
 			targetBank[targetBank.size() - 1][0] = currentRow;
 			targetBank[targetBank.size() - 1][1] = currentCol;
 		}
+		visitCell(HERE, attackResult, true);
 		currentRow = tmpRow;
 		currentCol = tmpCol;
 		return;
 	}
-	removeFromRandomTargets(HERE, true);
+	visitCell(HERE, attackResult, true);
 	if (result == AttackResult::Miss) {
-		if (!seekAndDestroy && targetBank.size()>0) {
-			//we are not busy chasing after a ship, so load a target from the target bank.
-			attackSucceeded = true;
-			currentRow = targetBank[targetBank.size()][0]; //the next attacks will be centered around these coordinates
-			currentCol = targetBank[targetBank.size()][1]; //the next attacks will be centered around these coordinates
-			targetBank.resize(targetBank.size()-1);
-		}
-		else {
-			shipSinked = false;
-			attackSucceeded = false;
-		}
+		attackSucceeded = false;
 	}
 	else if (result == AttackResult::Hit) {
-		shipSinked = false;
 		attackSucceeded = true;
 	}
 	else if (result == AttackResult::Sink) {
-		shipSinked = true;
-		attackSucceeded = true;
+		attackSucceeded = false;
+		markAdjacentCells();
+		if (seekAndDestroy) {
+			currentRow = firstHitRow;
+			currentCol = firstHitCol;
+			markAdjacentCells();
+		}
+		seekAndDestroy = false;
 	}
-	calcAttack();
 }
 
 std::pair<int, int> SmartAlgo::attack()
 {
-	if (possible_targets[currentRow][currentCol] == NOT_TARGET) {
-		attackSucceeded = false;
+	if (seekAndDestroy || attackSucceeded) {
 		calcAttack();
+	}
+	while (!seekAndDestroy && targetBank.size() > 0) {
+		//we are not busy chasing after a ship, so load a target from the target bank.
+		attackSucceeded = true;
+		currentRow = targetBank[targetBank.size() - 1][0]; //the next attacks will be centered around these coordinates
+		currentCol = targetBank[targetBank.size() - 1][1]; //the next attacks will be centered around these coordinates
+		targetBank.resize(targetBank.size() - 1);
+		calcAttack();
+	}
+	if (!seekAndDestroy) {
+		pickRandTarget();
 	}
 	//michael 12/5/17 08:19 added code start
 	attackPair.first = currentRow;
@@ -138,84 +144,85 @@ void SmartAlgo::pickRandTarget() {
 		currentCol = randomSpots[randomSpotIndex][1];
 		int spotValue = possible_targets[currentRow][currentCol];
 		randomSpotIndex = randomSpotIndex<rows*cols - 1 ? ++randomSpotIndex : 0;
-	} while (possible_targets[currentRow][currentCol] == NOT_TARGET && iters <= rows*cols);
+	} while (possible_targets[currentRow][currentCol] != TARGET && iters <= rows*cols);
 }
 
 void SmartAlgo::calcAttack() {
-	if (shipSinked) {
-		markAdjacentCells();
-		if (seekAndDestroy) {
-			currentRow = firstHitRow;
-			currentCol = firstHitCol;
-			markAdjacentCells();
-		}
-		seekAndDestroy = false;
-	}
-	else if (attackSucceeded && !seekAndDestroy) {
+	if (attackSucceeded && !seekAndDestroy) {
 		seekAndDestroy = true; //we hit a ship and didn't sink it - continue to target it
 		firstHitRow = currentRow; //the next attacks will be centered around these coordinates
 		firstHitCol = currentCol; //the next attacks will be centered around these coordinates
 		aimRange[UP] = aimRange[DOWN] = aimRange[RIGHT] = aimRange[LEFT] = NOT_TRIED;
 	}
 	else if (attackSucceeded && seekAndDestroy) {
-		blockIrrelevantDirections();
+		blockIrrelevantDirections(aimDirection);
 	}
 	else if (!attackSucceeded && seekAndDestroy) {
 		aimRange[aimDirection] = 0;
 	}
-	setNextAttack();
+	determineAimDirection();
+	calcCurrentCoords(aimDirection);
 }
 
-void SmartAlgo::blockIrrelevantDirections() {
-	if (aimDirection == RIGHT || aimDirection == LEFT) {
+void SmartAlgo::blockIrrelevantDirections(int direction) {
+	if (direction == RIGHT || direction == LEFT) {
 		aimRange[UP] = aimRange[DOWN] = 0;
-		removeFromRandomTargets(UP, true);
-		removeFromRandomTargets(DOWN, true);
+		visitCell(UP, NOT_TARGET, true);
+		visitCell(DOWN, NOT_TARGET, true);
 	}
 	else {
 		aimRange[LEFT] = aimRange[RIGHT] = 0;
-		removeFromRandomTargets(LEFT, true);
-		removeFromRandomTargets(RIGHT, true);
-	}
-}
-
-void SmartAlgo::setNextAttack() {
-	if (seekAndDestroy) {
-		determineAimDirection();
-	}
-	if (seekAndDestroy)
-	{
-		calcCurrentCoords(aimDirection);
-	}
-	else {
-		pickRandTarget();
+		visitCell(LEFT, NOT_TARGET, true);
+		visitCell(RIGHT, NOT_TARGET, true);
 	}
 }
 
 void SmartAlgo::determineAimDirection() {
-	aimDirection = NONE;
-	while(aimDirection == NONE) {
+	int direction = NONE;
+	expandOverHits();
+	while (direction == NONE) {
 		if (!aimRange[DOWN] && !aimRange[UP] && !aimRange[LEFT] && !aimRange[RIGHT]) {
 			seekAndDestroy = false;
 			break;
 		}
-		aimDirection = randomGen(0, 3);
-		if (!aimRange[aimDirection]) {
-			aimDirection = NONE;
+		direction = randomGen(0, 3);
+		if (!aimRange[direction]) {
+			direction = NONE;
 			continue;
 		}
-		if (aimRange[aimDirection] == NOT_TRIED) {
-			aimRange[aimDirection] = 0;
+		if (aimRange[direction] == NOT_TRIED) {
+			aimRange[direction] = 0;
 		}
-		if (!tryToExpandAimRange(aimDirection)) {
-			aimDirection = NONE;
-		}	
+		if (!tryToExpandAimRange(direction)) {
+			direction = NONE;
+		}
+	}
+	if (direction != NONE) {
+		aimDirection = direction;
+	}
+}
+
+void SmartAlgo::expandOverHits() {
+	for (int direction = 0; direction < 4; direction++) {
+		if (!aimRange[direction]) {
+			continue;
+		}
+		calcCurrentCoords(direction);
+		if (visitCell(direction, IS_SINK, false)) {
+			aimRange[UP] = aimRange[DOWN] = aimRange[LEFT] = aimRange[RIGHT] = 0;
+			return;
+		}
+		while (visitCell(direction, IS_HIT, false)) {
+			aimRange[direction] = aimRange[direction]==NOT_TRIED ? 1 : ++aimRange[direction];
+			blockIrrelevantDirections(direction);
+			calcCurrentCoords(direction);
+		}
 	}
 }
 
 bool SmartAlgo::tryToExpandAimRange(int direction) {
 	calcCurrentCoords(direction);
-	if (removeFromRandomTargets(direction, false)) {
+	if (visitCell(direction, TARGET, false)) {
 		aimRange[direction]++;
 		return true;
 	}
@@ -226,10 +233,11 @@ bool SmartAlgo::tryToExpandAimRange(int direction) {
 }
 
 void SmartAlgo::calcCurrentCoords(int direction) {
-	currentRow = direction == DOWN ? firstHitRow - aimRange[DOWN] : firstHitRow;
-	currentRow = direction == UP ? currentRow + aimRange[UP] : currentRow;
-	currentCol = direction == LEFT ? firstHitCol - aimRange[LEFT] : firstHitCol;
-	currentCol = direction == RIGHT ? currentCol + aimRange[RIGHT] : currentCol;
+	int directionSize = aimRange[direction] == NOT_TRIED ? 0 : aimRange[direction];
+	currentRow = direction == DOWN ? firstHitRow - directionSize : firstHitRow;
+	currentRow = direction == UP ? currentRow + directionSize : currentRow;
+	currentCol = direction == LEFT ? firstHitCol - directionSize : firstHitCol;
+	currentCol = direction == RIGHT ? currentCol + directionSize : currentCol;
 }
 
 IBattleshipGameAlgo* GetAlgorithm() {

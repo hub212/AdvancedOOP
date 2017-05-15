@@ -1,8 +1,8 @@
 #ifndef BOARD_CH_H
 #define BOARD_CH_H
-
-#include "ex1.h"
-#include "utils.h"
+#include <algorithm>
+#include "ex2.h"
+#include "Utils.h"
 
 class BoardChecker
 {

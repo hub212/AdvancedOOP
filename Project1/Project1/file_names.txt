@@ -1,3 +1,0 @@
-board_8.sboard
-NaiiveAlgo.dll
-SmartAlgo.dll

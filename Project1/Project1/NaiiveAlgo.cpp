@@ -44,7 +44,7 @@ void NaiiveAlgo::setNextAttack() {
 			currentCol = currentRow = -1;
 			return;
 		}
-	} while (possible_targets[currentRow][currentCol] == NOT_TARGET);
+	} while (possible_targets[currentRow][currentCol] != TARGET);
 }
 //michael 12/5/17 08:19 added code end
 

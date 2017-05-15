@@ -8,13 +8,8 @@ class SmartAlgo :
 	public CommonAlgo
 {
 
-
 	bool seekAndDestroy = false;
-	bool horizontalAxis = false;
-	bool verticalAxis = false;
-	bool axisFound = false;
 	bool attackSucceeded = false;
-	bool shipSinked = false;
 	int firstHitRow = -1;
 	int firstHitCol = -1;
 	int aimDirection = -1;
@@ -29,14 +24,14 @@ class SmartAlgo :
 	void pickRandTarget();
 	void calcAttack();
 	bool tryToExpandAimRange(int direction);
-	void setNextAttack();
 	void determineAimDirection();
-	void blockIrrelevantDirections();
+	void blockIrrelevantDirections(int direction);
 	void calcCurrentCoords(int direction);
+	void expandOverHits();
 
 public:
 	SmartAlgo();
-	
+
 	bool init(const std::string& path);
 	void notifyOnAttackResult(int player, int row, int col, AttackResult result);
 	std::pair<int, int> attack();

@@ -78,68 +78,42 @@ ifstream* BoardChecker::checkPath(char* path, bool& isDllFound) {
 	strcpy_s(dir, MY_MAX_PATH, path);
 	dir[MY_MAX_PATH - 1] = '\0';
 	// dlls handling	
+	vector<string> boards_list;
 
-
-	string dirStr(dir);
-	if (!dirExists(dirStr)) {
+	string files_dir(dir);
+	if (!dirExists(files_dir)) {
 		std::cout << "Wrong path: " << dir << std::endl;
 		return NULL;
 	}
-
-	string command = "dir ";
-	command.append("\"");
-	command.append(dir);
-	command.append("\\*.sboard\" ");
-
-	command.append("\"");
-	command.append(dir);
-	command.append("\\*.attack\" ");
-
-	command.append("\"");
-	command.append(dir);
-	command.append("\\*.dll\" ");
-
-	command.append(" /b /a-d > file_names.txt  2>&1");
-
-
-	TCHAR pwd[MY_MAX_PATH];
-	GetCurrentDirectory(MY_MAX_PATH, pwd);
-	std::wstring arr_w(pwd);
-	std::string files(arr_w.begin(), arr_w.end());
-
-	files.append("\\file_names.txt");
-	system(command.c_str());
-
-	ifstream files_stream(files);
-	string boardName = "";
-	boardName.append(dir);
-	boardName.append("\\");
+	bool isBoardFound = false;
 	std::ifstream* boardStream = 0;
 
-	std::string dll_fileName = "";
-	dll_fileName.append(dir);
-	dll_fileName.append("\\");
+	string boardName = "";
 
+	// builds moves vector list
+	Utils::GetFileNamesInDirectory(&boards_list, files_dir);
 
-	bool isBoardFound = false;
-	bool isAttackFound = false;
+	boards_list.erase(remove_if(boards_list.begin(), boards_list.end(), [](string str) { return !Utils::string_has_suffix(str, ".sboard"); }), boards_list.end());
 
-	string str;
-	while (!Board::safeGetline(files_stream, str).eof()) {
+	std::sort(boards_list.begin(), boards_list.end());
 
-		if (!isBoardFound && Utils::string_has_suffix(str, ".sboard")) {
-			boardName.append(str);
-			isBoardFound = true;
-			boardStream = new ifstream(boardName);
-		}
+	if (static_cast<int> (boards_list.size()) > 0) {
+		boardName = boards_list[0];
+		isBoardFound = true;
+		boardStream = new ifstream(boardName);
+	}
+	vector<string> dlls_list;
+	isDllFound = false;
+	// builds moves vector list
+	Utils::GetFileNamesInDirectory(&dlls_list, files_dir);
 
-		if (Utils::string_has_suffix(str, ".dll")) {
-			string curr_dll_filename = dll_fileName;
-			curr_dll_filename.append(str);
-			dllVec.push_back(curr_dll_filename);
-			isDllFound = true;
-		}
+	dlls_list.erase(remove_if(dlls_list.begin(), dlls_list.end(), [](string str) { return !Utils::string_has_suffix(str, ".dll"); }), dlls_list.end());
 
+	std::sort(dlls_list.begin(), dlls_list.end());
+
+	for (int i = 0; i < static_cast<int> (dlls_list.size()); ++i) {
+		isDllFound = true;
+		dllVec.push_back(dlls_list[i]);
 	}
 
 	if (!isBoardFound || !boardStream) {

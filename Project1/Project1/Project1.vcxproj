@@ -21,7 +21,7 @@
   <ItemGroup>
     <ClInclude Include="Board.h" />
     <ClInclude Include="BoardChecker.h" />
-    <ClInclude Include="ex1.h" />
+    <ClInclude Include="ex2.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="IBattleshipGameAlgo.h" />
     <ClInclude Include="Tests.h" />
@@ -29,7 +29,7 @@
   <ItemGroup>
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="BoardChecker.cpp" />
-    <ClCompile Include="ex1.cpp" />
+    <ClCompile Include="ex2.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Tests.cpp" />
   </ItemGroup>
@@ -62,7 +62,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>

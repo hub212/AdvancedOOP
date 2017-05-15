@@ -115,12 +115,12 @@
   <ItemGroup>
     <ClInclude Include="..\Project1\CommonAlgo.h" />
     <ClInclude Include="..\Project1\Types.h" />
-    <ClInclude Include="..\Project1\utils.h" />
+    <ClInclude Include="..\Project1\Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Project1\CommonAlgo.cpp" />
     <ClCompile Include="..\Project1\Types.cpp" />
-    <ClCompile Include="..\Project1\utils.cpp" />
+    <ClCompile Include="..\Project1\Utils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
