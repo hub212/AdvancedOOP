@@ -9,24 +9,16 @@
 #define HERE 4
 #define NOT_TARGET 1
 #define TARGET 0
-#define IS_HIT 10
 #include <set>
 #include <string>
 using namespace std;
-
-enum class ParamType {
-	MarkNotTarget = 0,
-	IsAvailable = 1,
-	IsHit = 2,
-	MarkHit = 3
-};
 
 class CommonAlgo : public IBattleshipGameAlgo
 {
 public:
 
 	//michael 12/5/17 08:19 added start
-	bool				visitAdjacentCell(int direction, ParamType queryType);
+	bool				removeFromRandomTargets(int direction, bool remove);
 	void				markAdjacentCells();
 
 	std::pair<int, int>	attackPair;
@@ -35,7 +27,7 @@ public:
 	int**				possible_targets = NULL;	// will hold the board after copy is done
 	int					rows; //number of rows in the game table
 	int					cols; //number of columns in the game table
-	//michael 12/5/17 08:19 added end
+							  //michael 12/5/17 08:19 added end
 
 
 	std::string			*board = NULL;	// will hold the board after copy is done
@@ -49,13 +41,13 @@ public:
 
 
 
-	/**
-	* \brief copying the relevant board and updating data set.
-	*		  being called by setBoards from GameMaster
-	* \param board
-	* \param numRows
-	* \param numCols
-	*/
+										/**
+										* \brief copying the relevant board and updating data set.
+										*		  being called by setBoards from GameMaster
+										* \param board
+										* \param numRows
+										* \param numCols
+										*/
 	void setBoard(int player, const char** board, int numRows, int numCols);
 
 	std::pair<int, int> attack();

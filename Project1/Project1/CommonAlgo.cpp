@@ -23,7 +23,7 @@ void CommonAlgo::setBoard(int player, const char** board, int numRows, int numCo
 			for (currentCol = 0; currentCol < cols; currentCol++) {
 				char c = board[currentRow][currentCol];
 				if ((player_num == 0 && isupper(c)) || (player_num == 1 && islower(c))) {
-					visitAdjacentCell(HERE, ParamType::MarkNotTarget);
+					removeFromRandomTargets(HERE, true);
 					markAdjacentCells();
 				}
 			}
@@ -70,23 +70,12 @@ CommonAlgo::~CommonAlgo()
 }
 
 //michael 12/5/17 08:19 added code start
-bool CommonAlgo::visitAdjacentCell(int direction, ParamType queryType) {
+bool CommonAlgo::removeFromRandomTargets(int direction, bool remove) {
 	int row = direction == UP ? currentRow + 1 : (direction == DOWN ? currentRow - 1 : currentRow);
 	int col = direction == RIGHT ? currentCol + 1 : (direction == LEFT ? currentCol - 1 : currentCol);
-	if (row >= 0 && row < rows && col >= 0 && col < cols) {
-		if(queryType == ParamType::IsHit) {
-			return possible_targets[row][col] == IS_HIT;
-		}
-		else if (queryType == ParamType::MarkNotTarget) {
-			if (possible_targets[row][col] != IS_HIT) {
-				possible_targets[row][col] = NOT_TARGET;
-			}
-		}
-		else if(queryType == ParamType::MarkHit){
-			possible_targets[row][col] = IS_HIT;
-		}
-		else if (queryType == ParamType::IsAvailable) {
-			return possible_targets[row][col] == TARGET;
+	if (row >= 0 && row < rows && col >= 0 && col < cols && possible_targets[row][col] != NOT_TARGET) {
+		if (remove) {
+			possible_targets[row][col] = NOT_TARGET;
 		}
 		return true;
 	}
@@ -96,9 +85,9 @@ bool CommonAlgo::visitAdjacentCell(int direction, ParamType queryType) {
 }
 
 void CommonAlgo::markAdjacentCells() {
-	visitAdjacentCell(UP, ParamType::MarkNotTarget);
-	visitAdjacentCell(DOWN, ParamType::MarkNotTarget);
-	visitAdjacentCell(LEFT, ParamType::MarkNotTarget);
-	visitAdjacentCell(RIGHT, ParamType::MarkNotTarget);
+	removeFromRandomTargets(UP, true);
+	removeFromRandomTargets(DOWN, true);
+	removeFromRandomTargets(LEFT, true);
+	removeFromRandomTargets(RIGHT, true);
 }
 //michael 12/5/17 08:19 added code end
