@@ -65,10 +65,6 @@ bool PreMovesAlgo::init(const std::string& path) {
 			myLetters.insert(letters, letters + strlen(letters));
 		}
 	}
-	// getting paths to moves dir
-	GetCurrentDirectoryA(MY_MAX_PATH, pwd);
-	moves_dir = pwd;
-
 
 	// builds moves vector list
 	Utils::GetFileNamesInDirectory(&moves_list, moves_dir);
@@ -78,6 +74,9 @@ bool PreMovesAlgo::init(const std::string& path) {
 	std::sort(moves_list.begin(), moves_list.end());
 	
 	if (static_cast<int> (moves_list.size()) ==  0){
+		if (DEBUG) {
+			cout << "Cannot identify any moves files in path: " << moves_dir << endl;
+		}
 		return false;
 	}
 
