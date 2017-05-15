@@ -5,7 +5,7 @@
 #include <sstream>
 #include <string>
 #include <algorithm>
-#include "ex1.h"
+#include "ex2.h"
 #include "Game.h"
 #include "BoardChecker.h"
 #include "Tests.h"

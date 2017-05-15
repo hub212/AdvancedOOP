@@ -7,7 +7,7 @@
 #include <windows.h>
 #include <set>
 #include <vector>
-#include "ex1.h"
+#include "ex2.h"
 #include "PreMovesAlgo.h"
 #include "IBattleshipGameAlgo.h"
 #include "SmartAlgo.h"

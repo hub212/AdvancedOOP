@@ -21,7 +21,7 @@
   <ItemGroup>
     <ClInclude Include="Board.h" />
     <ClInclude Include="BoardChecker.h" />
-    <ClInclude Include="ex1.h" />
+    <ClInclude Include="ex2.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="IBattleshipGameAlgo.h" />
     <ClInclude Include="Tests.h" />
