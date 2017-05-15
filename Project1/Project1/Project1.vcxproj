@@ -29,7 +29,7 @@
   <ItemGroup>
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="BoardChecker.cpp" />
-    <ClCompile Include="ex1.cpp" />
+    <ClCompile Include="ex2.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Tests.cpp" />
   </ItemGroup>

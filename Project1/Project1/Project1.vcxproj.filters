@@ -44,10 +44,10 @@
     <ClCompile Include="BoardChecker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ex1.cpp">
+    <ClCompile Include="Tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tests.cpp">
+    <ClCompile Include="ex2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
