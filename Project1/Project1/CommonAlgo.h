@@ -9,6 +9,8 @@
 #define HERE 4
 #define NOT_TARGET 1
 #define TARGET 0
+#define IS_HIT 2
+#define IS_SINK 3
 #include <set>
 #include <string>
 using namespace std;
@@ -18,7 +20,7 @@ class CommonAlgo : public IBattleshipGameAlgo
 public:
 
 	//michael 12/5/17 08:19 added start
-	bool				removeFromRandomTargets(int direction, bool remove);
+	bool				visitCell(int direction, int value, bool set);
 	void				markAdjacentCells();
 
 	std::pair<int, int>	attackPair;

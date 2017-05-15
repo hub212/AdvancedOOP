@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
 
 		if (!string("-quiet").compare(argv[i])) {
 			quiet = 1;
-			cout << "quit on" << endl;
+			cout << "quiet on" << endl;
 		}
 	}
 

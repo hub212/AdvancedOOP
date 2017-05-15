@@ -25,8 +25,9 @@ class SmartAlgo :
 	void calcAttack();
 	bool tryToExpandAimRange(int direction);
 	void determineAimDirection();
-	void blockIrrelevantDirections();
+	void blockIrrelevantDirections(int direction);
 	void calcCurrentCoords(int direction);
+	void expandOverHits();
 
 public:
 	SmartAlgo();
