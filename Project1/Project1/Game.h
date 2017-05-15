@@ -11,7 +11,7 @@
 #include "PreMovesAlgo.h"
 #include "IBattleshipGameAlgo.h"
 #include "SmartAlgo.h"
-#include "utils.h"
+#include "Utils.h"
 #include "Types.h"
 #include "Board.h"
 

@@ -1,7 +1,7 @@
 #ifndef COM_ALGO_H
 #define COM_ALGO_H
 #include "IBattleshipGameAlgo.h"
-#include "utils.h"
+#include "Utils.h"
 #define DOWN 0
 #define RIGHT 1
 #define UP 2

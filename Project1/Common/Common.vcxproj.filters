@@ -18,21 +18,21 @@
     <ClInclude Include="..\Project1\CommonAlgo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Project1\utils.h">
+    <ClInclude Include="..\Project1\Types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Project1\Types.h">
+    <ClInclude Include="..\Project1\Utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Project1\utils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Project1\Types.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Project1\CommonAlgo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Project1\Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
