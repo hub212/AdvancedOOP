@@ -52,7 +52,6 @@ std::pair<int, int> PreMovesAlgo::attack() {
 bool PreMovesAlgo::init(const std::string& path) {
 
 	
-
 	char dir[MY_MAX_PATH];
 	strcpy_s(dir, MY_MAX_PATH, path.c_str());
 	dir[MY_MAX_PATH - 1] = '\0';
@@ -63,13 +62,13 @@ bool PreMovesAlgo::init(const std::string& path) {
 	//char pwd[MY_MAX_PATH];
 	// when using get_algo() we nned to specify the letters of each player expicitly
 	if (myLetters.empty()) {
-	if (player_num == 0) {
-	char* letters = "BPMD";
-	myLetters.insert(letters, letters + strlen(letters));
-	}else {
-	char* letters = "bpmd";
-	myLetters.insert(letters, letters + strlen(letters));
-	}
+		if (player_num == 0) {
+			char* letters = "BPMD";
+			myLetters.insert(letters, letters + strlen(letters));
+		}else {
+			char* letters = "bpmd";
+			myLetters.insert(letters, letters + strlen(letters));
+		}
 	}
 	// getting paths to moves dir
 	//GetCurrentDirectoryA(MY_MAX_PATH, pwd);
@@ -84,15 +83,13 @@ bool PreMovesAlgo::init(const std::string& path) {
 	std::sort(moves_list.begin(), moves_list.end());
 
 	if (static_cast<int> (moves_list.size()) ==  0){
-	return false;
+		return false;
 	}
 
 	if (static_cast<int>(moves_list.size()) == 1) {
 	moves_path = moves_list[0];
-	return true;
+		return true;
 	}
-
-	moves_path = "C:\\Users\\User7\\Desktop\\oop_hw2\\dfdssss\\ccccc.attack";//moves_list[player_num];
 
 	return true;
 }
