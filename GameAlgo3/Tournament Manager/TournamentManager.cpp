@@ -5,6 +5,7 @@
 #include <sstream>
 #include <algorithm>
 #include <queue>
+#include <memory>
 #include "TournamentManager.h"
 #include "SingleGameManager.h"
 #include "BoardChecker.h"
@@ -65,23 +66,8 @@ void createPath(int argc, char* argv[], char* pwd) {
 	}
 }
 
-void del(SingleGameManager** game_manager, BoardChecker** bc) {
-	if (*bc != nullptr) {
-		delete *bc;
-		*bc = nullptr;
-	}
-	if (*game_manager != nullptr) {
-		delete *game_manager;
-		*game_manager = nullptr;
-	}
-}
+int parseArgs(int argc, char* argv[], int& threads) {
 
-int main(int argc, char* argv[])
-{
-	// Game Parameters
-	int threads = 4;
-
-	// Command Line Parsing
 	for (int i = 0; i < argc; i++) {
 		if (!string("-threads").compare(argv[i])) {
 			if (i == argc - 1) {
@@ -100,23 +86,41 @@ int main(int argc, char* argv[])
 			}
 		}
 	}
+	return 0;
+}
+
+
+int main(int argc, char* argv[])
+{
+	// Game Parameters
+	int threads = 4;
+
+	// Command Line Parsing
+	if (parseArgs(argc, argv, threads) != 0) {
+		return 1;
+	}
 
 
 
 	// Main Data structures
-	vector<SingleGameManager*>				singleGameThreads;
-	vector<Board*>							BoardsVector;
-	vector<Player>							playersDlls;
-	vector<tuple<Player, Player, Board>>	matchesQueue;
+	vector<int>											singleGameThreads;
+	vector<shared_ptr<Board>>							BoardsVector;
+	vector<shared_ptr<Player>>							playersDlls;
+	vector<tuple<shared_ptr<Player>, shared_ptr<Player>, shared_ptr<Board>>>	matchesQueue;
+	vector<queue<int>>									scores;
 
-	bool isInputOk;
-	bool isDllFound = false;
-	char pwd[MY_MAX_PATH];
+	bool	isInputOk;
+	bool	isDllFound = false;
+	char	pwd[MY_MAX_PATH];
 
 
-	// start board check
+	// init threads vector
+	for (int i = 0; i < threads; i++) {
+		singleGameThreads.push_back(-1);
+	}
+	// start boards check - in this section we need to add multiple boards check 
 	BoardChecker::isDebug = DEBUG;
-	BoardChecker* bc = new BoardChecker();
+	unique_ptr<BoardChecker> bc(new  BoardChecker());
 
 	if (argc > 1 && string("-threads").compare(argv[1])) {
 		createPath(argc, argv, pwd);
@@ -127,20 +131,23 @@ int main(int argc, char* argv[])
 		isInputOk = bc->checkBoard(pwd, isDllFound);
 	}
 
-
-	char** boards = bc->board;
-
-	Board *boardCopy = new Board(NUM_ROWS, NUM_COLS);
+	// copy boards - need to add multile boards copy as well - maybe change bc->boards to bc->boards and iterate to copy all the boards
 	if (isInputOk) {
-		for (int i = 0; i < NUM_ROWS; i++) {
-			for (int j = 0; j < NUM_COLS; j++) {
-				boardCopy->set(i, j, boards[i][j]);
+		for (int board = 0; board < bc->boards.size(); board++) {
+			for (int i = 0; i < NUM_ROWS; i++) {
+				for (int j = 0; j < NUM_COLS; j++) {
+					shared_ptr<Board> boardCopy(new Board(NUM_ROWS, NUM_COLS));
+					boardCopy->set(i, j, bc->boards[board][i][j]);
+					BoardsVector.push_back(boardCopy);
+				}
 			}
 		}
 	}
 
+	
 
 
+	// initializing the dll's vector
 	if (isDllFound) {
 		std::sort(bc->dllsLists.begin(), bc->dllsLists.end());
 
@@ -166,25 +173,41 @@ int main(int argc, char* argv[])
 				}
 			}
 			if (isInputOk) {
-				playersDlls.push_back(make_tuple(AlgoName, hDll, getAlgo));
+				shared_ptr<Player> player(new Player( {AlgoName, hDll, getAlgo }));
+				playersDlls.push_back(player);
 			}
-			//std::reverse(playersDlls.begin(), playersDlls.end());
 		}
 	}
 
+
 	if (!isInputOk) {
-		delete boardCopy;
-		del(&game_master, &bc);
 		return 1;
 	}
-	game_master = new SingleGameManager(boards, pwd, NUM_ROWS, NUM_COLS, delay, quiet, playersDlls, boardCopy->getboard());
-	if (!game_master->init(pwd))
-		return 1;
-	if (game_master->play() != 0) {
-		del(&game_master, &bc);
-		return -1;
+
+
+	// init matches queue
+	for (auto boards : BoardsVector) {
+		for (auto player1 : playersDlls) {
+			for (auto player2 : playersDlls) {
+				if (player1 == player2) continue;
+				matchesQueue.push_back({ player1, player2, boards });
+		}
 	}
-	delete boardCopy;
-	del(&game_master, &bc);
+
+	// randomizing queue
+	std::random_shuffle(matchesQueue.begin(), matchesQueue.end());
+
+/*
+	// need to change this part to threads
+	for (auto match : matchesQueue) {
+
+		std:auto_ptr<SingleGameManager> game_master (new SingleGameManager(boards, pwd, NUM_ROWS, NUM_COLS, delay, quiet, playersDlls, boardCopy->getboard()));
+		if (!game_master->init(pwd))
+			return 1;
+		if (game_master->play() != 0) {
+			return -1;
+		}
+	}
+*/
 	return 0;
 }

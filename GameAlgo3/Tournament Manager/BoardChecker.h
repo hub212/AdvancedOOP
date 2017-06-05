@@ -7,18 +7,24 @@
 class BoardChecker
 {
 public:
-	char** board;
+	vector<char**> boards;
 	int num_rows;
 	int num_cols;
-	static bool isDebug;
-	ifstream* checkPath(char * path, bool & isDllFound);
-	BoardChecker();
-	void printIllegalShapeError(string illegalShips, char ch);
-	static int shipSize(char ch);
-	bool checkBoard(char* path, bool& isDllFound);
 
+	static bool isDebug;
 	static vector<string> boardsList;
 	static vector<string> dllsLists;
+
+
+	int checkPath(char * path, bool & isDllFound);
+
+	BoardChecker();
+
+	void printIllegalShapeError(string illegalShips, char ch);
+
+	static int shipSize(char ch);
+
+	bool checkBoard(char* path, bool& isDllFound);
 
 	~BoardChecker();
 };

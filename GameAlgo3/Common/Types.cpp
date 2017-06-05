@@ -33,3 +33,7 @@ Vessel_ID::Vessel_ID() {};
 /////---------------------------
 
 Player::Player(std::string name, HINSTANCE hdll, GetAlgoType getAlgo) : name(name), hdll(hdll), getAlgo(getAlgo) {};
+
+bool Player::operator== (const Player& player1) {
+	return name == player1.name && hdll == player1.hdll;
+}

@@ -18,6 +18,7 @@ public:
 
 	Player(std::string name, HINSTANCE hdll, GetAlgoType getAlgo);
 
+	bool operator == (const Player& player1);
 };
 
 enum class Players {
