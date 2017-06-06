@@ -1,3 +1,4 @@
+#include "BoardChecker.h"
 #include "Board.h"
 #include "windows.h"
 #include <memory>
@@ -20,7 +21,7 @@ void BoardChecker::printIllegalShapeError(string illegalShips, char ch) {
 
 	bool contains = false;
 
-	for (int i = 0; i < illegalShips.length(); i++) {
+	for (uint16_t i = 0; i < illegalShips.length(); i++) {
 
 		if (illegalShips.at(i) == ch) {
 
@@ -105,7 +106,7 @@ int BoardChecker::checkPath(char* path, bool& isDllFound) {
 
 	// boards list - open stream per file - check if readble
 	if (static_cast<int> (boards_list.size()) > 0) {
-		for (int i = 0; i < boards_list.size(); i++) {
+		for (uint16_t i = 0; i < boards_list.size(); i++) {
 			std::ifstream* boardStream = 0;
 			boardStream = new ifstream(dlls_list[i]);
 			if (!boardStream) {
@@ -132,7 +133,7 @@ int BoardChecker::checkPath(char* path, bool& isDllFound) {
 
 	// dlls list - open stream per file - check if readble
 	if (isDllFound) {
-		for (int i = 0; i < dlls_list.size(); i++) {
+		for (uint16_t i = 0; i < dlls_list.size(); i++) {
 			std::ifstream* dllStream = 0;
 			dllStream = new ifstream(dlls_list[i]);
 			if (!dllStream) {
@@ -174,15 +175,15 @@ bool BoardChecker::checkBoard(char* path, bool& isDllFound) {
 	}
 
 
-	for (int i = 0; i < BoardChecker::boardsList.size(); i++) {
+	for (uint16_t i = 0; i < BoardChecker::boardsList.size(); i++) {
 
 		std::unique_ptr<ifstream> boardStream(new ifstream(BoardChecker::boardsList[i]));
 		int playerA_ships = 0;
 		int playerB_ships = 0;
 		string illegalShips = "";
 		bool areAdjacentShips = false;
-		std:unique_ptr<Board> newBoard(new Board(NUM_ROWS, NUM_COLS));
-		std:unique_ptr<Board> boards(new Board(*boardStream, NUM_ROWS, NUM_COLS));
+		std::unique_ptr<Board> newBoard(new Board(NUM_ROWS, NUM_COLS));
+		std::unique_ptr<Board> boards(new Board(*boardStream, NUM_ROWS, NUM_COLS));
 		boardStream->close();
 
 		areAdjacentShips = boards->areAdjacentShapes();
@@ -196,7 +197,7 @@ bool BoardChecker::checkBoard(char* path, bool& isDllFound) {
 
 				if (curChar != ' ' && newBoard->get(row, col) == ' ') {
 
-				std:unique_ptr <Board> tmpBoard(new Board(*boards, row, col));
+				std::unique_ptr <Board> tmpBoard(new Board(*boards, row, col));
 					newBoard->add(*tmpBoard);
 
 
@@ -309,7 +310,7 @@ BoardChecker::~BoardChecker()
 	if (BoardChecker::isDebug)
 		std::cout << "deleting board checker" << std::endl;
 
-	if (boards != nullptr && num_rows > 0 && num_cols > 0) {
+	if (boards.size() != 0 && num_rows > 0 && num_cols > 0) {
 		for (int row_index = 0; row_index < num_rows; row_index++)
 		{
 			if (boards[row_index] != nullptr) {
@@ -317,7 +318,5 @@ BoardChecker::~BoardChecker()
 				boards[row_index] = nullptr;
 			}
 		}
-		delete[] boards;
-		boards = nullptr;
 	}
 }

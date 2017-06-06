@@ -31,7 +31,7 @@ void createPath(int argc, char* argv[], char* pwd) {
 
 		string arg(argv[i]);
 
-		for (int j = 0; j < arg.length(); j++) {
+		for (uint16_t j = 0; j < arg.length(); j++) {
 
 			if (cnt == MY_MAX_PATH - 1) {
 				break;
@@ -133,18 +133,18 @@ int main(int argc, char* argv[])
 
 	// copy boards - need to add multile boards copy as well - maybe change bc->boards to bc->boards and iterate to copy all the boards
 	if (isInputOk) {
-		for (int board = 0; board < bc->boards.size(); board++) {
-			for (int i = 0; i < NUM_ROWS; i++) {
-				for (int j = 0; j < NUM_COLS; j++) {
+		for (uint16_t board = 0; board < bc->boards.size(); board++) {
+			for (uint16_t row = 0; row < NUM_ROWS; row++) {
+				for (uint16_t col = 0; col < NUM_COLS; col++) {
 					shared_ptr<Board> boardCopy(new Board(NUM_ROWS, NUM_COLS));
-					boardCopy->set(i, j, bc->boards[board][i][j]);
+					boardCopy->set(row, col, bc->boards[board][row][col]);
 					BoardsVector.push_back(boardCopy);
 				}
 			}
 		}
 	}
 
-	
+
 
 
 	// initializing the dll's vector
@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
 				}
 			}
 			if (isInputOk) {
-				shared_ptr<Player> player(new Player( {AlgoName, hDll, getAlgo }));
+				shared_ptr<Player> player(new Player({ AlgoName, hDll, getAlgo }));
 				playersDlls.push_back(player);
 			}
 		}
@@ -191,23 +191,25 @@ int main(int argc, char* argv[])
 			for (auto player2 : playersDlls) {
 				if (player1 == player2) continue;
 				matchesQueue.push_back({ player1, player2, boards });
+			}
 		}
 	}
 
-	// randomizing queue
-	std::random_shuffle(matchesQueue.begin(), matchesQueue.end());
+		// randomizing queue
+		std::random_shuffle(matchesQueue.begin(), matchesQueue.end());
 
-/*
-	// need to change this part to threads
-	for (auto match : matchesQueue) {
+		/*
+			// need to change this part to threads
+			for (auto match : matchesQueue) {
 
-		std:auto_ptr<SingleGameManager> game_master (new SingleGameManager(boards, pwd, NUM_ROWS, NUM_COLS, delay, quiet, playersDlls, boardCopy->getboard()));
-		if (!game_master->init(pwd))
-			return 1;
-		if (game_master->play() != 0) {
-			return -1;
-		}
-	}
-*/
-	return 0;
+				std:auto_ptr<SingleGameManager> game_master (new SingleGameManager(boards, pwd, NUM_ROWS, NUM_COLS, delay, quiet, playersDlls, boardCopy->getboard()));
+				if (!game_master->init(pwd))
+					return 1;
+				if (game_master->play() != 0) {
+					return -1;
+				}
+			}
+		*/
+		return 0;
+
 }

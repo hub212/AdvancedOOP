@@ -9,18 +9,6 @@
 #define MY_MAX_PATH 1024
 
 
-class Player 
-{
-public:
-	std::string name = "";
-	HINSTANCE hdll;
-	GetAlgoType getAlgo;
-
-	Player(std::string name, HINSTANCE hdll, GetAlgoType getAlgo);
-
-	bool operator == (const Player& player1);
-};
-
 enum class Players {
 	PlayerA = 0,
 	PlayerB = 1
@@ -61,5 +49,17 @@ public:
 };
 
 typedef IBattleshipGameAlgo *(*GetAlgoType)();
+
+class Player
+{
+public:
+	std::string name = "";
+	HINSTANCE hdll;
+	GetAlgoType getAlgo;
+
+	Player(std::string name, HINSTANCE hdll, GetAlgoType getAlgo);
+
+	bool operator == (const Player& player1);
+};
 
 #endif

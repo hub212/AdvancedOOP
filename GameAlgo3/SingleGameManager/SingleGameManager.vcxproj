@@ -119,6 +119,14 @@
   <ItemGroup>
     <ClCompile Include="SingleGameManager.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.vcxproj">
+      <Project>{8c318f9e-d277-44ff-96a5-a614f4aa119d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Tournament Manager\Tournament Manager.vcxproj">
+      <Project>{884dab9b-af87-4d70-b6f6-d800c6ffc48d}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

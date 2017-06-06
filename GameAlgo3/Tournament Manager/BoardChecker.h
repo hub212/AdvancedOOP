@@ -1,8 +1,9 @@
 #ifndef BOARD_CH_H
 #define BOARD_CH_H
 #include <algorithm>
-#include "TournamentManager.h"
 #include "Utils.h"
+#include "TournamentManager.h"
+
 
 class BoardChecker
 {
