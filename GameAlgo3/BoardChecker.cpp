@@ -131,25 +131,25 @@ int BoardChecker::checkPath(char* path, bool& isDllFound) {
 	std::sort(dlls_list.begin(), dlls_list.end());
 
 	// We need at least one boards file
-	if (!isBoardFound || !boardStream) {
+	if (!isBoardFound) {
 		std::cout << "Missing board file (*.sboard) looking in path: " << dir << std::endl;
 	}
 
 	// dlls list - open stream per file - check if readble
-	if (isDllFound) {
-		for (uint16_t i = 0; i < dlls_list.size(); i++) {
-			std::ifstream* dllStream = 0;
-			dllStream = new ifstream(dlls_list[i]);
-			if (!dllStream) {
-				dlls_list.erase(dlls_list.begin() + i);
-			}
-			else {
-				dllStream->close();
-				delete dllStream;
-				dllStream = NULL;
-			}
+	for (uint16_t i = 0; i < dlls_list.size(); i++) {
+		std::ifstream* dllStream = 0;
+		dllStream = new ifstream(dlls_list[i]);
+		if (!dllStream) {
+			dlls_list.erase(dlls_list.begin() + i);
+		}
+		else {
+			dllStream->close();
+			delete dllStream;
+			dllStream = NULL;
+			isDllFound = true;
 		}
 	}
+	
 
 	// And at least two dll's
 	if (dlls_list.size() < 2) {
@@ -157,7 +157,7 @@ int BoardChecker::checkPath(char* path, bool& isDllFound) {
 		isDllFound = false;
 	}
 
-	if (!boardStream || !isDllFound || !isBoardFound) {
+	if (!isDllFound || !isBoardFound) {
 		return 1;
 	}
 
@@ -171,7 +171,7 @@ int BoardChecker::checkPath(char* path, bool& isDllFound) {
 
 bool BoardChecker::checkBoard(char* path, bool& isDllFound) {
 	
-	if (checkPath(path, isDllFound) == 0) {
+	if (checkPath(path, isDllFound)) {
 		if (DEBUG) {
 			cout << "ERROR: checkboard failed; no board to check" << endl;
 		}
