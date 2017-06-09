@@ -10,6 +10,8 @@
 #include "SingleGameManager.h"
 #include "BoardChecker.h"
 
+using namespace std;
+
 
 void createPath(int argc, char* argv[], char* pwd) {
 

@@ -7,7 +7,6 @@
 #include <windows.h>
 #include <set>
 #include <vector>
-#include "TournamentManager.h"
 #include "IBattleshipGameAlgo.h"
 #include "Utils.h"
 #include "Types.h"

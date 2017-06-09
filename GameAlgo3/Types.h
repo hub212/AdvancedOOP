@@ -1,12 +1,21 @@
 #ifndef TYPES_H
 #define TYPES_H
+
 #include "IBattleshipGameAlgo.h"
 #include <string>
 #include <Windows.h>
+#include <iostream>
 
 #define NUM_ROWS 10
 #define NUM_COLS 10
 #define MY_MAX_PATH 1024
+
+using namespace std;
+#ifdef _UNICODE
+typedef wchar_t TCHAR;
+#else
+typedef char TCHAR;
+#endif
 
 
 enum class Players {
@@ -59,7 +68,9 @@ public:
 
 	Player(std::string name, HINSTANCE hdll, GetAlgoType getAlgo);
 
+	friend ostream& operator<< (std::ostream &Str, const Player& player);
+
 	bool operator == (const Player& player1);
 };
 
-#endif
+#endif #ifndef TYPES_H

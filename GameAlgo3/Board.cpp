@@ -99,7 +99,7 @@ Board::Board(std::ifstream& file, int num_rows, int num_cols) {
 			lineExists = true;
 		}
 
-		for (int col_index = 0; lineExists && col_index < num_cols && col_index < str.length(); col_index++) {
+		for (uint16_t col_index = 0; lineExists && col_index < num_cols && col_index < str.length(); col_index++) {
 			char inputChar = str.at(col_index);
 			bool charIsLegal = false;
 			if (inputChar == ' ' || BoardChecker::shipSize(inputChar) > 0) {
@@ -115,9 +115,9 @@ Board::Board(std::ifstream& file, int num_rows, int num_cols) {
 }
 
 void Board::printBoard() {
-	for (int row_index = 0; row_index < num_rows; row_index++) {
+	for (uint16_t row_index = 0; row_index < num_rows; row_index++) {
 		std::string rowString(board[row_index]);
-		if (rowString.length() > num_cols) {
+		if (rowString.length() > static_cast<std::size_t>(num_cols)) {
 			rowString = rowString.substr(0, num_cols);
 		}
 		std::cout << rowString << std::endl;

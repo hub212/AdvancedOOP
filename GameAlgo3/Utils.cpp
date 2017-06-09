@@ -1,5 +1,6 @@
 #include "Utils.h"
 #include <vector>
+#include <string>
 
 ////-------------------------
 ////		Utils

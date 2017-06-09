@@ -19,14 +19,21 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Board.h" />
-    <ClInclude Include="BoardChecker.h" />
-    <ClInclude Include="TournamentManager.h" />
+    <ClInclude Include="..\Board.h" />
+    <ClInclude Include="..\BoardChecker.h" />
+    <ClInclude Include="..\IBattleshipGameAlgo.h" />
+    <ClInclude Include="..\SingleGameManager.h" />
+    <ClInclude Include="..\TournamentManager.h" />
+    <ClInclude Include="..\Types.h" />
+    <ClInclude Include="..\Utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Board.cpp" />
-    <ClCompile Include="BoardChecker.cpp" />
-    <ClCompile Include="TournamentManager.cpp" />
+    <ClCompile Include="..\Board.cpp" />
+    <ClCompile Include="..\BoardChecker.cpp" />
+    <ClCompile Include="..\SingleGameManager.cpp" />
+    <ClCompile Include="..\TournamentManager.cpp" />
+    <ClCompile Include="..\Types.cpp" />
+    <ClCompile Include="..\Utils.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{884DAB9B-AF87-4D70-B6F6-D800C6FFC48D}</ProjectGuid>

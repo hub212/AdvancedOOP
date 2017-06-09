@@ -1,9 +1,15 @@
+#include "Utils.h"
 #include "BoardChecker.h"
 #include "Board.h"
 #include "windows.h"
 #include <memory>
+#include <string>
+
+using namespace std;
 
 bool BoardChecker::isDebug;
+vector<string> BoardChecker::boardsList;
+vector<string> BoardChecker::dllsLists;
 char** boards = NULL;
 int num_rows = 0;
 int num_cols = 0;
@@ -12,8 +18,6 @@ int num_cols = 0;
 BoardChecker::BoardChecker()
 {
 }
-
-
 
 
 

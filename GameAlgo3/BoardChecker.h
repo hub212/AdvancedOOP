@@ -1,8 +1,10 @@
-#ifndef BOARD_CH_H
-#define BOARD_CH_H
-#include <algorithm>
-#include "Utils.h"
+#ifndef BOARD_CHECK_H
+#define BOARD_CHECK_H
 #include "TournamentManager.h"
+#include <algorithm>
+#include <vector>
+
+using namespace std;
 
 
 class BoardChecker
@@ -29,4 +31,5 @@ public:
 
 	~BoardChecker();
 };
-#endif
+
+#endif 

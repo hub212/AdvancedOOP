@@ -1,4 +1,6 @@
 #include "Types.h"
+#include <iostream>
+
 
 ////--------------------------
 ////		Vessels
@@ -32,7 +34,14 @@ Vessel_ID::Vessel_ID() {};
 /////		Player
 /////---------------------------
 
-Player::Player(std::string name, HINSTANCE hdll, GetAlgoType getAlgo) : name(name), hdll(hdll), getAlgo(getAlgo) {};
+Player::Player(std::string name, HINSTANCE hdll, GetAlgoType getAlgo) : name(name), hdll(hdll), getAlgo(getAlgo) {}
+
+ostream& operator<<(std::ostream & Str, const Player& player)
+{
+	Str << player.name;
+	return Str;
+}
+
 
 bool Player::operator== (const Player& player1) {
 	return name == player1.name && hdll == player1.hdll;
