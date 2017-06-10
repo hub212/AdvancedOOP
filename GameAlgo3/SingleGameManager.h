@@ -25,6 +25,10 @@ private:
 	std::set<char>		lettersA = {'B','P','M','D' };
 	std::set<char>		lettersB = {'b','p','m','d' };
 
+	shared_ptr<Board> board;
+	Player0Board board0;
+	Player1Board board1;
+
 
 	char**	boards;
 	int rows;
@@ -38,6 +42,8 @@ private:
 	int quiet;
 
 	vector<tuple<string, HINSTANCE, GetAlgoType>> dll_vec;
+
+	tuple<shared_ptr<Player>, shared_ptr<Player>, shared_ptr<Board>> match;
 
 
 	std::pair<Vessel_ID, AttackResult> attack_results(std::pair<int, int> move);
@@ -87,6 +93,9 @@ public:
 	* \param numCols
 	*/
 	SingleGameManager(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet, vector<tuple<string, HINSTANCE, GetAlgoType>> dll_vec, char **boardCopy);
+
+
+	SingleGameManager(tuple<shared_ptr<Player>, shared_ptr<Player>, shared_ptr<Board>> match);
 
 	/**
 	* \brief impliments the game running phase.

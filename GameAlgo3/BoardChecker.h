@@ -1,35 +1,27 @@
-#ifndef BOARD_CHECK_H
-#define BOARD_CHECK_H
-#include "TournamentManager.h"
+#ifndef BOARD_CH_H
+#define BOARD_CH_H
 #include <algorithm>
-#include <vector>
-
-using namespace std;
+#include "Board.h"
+#include "ex2.h"
+#include "Utils.h"
 
 
 class BoardChecker
 {
 public:
-	vector<char**> boards;
-	int num_rows;
-	int num_cols;
 
 	static bool isDebug;
-	static vector<string> boardsList;
-	static vector<string> dllsLists;
 
+	static vector<string> dllVec = {};
+	static vector<std::shared_ptr<const Board>> boardVec = {};
 
-	int checkPath(char * path, bool & isDllFound);
-
+	std::shared_ptr<const Board> checkBoard(string boardPath);
+	
+	bool checkPath(char * path, bool & isDllFound);
 	BoardChecker();
-
-	void printIllegalShapeError(string illegalShips, char ch);
-
-	static int shipSize(char ch);
-
+	static void printIllegalShapeError(string illegalShips, char ch);
 	bool checkBoard(char* path, bool& isDllFound);
 
 	~BoardChecker();
 };
-
-#endif 
+#endif

@@ -34,7 +34,9 @@ Vessel_ID::Vessel_ID() {};
 /////		Player
 /////---------------------------
 
-Player::Player(std::string name, HINSTANCE hdll, GetAlgoType getAlgo) : name(name), hdll(hdll), getAlgo(getAlgo) {}
+Player::Player(std::string name, HINSTANCE hdll, GetAlgoType getAlgo) : playerNumber(playerNumber), name(name), hdll(hdll), getAlgo(getAlgo) {}
+Player::Player(int playerNumber, Player player) {}
+
 
 ostream& operator<<(std::ostream & Str, const Player& player)
 {

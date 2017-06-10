@@ -39,6 +39,12 @@ SingleGameManager::SingleGameManager(char ** boards, const char * players_moves,
 	Utils::ShowConsoleCursor(0);
 }
 
+SingleGameManager::SingleGameManager(tuple<shared_ptr<Player>, shared_ptr<Player>, shared_ptr<Board>> match) : match(match), board(get<2>(match)) , board0(board) , board1(board) {
+	dll_vec.push_back({ get<0>(match)->name,get<0>(match)->hdll, get<0>(match)->getAlgo });
+	dll_vec.push_back({ get<1>(match)->name,get<1>(match)->hdll, get<1>(match)->getAlgo });
+	setBoards()
+}
+
 
 int SingleGameManager::extractBoards(const char** board, int numRows, int numCols, char**** out_board)
 {

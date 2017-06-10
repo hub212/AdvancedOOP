@@ -8,6 +8,7 @@
 
 #define NUM_ROWS 10
 #define NUM_COLS 10
+#define MAX_DEPTH 3
 #define MY_MAX_PATH 1024
 
 using namespace std;
@@ -65,8 +66,10 @@ public:
 	std::string name = "";
 	HINSTANCE hdll;
 	GetAlgoType getAlgo;
+	int playerNumber = -1;
 
-	Player(std::string name, HINSTANCE hdll, GetAlgoType getAlgo);
+	Player(int playerNumber, Player player) {};
+	Player( std::string name, HINSTANCE hdll, GetAlgoType getAlgo);
 
 	friend ostream& operator<< (std::ostream &Str, const Player& player);
 

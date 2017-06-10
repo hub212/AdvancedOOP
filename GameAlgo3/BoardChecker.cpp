@@ -1,18 +1,6 @@
-#include "Utils.h"
 #include "BoardChecker.h"
-#include "Board.h"
 #include "windows.h"
-#include <memory>
-#include <string>
 
-using namespace std;
-
-bool BoardChecker::isDebug;
-vector<string> BoardChecker::boardsList;
-vector<string> BoardChecker::dllsLists;
-char** boards = NULL;
-int num_rows = 0;
-int num_cols = 0;
 
 
 BoardChecker::BoardChecker()
@@ -20,12 +8,16 @@ BoardChecker::BoardChecker()
 }
 
 
+bool BoardChecker::isDebug=false;
+vector<string> BoardChecker::dllVec = {};
+vector<std::shared_ptr<const Board>> BoardChecker::boardVec = {};
+
 
 void BoardChecker::printIllegalShapeError(string illegalShips, char ch) {
 
 	bool contains = false;
 
-	for (uint16_t i = 0; i < illegalShips.length(); i++) {
+	for (int i = 0; i < illegalShips.length(); i++) {
 
 		if (illegalShips.at(i) == ch) {
 
@@ -44,21 +36,7 @@ void BoardChecker::printIllegalShapeError(string illegalShips, char ch) {
 	}
 }
 
-int BoardChecker::shipSize(char ch) {
-	if (tolower(ch) == tolower('B')) {
-		return 1;
-	}
-	if (tolower(ch) == tolower('P')) {
-		return 2;
-	}
-	if (tolower(ch) == tolower('M')) {
-		return 3;
-	}
-	if (tolower(ch) == tolower('D')) {
-		return 4;
-	}
-	return -1;
-}
+
 
 
 bool dirExists(const std::string& dirName_in)
@@ -74,147 +52,59 @@ bool dirExists(const std::string& dirName_in)
 }
 
 
-int BoardChecker::checkPath(char* path, bool& isDllFound) {
+
+std::shared_ptr<const Board> BoardChecker::checkBoard(string boardPath) {
 
 
-	char dir[MY_MAX_PATH];
+	std::cout << "Checking board: " << boardPath << std::endl;
+
+	std::ifstream boardStream = ifstream(boardPath);
+
+	int player0_ships = 0;
+	int player1_ships = 0;
+
+	int blayer0_shipSizes[4] = { 0 };
+	int blayer1_shipSizes[4] = { 0 };
+
+	string illegalShips = "";
+	bool areAdjacentShips = false;
+
+	std::shared_ptr<Board> board = std::make_shared<Board>(boardStream);
+
+	Board newBoard = Board(board->depth(), board->rows(), board->cols());
 	
-	vector<string> boards_list;
-	vector<string> dlls_list;
+	boardStream.close();
 
-	isDllFound = false;
-	bool isBoardFound = false;
-
-	std::ifstream* boardStream = 0;
-	string boardName = "";
-	
-	strcpy_s(dir, MY_MAX_PATH, path);
-	dir[MY_MAX_PATH - 1] = '\0';
-	string files_dir(dir);
+	areAdjacentShips = board->areAdjacentShapes();
 
 
+	Board tmpBoard = Board(board->depth(), board->rows(), board->cols());
 
-	if (!dirExists(files_dir)) {
-		std::cout << "Wrong path: " << dir << std::endl;
-		return 1;
-	}
-	
+	for (int dpth = 0; dpth < board->depth(); dpth++) {
+		for (int row = 0; row < board->rows(); row++) {
+			for (int col = 0; col < board->cols(); col++) {
 
-	// Extracting file list to dlls and boards lists
-	Utils::GetFileNamesInDirectory(&boards_list, files_dir);
-	dlls_list = boards_list;
-
-	// filtering boards lists
-	boards_list.erase(remove_if(boards_list.begin(), boards_list.end(), [](string str) { return !Utils::string_has_suffix(str, ".sboard"); }), boards_list.end());
-	std::sort(boards_list.begin(), boards_list.end());
-
-	// boards list - open stream per file - check if readble
-	if (static_cast<int> (boards_list.size()) > 0) {
-		for (uint16_t i = 0; i < boards_list.size(); i++) {
-			std::ifstream* boardStream = 0;
-			boardStream = new ifstream(dlls_list[i]);
-			if (!boardStream) {
-				boards_list.erase(dlls_list.begin() + i);
-			}
-			else {
-				boardStream->close();
-				delete boardStream;
-				boardStream = NULL;
-				isBoardFound = true;
-			}
-		}
-	}
-	
-
-	// filtering dlls list
-	dlls_list.erase(remove_if(dlls_list.begin(), dlls_list.end(), [](string str) { return !Utils::string_has_suffix(str, ".dll"); }), dlls_list.end());
-	std::sort(dlls_list.begin(), dlls_list.end());
-
-	// We need at least one boards file
-	if (!isBoardFound) {
-		std::cout << "Missing board file (*.sboard) looking in path: " << dir << std::endl;
-	}
-
-	// dlls list - open stream per file - check if readble
-	for (uint16_t i = 0; i < dlls_list.size(); i++) {
-		std::ifstream* dllStream = 0;
-		dllStream = new ifstream(dlls_list[i]);
-		if (!dllStream) {
-			dlls_list.erase(dlls_list.begin() + i);
-		}
-		else {
-			dllStream->close();
-			delete dllStream;
-			dllStream = NULL;
-			isDllFound = true;
-		}
-	}
-	
-
-	// And at least two dll's
-	if (dlls_list.size() < 2) {
-		cout << "Missing an algorithm (dll) file looking in path: " << path << endl;
-		isDllFound = false;
-	}
-
-	if (!isDllFound || !isBoardFound) {
-		return 1;
-	}
-
-	// for exernal use in TournamentManager
-	BoardChecker::boardsList = boards_list;
-	BoardChecker::dllsLists = dlls_list;
-
-	return 0;
-}
+				char curChar = board->get(dpth, row, col);
 
 
-bool BoardChecker::checkBoard(char* path, bool& isDllFound) {
-	
-	if (checkPath(path, isDllFound)) {
-		if (DEBUG) {
-			cout << "ERROR: checkboard failed; no board to check" << endl;
-		}
-		return false;
-	}
-
-
-	for (uint16_t i = 0; i < BoardChecker::boardsList.size(); i++) {
-
-		std::unique_ptr<ifstream> boardStream(new ifstream(BoardChecker::boardsList[i]));
-		int playerA_ships = 0;
-		int playerB_ships = 0;
-		string illegalShips = "";
-		bool areAdjacentShips = false;
-		std::unique_ptr<Board> newBoard(new Board(NUM_ROWS, NUM_COLS));
-		std::unique_ptr<Board> boards(new Board(*boardStream, NUM_ROWS, NUM_COLS));
-		boardStream->close();
-
-		areAdjacentShips = boards->areAdjacentShapes();
+				if (curChar != ' ' && newBoard.get(dpth, row, col) == ' ') {
 
 
 
-		for (int row = 0; row < NUM_ROWS; row++) {
-			for (int col = 0; col < NUM_COLS; col++) {
-				char curChar = boards->get(row, col);
+					tmpBoard = Board(*board, dpth, row, col);
+					newBoard.add(tmpBoard);
 
 
-				if (curChar != ' ' && newBoard->get(row, col) == ' ') {
-
-				std::unique_ptr <Board> tmpBoard(new Board(*boards, row, col));
-					newBoard->add(*tmpBoard);
-
-
-					if (BoardChecker::isDebug) {
+					if (isDebug) {
 						std::cout << "adding shape: " << std::endl;
 
-						tmpBoard->printBoard();
+						tmpBoard.printBoard();
 
 						std::cout << "--------------------------------------------" << std::endl;
 
 						std::cout << "shape added: " << std::endl;
 
-						newBoard->printBoard();
+						newBoard.printBoard();
 
 						std::cout << "--------------------------------------------" << std::endl;
 
@@ -222,105 +112,183 @@ bool BoardChecker::checkBoard(char* path, bool& isDllFound) {
 
 
 
-					int minRow = tmpBoard->minOccupiedRow();
-					int minCol = tmpBoard->minOccupiedCol();
-					int maxRow = tmpBoard->maxOccupiedRow();
-					int maxCol = tmpBoard->maxOccupiedCol();
+					int minRow = tmpBoard.minOccupiedRow();
+					int minCol = tmpBoard.minOccupiedCol();
+					int minDpt = tmpBoard.minOccupiedDpth();
+					int maxRow = tmpBoard.maxOccupiedRow();
+					int maxCol = tmpBoard.maxOccupiedCol();
+					int maxDpt = tmpBoard.maxOccupiedDpth();
 
-					if (minRow == -1 || minCol == -1 || maxRow == -1 || maxCol == -1) {
-						if (BoardChecker::isDebug)
+					if (minRow == -1 || minCol == -1 || maxRow == -1 || maxCol == -1 || minDpt == -1 || maxDpt == -1) {
+						if (isDebug)
 							std::cout << "error, no chars in tmpBoard" << std::endl;
 						continue;
 					}
 
-					if (minRow < maxRow && minCol < maxCol) {
+					if ((minRow < maxRow && minCol < maxCol) || (minRow < maxRow && minDpt < maxDpt) || (minCol < maxCol && minDpt < maxDpt)) {
+
+						std::cout << "minRow: " << minRow << " maxRow: " << maxRow << " minCol: " << minCol << " maxCol: " << maxCol << " minDpt: " << minDpt << " maxDpt: " << maxDpt <<  std::endl;
+
 						illegalShips.append(1, curChar);
 						continue;
 					}
 
-					if (tmpBoard->countNonEmptyCells() != shipSize(curChar)) {
+					if (tmpBoard.countNonEmptyCells() != Board::shipSize(curChar)) {
+
+						if (isDebug)
+							std::cout << "Illegal shape was added: " << curChar <<  " of size: " << Board::shipSize(curChar) <<  std::endl;
+
 						illegalShips.append(1, curChar);
 						continue;
 					}
 
 					if (isupper(curChar)) {
-						playerA_ships++;
+						blayer0_shipSizes[Board::shipSize(curChar) - 1]++;
+						player0_ships++;
 					}
 					else {
-						playerB_ships++;
+						blayer1_shipSizes[Board::shipSize(curChar) - 1]++;
+						player1_ships++;
 					}
 				}
 			}
 		}
+	}
 
-		bool boardIsOk  = illegalShips.length() == 0;
+	bool boardIsOk = illegalShips.length() == 0;
 
-		printIllegalShapeError(illegalShips, 'B');
-		printIllegalShapeError(illegalShips, 'P');
-		printIllegalShapeError(illegalShips, 'M');
-		printIllegalShapeError(illegalShips, 'D');
-		printIllegalShapeError(illegalShips, 'b');
-		printIllegalShapeError(illegalShips, 'p');
-		printIllegalShapeError(illegalShips, 'm');
-		printIllegalShapeError(illegalShips, 'd');
+	printIllegalShapeError(illegalShips, 'B');
+	printIllegalShapeError(illegalShips, 'P');
+	printIllegalShapeError(illegalShips, 'M');
+	printIllegalShapeError(illegalShips, 'D');
+	printIllegalShapeError(illegalShips, 'b');
+	printIllegalShapeError(illegalShips, 'p');
+	printIllegalShapeError(illegalShips, 'm');
+	printIllegalShapeError(illegalShips, 'd');
 
-		if (playerA_ships > 5) {
-			std::cout << "Too many ships for player A" << std::endl;
-			boardIsOk = false;
-		}
-		if (playerA_ships < 5) {
-			std::cout << "Too few ships for player A" << std::endl;
-			boardIsOk = false;
-		}
-		if (playerB_ships > 5) {
-			std::cout << "Too many ships for player B" << std::endl;
-			boardIsOk = false;
-		}
-		if (playerB_ships < 5) {
-			std::cout << "Too few ships for player B" << std::endl;
-			boardIsOk = false;
-		}
-		if (areAdjacentShips) {
-			std::cout << "Adjacent Ships on Board" << std::endl;
-			boardIsOk = false;
-		}
+	if (player0_ships != player1_ships || 
+		blayer0_shipSizes[0] != blayer1_shipSizes[0] || 
+		blayer0_shipSizes[1] != blayer1_shipSizes[1] || 
+		blayer0_shipSizes[2] != blayer1_shipSizes[2] ||
+		blayer0_shipSizes[3] != blayer1_shipSizes[3])
+	{	
+		std::cout << "Imbalanced board" << std::endl;
+	}
+	else {
+		std::cout << "Balanced board" << std::endl;
+	}
+	if (player0_ships == 0) {
+		std::cout << "Player A has no ships" << std::endl;
+	}
+	if (player1_ships == 0) {
+		std::cout << "Player B has no ships" << std::endl;
+	}
+	if (areAdjacentShips) {
+		std::cout << "Adjacent Ships on Board" << std::endl;
+		boardIsOk = false;
+	}
 
 
+	if (boardIsOk) {
+		std::cout << "Legal board" << std::endl;
+		return board;
+	}
+	else {
+		std::cout << "Illegal board" << std::endl;
+		return nullptr;
+	}
+}
 
-		if (boardIsOk)
-		{
-			num_rows = newBoard->numRows();
-			num_cols = newBoard->numCols();
-			char** tmpArr = new char*[num_rows];
-			for (int row_index = 0; row_index < num_rows; row_index++)
-			{
-				tmpArr[row_index] = new char[num_cols + 1];
-				tmpArr[row_index][num_cols] = '\0';
-				for (int col_index = 0; col_index < num_cols; col_index++) {
-					tmpArr[row_index][col_index] = newBoard->get(row_index, col_index);
-				}
-			}
-			this->boards.push_back(tmpArr);
-		}
-		else {
-			BoardChecker::boardsList.erase(BoardChecker::boardsList.begin() + i);
+
+bool BoardChecker::checkPath(char* path, bool& isDllFound) {
+
+	char dir[MY_MAX_PATH];
+	strcpy_s(dir, MY_MAX_PATH, path);
+	dir[MY_MAX_PATH - 1] = '\0';
+	// dlls handling	
+	vector<string> boards_list;
+
+	string files_dir(dir);
+	if (!dirExists(files_dir)) {
+		std::cout << "Wrong path: " << dir << std::endl;
+		return false;
+	}
+	bool isBoardFound = false;
+
+	string boardName = "";
+
+	// builds moves vector list
+	Utils::GetFileNamesInDirectory(&boards_list, files_dir);
+
+	boards_list.erase(remove_if(boards_list.begin(), boards_list.end(), [](string str) { return !Utils::string_has_suffix(str, ".sboard"); }), boards_list.end());
+
+	std::sort(boards_list.begin(), boards_list.end());
+
+	for (int i = 0; i < static_cast<int> (boards_list.size()); ++i) {
+		isBoardFound = true;
+		std::shared_ptr<const Board> brd = checkBoard(boards_list[i]);
+
+		if (brd != nullptr) {
+			brd->printBoard();
+			boardVec.push_back(brd);
 		}
 	}
-		return !BoardChecker::boardsList.empty();
+
+	vector<string> dlls_list;
+	isDllFound = false;
+
+
+
+	dlls_list.erase(remove_if(dlls_list.begin(), dlls_list.end(), [](string str) { return !Utils::string_has_suffix(str, ".dll"); }), dlls_list.end());
+
+	std::sort(dlls_list.begin(), dlls_list.end());
+
+	for (int i = 0; i < static_cast<int> (dlls_list.size()); ++i) {
+		isDllFound = true;
+		dllVec.push_back(dlls_list[i]);
+	}
+
+	if (!isBoardFound) {
+		std::cout << "Missing board file (*.sboard) looking in path: " << dir << std::endl;
+	}
+
+	if (static_cast<int> (boardVec.size()) < 1) {
+		std::cout << "No legal boards found in dir: " << dir << std::endl;
+		isBoardFound = false;
+	}
+
+	if (isDllFound) {
+		for (int i = 0; i < dllVec.size(); i++) {
+			std::ifstream dllStream = ifstream(dllVec[i]);
+			if (!dllStream) {
+				dllVec.erase(dllVec.begin() + i);
+			}
+			else {
+				dllStream.close();
+			}
+		}
+	}
+
+	if (dllVec.size() < 2) {
+		cout << "Missing an algorithm (dll) file looking in path: " << path << " (needs at least two)" << endl;
+		isDllFound = false;
+	}
+
+	if (!isDllFound || !isBoardFound) {
+		return false;
+	}
+
+	return true;
+}
+
+
+bool BoardChecker::checkBoard(char* path, bool& isDllFound) {
+	
+	return checkPath(path, isDllFound);
 }
 
 BoardChecker::~BoardChecker()
 {
-	if (BoardChecker::isDebug)
+	if (isDebug)
 		std::cout << "deleting board checker" << std::endl;
-
-	if (boards.size() != 0 && num_rows > 0 && num_cols > 0) {
-		for (int row_index = 0; row_index < num_rows; row_index++)
-		{
-			if (boards[row_index] != nullptr) {
-				delete[] boards[row_index];
-				boards[row_index] = nullptr;
-			}
-		}
-	}
 }

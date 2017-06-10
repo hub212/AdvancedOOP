@@ -135,14 +135,9 @@ int main(int argc, char* argv[])
 
 	// copy boards - need to add multile boards copy as well - maybe change bc->boards to bc->boards and iterate to copy all the boards
 	if (isInputOk) {
-		for (uint16_t board = 0; board < bc->boards.size(); board++) {
-			for (uint16_t row = 0; row < NUM_ROWS; row++) {
-				for (uint16_t col = 0; col < NUM_COLS; col++) {
-					shared_ptr<Board> boardCopy(new Board(NUM_ROWS, NUM_COLS));
-					boardCopy->set(row, col, bc->boards[board][row][col]);
-					BoardsVector.push_back(boardCopy);
-				}
-			}
+		for (uint16_t board = 0; board < bc->boardVec.size(); board++) {
+			BoardsVector.push_back(std::make_shared<Board>(*bc->boardVec[board]));
+
 		}
 	}
 
@@ -151,9 +146,9 @@ int main(int argc, char* argv[])
 
 	// initializing the dll's vector
 	if (isDllFound) {
-		std::sort(bc->dllsLists.begin(), bc->dllsLists.end());
+		std::sort(bc->dllVec.begin(), bc->dllVec.end());
 
-		for (const auto dll : bc->dllsLists) {
+		for (const auto dll : bc->dllVec) {
 
 			string AlgoName = dll.substr(dll.find_last_of("\\") == string::npos ? 0 : dll.find_last_of("\\") + 1, dll.find_first_of('.'));
 			HINSTANCE hDll = LoadLibraryA(dll.c_str());
@@ -188,30 +183,29 @@ int main(int argc, char* argv[])
 
 
 	// init matches queue
-	for (auto boards : BoardsVector) {
+	for (auto board : BoardsVector) {
 		for (auto player1 : playersDlls) {
 			for (auto player2 : playersDlls) {
 				if (player1 == player2) continue;
-				matchesQueue.push_back({ player1, player2, boards });
+				matchesQueue.push_back({ make_shared<Player>(1,*player1), make_shared<Player>(2,*player2), board });
 			}
 		}
 	}
 
-		// randomizing queue
-		std::random_shuffle(matchesQueue.begin(), matchesQueue.end());
+	// randomizing queue
+	std::random_shuffle(matchesQueue.begin(), matchesQueue.end());
 
-		/*
-			// need to change this part to threads
-			for (auto match : matchesQueue) {
 
-				std:auto_ptr<SingleGameManager> game_master (new SingleGameManager(boards, pwd, NUM_ROWS, NUM_COLS, delay, quiet, playersDlls, boardCopy->getboard()));
-				if (!game_master->init(pwd))
-					return 1;
-				if (game_master->play() != 0) {
-					return -1;
-				}
-			}
-		*/
+		// need to change this part to threads
+	for (auto match : matchesQueue) {
+		std:auto_ptr<SingleGameManager> game_master (new SingleGameManager(match));
+		if (!game_master->init(pwd))
+			return 1;
+		if (game_master->play() != 0) {
+			return -1;
+		}
+	}
+
 		return 0;
 
 }
