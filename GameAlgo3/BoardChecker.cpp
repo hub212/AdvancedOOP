@@ -17,7 +17,7 @@ void BoardChecker::printIllegalShapeError(string illegalShips, char ch) {
 
 	bool contains = false;
 
-	for (int i = 0; i < illegalShips.length(); i++) {
+	for (size_t i = 0; i < illegalShips.length(); i++) {
 
 		if (illegalShips.at(i) == ch) {
 
@@ -258,7 +258,7 @@ bool BoardChecker::checkPath(char* path, bool& isDllFound) {
 	}
 
 	if (isDllFound) {
-		for (int i = 0; i < dllVec.size(); i++) {
+		for (size_t i = 0; i < dllVec.size(); i++) {
 			std::ifstream dllStream = ifstream(dllVec[i]);
 			if (!dllStream) {
 				dllVec.erase(dllVec.begin() + i);

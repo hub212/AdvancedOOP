@@ -2,7 +2,7 @@
 #define BOARD_CH_H
 #include <algorithm>
 #include "Board.h"
-#include "ex2.h"
+#include "TournamentManager.h"
 #include "Utils.h"
 
 
@@ -12,8 +12,8 @@ public:
 
 	static bool isDebug;
 
-	static vector<string> dllVec = {};
-	static vector<std::shared_ptr<const Board>> boardVec = {};
+	static vector<string> dllVec;
+	static vector<std::shared_ptr<const Board>> boardVec;
 
 	std::shared_ptr<const Board> checkBoard(string boardPath);
 	

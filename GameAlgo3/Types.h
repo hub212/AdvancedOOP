@@ -70,7 +70,7 @@ public:
 	GetAlgoType getAlgo;
 	int playerNumber = -1;
 
-	Player(int playerNumber, Player player) {};
+	Player(int playerNumber, Player player);
 	Player( std::string name, HINSTANCE hdll, GetAlgoType getAlgo);
 
 	friend ostream& operator<< (std::ostream &Str, const Player& player);

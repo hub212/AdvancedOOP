@@ -187,7 +187,7 @@ int main(int argc, char* argv[])
 		for (auto player1 : playersDlls) {
 			for (auto player2 : playersDlls) {
 				if (player1 == player2) continue;
-				matchesQueue.push_back({ make_shared<Player>(1,*player1), make_shared<Player>(2,*player2), board });
+				matchesQueue.push_back({ make_shared<Player>(0,*player1), make_shared<Player>(1,*player2), board });
 			}
 		}
 	}
@@ -198,9 +198,7 @@ int main(int argc, char* argv[])
 
 		// need to change this part to threads
 	for (auto match : matchesQueue) {
-		std:auto_ptr<SingleGameManager> game_master (new SingleGameManager(match));
-		if (!game_master->init(pwd))
-			return 1;
+		std::auto_ptr<SingleGameManager> game_master (new SingleGameManager(match));
 		if (game_master->play() != 0) {
 			return -1;
 		}

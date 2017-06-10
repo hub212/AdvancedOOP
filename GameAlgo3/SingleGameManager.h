@@ -36,9 +36,6 @@ private:
 	int		scores[2];
 	Players turn;
 
-	int delay;
-	int quiet;
-
 	tuple<string, HINSTANCE, GetAlgoType> dll0;
 	tuple<string, HINSTANCE, GetAlgoType> dll1;
 

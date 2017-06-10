@@ -125,7 +125,7 @@ Board::Board(std::ifstream& file) {
 		std::cout << "first board line is not in format '<cols>x<rows>x<depth>'" << std::endl;
 	}
 
-	for (int i = 0; i < str.length(); i++) {
+	for (size_t i = 0; i < str.length(); i++) {
 		if (str.at(i) == 'x') {
 			str.at(i) = ' ';
 		}
@@ -176,7 +176,7 @@ Board::Board(std::ifstream& file) {
 				lineExists = true;
 			}
 
-			for (int col_index = 0; lineExists && col_index < num_cols && col_index < str.length() && !afterEmptyLine; col_index++) {
+			for (size_t col_index = 0; lineExists && col_index < num_cols && col_index < str.length() && !afterEmptyLine; col_index++) {
 				char inputChar = str.at(col_index);
 				bool charIsLegal = false;
 				if (inputChar == ' ' || shipSize(inputChar) > 0) {

@@ -1,6 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 #include "Types.h"
+#include "Board.h"
 #include <Windows.h>
 #include <ostream>
 #include <istream>
