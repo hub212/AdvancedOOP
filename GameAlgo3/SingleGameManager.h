@@ -33,6 +33,7 @@ private:
 	char**	boards;
 	int rows;
 	int cols;
+	int depth;
 	const char* players_moves;
 
 	int		scores[2];

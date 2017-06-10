@@ -270,18 +270,20 @@ bool SingleGameManager::is_defeat()
 {
 	bool boolA = false;
 	bool boolB = false;
-	for (int i = 0; i < rows; i++)
-	{
-		for (int j = 0; j < cols && (!boolA || !boolB); j++)
+	for (int d = 0; d < depth; d++) {
+		for (int i = 0; i < rows; i++)
 		{
-			if (lettersA.find(boards[i][j]) != lettersA.end())
+			for (int j = 0; j < cols && (!boolA || !boolB); j++)
 			{
-				boolA = true;
-			}
+				if (lettersA.find(board->get(d,i,j)) != lettersA.end())
+				{
+					boolA = true;
+				}
 
-			if (lettersB.find(boards[i][j]) != lettersB.end())
-			{
-				boolB = true;
+				if (lettersB.find(board->get(d, i, j)) != lettersB.end())
+				{
+					boolB = true;
+				}
 			}
 		}
 	}
