@@ -60,6 +60,8 @@ public:
 
 typedef IBattleshipGameAlgo *(*GetAlgoType)();
 
+
+
 class Player
 {
 public:

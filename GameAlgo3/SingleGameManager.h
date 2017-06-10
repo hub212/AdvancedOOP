@@ -4,13 +4,13 @@
 #include <set>
 #include <vector>
 #include <tuple>
-#include <windows.h>
-#include <set>
-#include <vector>
+#include<memory>
 #include "IBattleshipGameAlgo.h"
 #include "Utils.h"
 #include "Types.h"
 #include "Board.h"
+
+using namespace std;
 
 // this class is the game managment class
 class SingleGameManager
@@ -26,14 +26,11 @@ private:
 	std::set<char>		lettersB = {'b','p','m','d' };
 
 	shared_ptr<Board> board;
+	shared_ptr<Board> origBoard;
 	Player0Board board0;
 	Player1Board board1;
 
-
-	char**	boards;
-	int rows;
-	int cols;
-	int depth;
+	Coordinate dims;
 	const char* players_moves;
 
 	int		scores[2];
@@ -42,20 +39,20 @@ private:
 	int delay;
 	int quiet;
 
-	vector<tuple<string, HINSTANCE, GetAlgoType>> dll_vec;
+	tuple<string, HINSTANCE, GetAlgoType> dll0;
+	tuple<string, HINSTANCE, GetAlgoType> dll1;
+
 
 	tuple<shared_ptr<Player>, shared_ptr<Player>, shared_ptr<Board>> match;
 
 
-	std::pair<Vessel_ID, AttackResult> attack_results(std::pair<int, int> move);
+	std::pair<Vessel_ID, AttackResult> attack_results(Coordinate move);
 
-	int extractBoards(const char** board, int numRows, int numCols, char**** out_board);
+	void setBoards(Board board);
 
-	void setBoards(const char** board, int numRows, int numCols);
+	Coordinate attack();
 
-	std::pair<int, int> attack();
-
-	void update_state(std::pair<int,int> move, std::pair<Vessel_ID, AttackResult> results);
+	void update_state(Coordinate move, std::pair<Vessel_ID, AttackResult> results);
 
 	bool is_defeat();
 
@@ -73,29 +70,12 @@ private:
 
 	void print_results();
 
-	void print_board(int x,int y,int delay);
-
-
 public:
-	/**
-	* \brief init all internal variables - paths and boards. intansiating the Player intances.
-	* \param boards
-	* \param players_moves
-	* \param numRows
-	* \param numCols
-	*/
-	SingleGameManager(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet, char **boardCopy);
 
 	/**
 	* \brief init all internal variables - paths and boards. intansiating the Player intances.
-	* \param boards
-	* \param players_moves
-	* \param numRows
-	* \param numCols
+	* \param match
 	*/
-	SingleGameManager(char** boards, const char* players_moves, int numRows, int numCols, int delay, int quiet, vector<tuple<string, HINSTANCE, GetAlgoType>> dll_vec, char **boardCopy);
-
-
 	SingleGameManager(tuple<shared_ptr<Player>, shared_ptr<Player>, shared_ptr<Board>> match);
 
 	/**
@@ -103,8 +83,6 @@ public:
 	*		  responsible for attack() and notifyOnAttackResult() and updating current state.
 	*/
 	int play();
-
-	bool init(string path);
 };
 
 #endif

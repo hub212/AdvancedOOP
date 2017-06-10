@@ -2,7 +2,8 @@
 #define UTILS_H
 #include "Types.h"
 #include <Windows.h>
-#include <iostream>
+#include <ostream>
+#include <istream>
 #include <vector>
 #include <string>
 
@@ -33,7 +34,7 @@ public:
 	static bool search_left(char** boards, int x, int y, char curr);
 
 	// the function uses search_* functions and returns whether the current attack result is sink or not
-	static bool is_sink(char** boards, int x, int y, char curr, char** boardCopy, int numRows, int numCols);
+	static bool is_sink(Board boards, Coordinate coor, Board boardCopy, Coordinate dims);
 
 
 	static int copyBoard(const char** in_board, int numCols, int numRows, char*** out_board);
@@ -48,5 +49,16 @@ public:
 	static 	bool string_has_suffix(const std::string &str, const std::string &suffix);
 
 };
+
+
+/////////////////////////////////
+//////	Coordinate
+/////////////////////////////////
+
+bool operator == (const Coordinate coor0, const Coordinate coor1);
+
+bool operator != (const Coordinate coor0, const Coordinate coor1);
+
+std::ostream& operator<<(std::ostream & out, const Coordinate& coor);
 
 #endif

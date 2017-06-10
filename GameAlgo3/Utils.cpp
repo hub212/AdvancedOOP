@@ -1,4 +1,7 @@
 #include "Utils.h"
+#include "Board.h"
+#include <ostream>
+#include <istream>
 #include <vector>
 #include <string>
 
@@ -9,13 +12,13 @@
 using namespace std;
 
 
-bool Utils::is_sink(char** boards, int x, int y, char curr, char** boardCopy, int numRows, int numCols)
+bool Utils::is_sink(Board board, Coordinate coor, Board boardCopy, Coordinate dims)
 {
-	for (int i = 0; i < numRows; i++) {
-		for (int j = 0; j < numCols; j++) {
-			if (boardCopy[i][j] != ' ') {
-				if (boards[i][j] != '@') {
-					if (x != i || y != j) {
+	for (int i = 0; i < dims.row; i++) {
+		for (int j = 0; j < dims.col; j++) {
+			if (boardCopy.get(coor) != ' ') {
+				if (board.get(coor) != '@') {
+					if (coor.col != i || coor.row != j) {
 						return false;
 					}
 				}
@@ -161,4 +164,22 @@ bool Utils::search_left(char** boards, int x, int y, char curr)
  {
 	 return str.size() >= suffix.size() &&
 		 str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+ }
+
+
+ // Coordinate
+ bool operator==(const Coordinate coor0, const Coordinate coor1)
+ {
+	 return coor0.col == coor1.col && coor0.row == coor1.row && coor0.depth == coor1.depth;
+ }
+
+ bool operator!=(const Coordinate coor0, const Coordinate coor1)
+ {
+	 return !(coor0 == coor1);
+ }
+
+ std::ostream& operator<<(std::ostream & out, const Coordinate& coor)
+ {
+	 out << "(" << coor.row << "," << coor.col << "," << coor.depth << ")";
+	 return out;
  }

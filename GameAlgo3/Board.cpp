@@ -38,6 +38,14 @@ void Board::set(int depth, int row, int col, char ch) {
 	}
 }
 
+char Board::get(Coordinate coor)const {
+	return Board::get(coor.depth, coor.row, coor.col);
+}
+
+void Board::set(Coordinate coor, char ch) {
+	Board::set(coor.depth, coor.row, coor.col, ch);
+}
+
 std::istream& Board::safeGetline(std::istream& is, std::string& t)
 {
 	t.clear();

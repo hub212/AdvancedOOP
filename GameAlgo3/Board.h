@@ -44,6 +44,8 @@ public:
 	Board(v3dp other, int depth, int num_rows, int num_cols);
 	char get(int dpth, int row, int col) const;
 	void set(int dpth, int row, int col, char ch);
+	char get(Coordinate coor) const;
+	void set(Coordinate coor, char ch);
 	int countNonEmptyCells() const;
 	void printBoard() const;
 	void printBoard(const std::string filePath) const;
