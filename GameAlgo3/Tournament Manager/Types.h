@@ -2,7 +2,10 @@
 #define TYPES_H
 
 #include "IBattleshipGameAlgo.h"
+#include "Board.h"
 #include <string>
+#include <tuple>
+#include <list>
 #include <Windows.h>
 #include <iostream>
 
@@ -12,6 +15,7 @@
 #define MY_MAX_PATH 1024
 
 using namespace std;
+
 #ifdef _UNICODE
 typedef wchar_t TCHAR;
 #else
@@ -60,8 +64,6 @@ public:
 
 typedef IBattleshipGameAlgo *(*GetAlgoType)();
 
-
-
 class Player
 {
 public:
@@ -77,5 +79,7 @@ public:
 
 	bool operator == (const Player& player1);
 };
+
+typedef tuple<shared_ptr<Player>, shared_ptr<Player>, shared_ptr<Board>> Match;
 
 #endif #ifndef TYPES_H

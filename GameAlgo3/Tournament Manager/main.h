@@ -2,7 +2,7 @@
 #define TOURMAN_H
 
 
-#define DEBUG 0
+#define DEBUG 1
 
 #include <iostream>
 #include <string>

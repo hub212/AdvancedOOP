@@ -1,4 +1,3 @@
-#pragma once
 #include "IBattleshipGameAlgo.h"
 #include <iostream>
 #include <string>

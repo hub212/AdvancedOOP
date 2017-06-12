@@ -10,7 +10,7 @@ BoardChecker::BoardChecker()
 
 bool BoardChecker::isDebug=false;
 vector<string> BoardChecker::dllVec = {};
-vector<std::shared_ptr<const Board>> BoardChecker::boardVec = {};
+vector<std::shared_ptr<Board>> BoardChecker::boardVec = {};
 
 
 void BoardChecker::printIllegalShapeError(string illegalShips, char ch) {
@@ -53,7 +53,7 @@ bool dirExists(const std::string& dirName_in)
 
 
 
-std::shared_ptr<const Board> BoardChecker::checkBoard(string boardPath) {
+std::shared_ptr<Board> BoardChecker::checkBoard(string boardPath) {
 
 
 	std::cout << "Checking board: " << boardPath << std::endl;
@@ -207,18 +207,24 @@ bool BoardChecker::checkPath(char* path, bool& isDllFound) {
 	dir[MY_MAX_PATH - 1] = '\0';
 	// dlls handling	
 	vector<string> boards_list;
+	vector<string> dlls_list;
 
+	isDllFound = false;
+	bool isBoardFound = false;
+
+	string boardName = "";
 	string files_dir(dir);
+
+
 	if (!dirExists(files_dir)) {
 		std::cout << "Wrong path: " << dir << std::endl;
 		return false;
 	}
-	bool isBoardFound = false;
-
-	string boardName = "";
+	
 
 	// builds moves vector list
 	Utils::GetFileNamesInDirectory(&boards_list, files_dir);
+	dlls_list = boards_list;
 
 	boards_list.erase(remove_if(boards_list.begin(), boards_list.end(), [](string str) { return !Utils::string_has_suffix(str, ".sboard"); }), boards_list.end());
 
@@ -226,17 +232,13 @@ bool BoardChecker::checkPath(char* path, bool& isDllFound) {
 
 	for (int i = 0; i < static_cast<int> (boards_list.size()); ++i) {
 		isBoardFound = true;
-		std::shared_ptr<const Board> brd = checkBoard(boards_list[i]);
+		std::shared_ptr<Board> brd = checkBoard(boards_list[i]);
 
 		if (brd != nullptr) {
 			brd->printBoard();
 			boardVec.push_back(brd);
 		}
 	}
-
-	vector<string> dlls_list;
-	isDllFound = false;
-
 
 
 	dlls_list.erase(remove_if(dlls_list.begin(), dlls_list.end(), [](string str) { return !Utils::string_has_suffix(str, ".dll"); }), dlls_list.end());

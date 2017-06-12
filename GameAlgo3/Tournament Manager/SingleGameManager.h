@@ -73,13 +73,15 @@ public:
 	* \brief init all internal variables - paths and boards. intansiating the Player intances.
 	* \param match
 	*/
-	SingleGameManager(tuple<shared_ptr<Player>, shared_ptr<Player>, shared_ptr<Board>> match);
+	SingleGameManager(Match match);
 
 	/**
 	* \brief impliments the game running phase.
 	*		  responsible for attack() and notifyOnAttackResult() and updating current state.
 	*/
 	int play();
+
+	vector<int> getScores();
 };
 
 #endif

@@ -19,21 +19,23 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Board.h" />
-    <ClInclude Include="..\BoardChecker.h" />
-    <ClInclude Include="..\IBattleshipGameAlgo.h" />
-    <ClInclude Include="..\SingleGameManager.h" />
-    <ClInclude Include="..\TournamentManager.h" />
-    <ClInclude Include="..\Types.h" />
-    <ClInclude Include="..\Utils.h" />
+    <ClInclude Include="Board.h" />
+    <ClInclude Include="BoardChecker.h" />
+    <ClInclude Include="TournamentManager.h" />
+    <ClInclude Include="IBattleshipGameAlgo.h" />
+    <ClInclude Include="SingleGameManager.h" />
+    <ClInclude Include="main.h" />
+    <ClInclude Include="Types.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Board.cpp" />
-    <ClCompile Include="..\BoardChecker.cpp" />
-    <ClCompile Include="..\SingleGameManager.cpp" />
-    <ClCompile Include="..\TournamentManager.cpp" />
-    <ClCompile Include="..\Types.cpp" />
-    <ClCompile Include="..\Utils.cpp" />
+    <ClCompile Include="Board.cpp" />
+    <ClCompile Include="BoardChecker.cpp" />
+    <ClCompile Include="SingleGameManager.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="TounamentManager.cpp" />
+    <ClCompile Include="Types.cpp" />
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{884DAB9B-AF87-4D70-B6F6-D800C6FFC48D}</ProjectGuid>
@@ -93,7 +95,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\Common;C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\SingleGameManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\SmartAlgo;C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\Common;C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\SingleGameManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -101,7 +103,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\Common;C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\SingleGameManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\SmartAlgo;C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\Common;C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\SingleGameManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -111,7 +113,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\Common;C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\SingleGameManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\SmartAlgo;C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\Common;C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\SingleGameManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -125,13 +127,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\Common;C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\SingleGameManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\SmartAlgo;C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\SmartAlgo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

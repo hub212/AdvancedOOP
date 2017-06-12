@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <queue>
 #include <memory>
+#include <map>
+#include "main.h"
 #include "TournamentManager.h"
 #include "SingleGameManager.h"
 #include "BoardChecker.h"
@@ -91,6 +93,10 @@ int parseArgs(int argc, char* argv[], int& threads) {
 	return 0;
 }
 
+void updateStatus(tuple<shared_ptr<Player>, shared_ptr<Player>, shared_ptr<Board>> match, tuple<int, int> newScores, map<string, vector<int>>& scores) {
+	scores[get<0>(match)->name].push_back((get<0>(newScores)));
+	scores[get<1>(match)->name].push_back(get<1>(newScores));
+}
 
 int main(int argc, char* argv[])
 {
@@ -104,22 +110,13 @@ int main(int argc, char* argv[])
 
 
 
-	// Main Data structures
-	vector<int>											singleGameThreads;
-	vector<shared_ptr<Board>>							BoardsVector;
-	vector<shared_ptr<Player>>							playersDlls;
-	vector<tuple<shared_ptr<Player>, shared_ptr<Player>, shared_ptr<Board>>>	matchesQueue;
-	vector<queue<int>>									scores;
 
+	// Checking phase
 	bool	isInputOk;
 	bool	isDllFound = false;
 	char	pwd[MY_MAX_PATH];
 
 
-	// init threads vector
-	for (int i = 0; i < threads; i++) {
-		singleGameThreads.push_back(-1);
-	}
 	// start boards check - in this section we need to add multiple boards check 
 	BoardChecker::isDebug = DEBUG;
 	unique_ptr<BoardChecker> bc(new  BoardChecker());
@@ -133,77 +130,16 @@ int main(int argc, char* argv[])
 		isInputOk = bc->checkBoard(pwd, isDllFound);
 	}
 
-	// copy boards - need to add multile boards copy as well - maybe change bc->boards to bc->boards and iterate to copy all the boards
-	if (isInputOk) {
-		for (uint16_t board = 0; board < bc->boardVec.size(); board++) {
-			BoardsVector.push_back(std::make_shared<Board>(*bc->boardVec[board]));
-
-		}
-	}
 
 
+	// Tournament phase
+	TournamentManager manager(threads, bc->boardVec, bc->dllVec);
 
+	if (!isInputOk) return 1;
 
-	// initializing the dll's vector
-	if (isDllFound) {
-		std::sort(bc->dllVec.begin(), bc->dllVec.end());
-
-		for (const auto dll : bc->dllVec) {
-
-			string AlgoName = dll.substr(dll.find_last_of("\\") == string::npos ? 0 : dll.find_last_of("\\") + 1, dll.find_first_of('.'));
-			HINSTANCE hDll = LoadLibraryA(dll.c_str());
-			bool dllOk = true;
-			if (!hDll) {
-				cout << "Cannot not load dll: " << dll << std::endl;
-				dllOk = false;
-				isInputOk = false;
-			}
-
-			GetAlgoType getAlgo;
-			getAlgo = (GetAlgoType)GetProcAddress(hDll, "GetAlgorithm");
-			if (!getAlgo)
-			{
-				if (dllOk) {
-					cout << "Cannot not load dll: " << dll << std::endl;
-					dllOk = false;
-					isInputOk = false;
-				}
-			}
-			if (isInputOk) {
-				shared_ptr<Player> player(new Player({ AlgoName, hDll, getAlgo }));
-				playersDlls.push_back(player);
-			}
-		}
-	}
-
-
-	if (!isInputOk) {
+	if (manager.play())
 		return 1;
-	}
 
-
-	// init matches queue
-	for (auto board : BoardsVector) {
-		for (auto player1 : playersDlls) {
-			for (auto player2 : playersDlls) {
-				if (player1 == player2) continue;
-				matchesQueue.push_back({ make_shared<Player>(0,*player1), make_shared<Player>(1,*player2), board });
-			}
-		}
-	}
-
-	// randomizing queue
-	std::random_shuffle(matchesQueue.begin(), matchesQueue.end());
-
-
-		// need to change this part to threads
-	for (auto match : matchesQueue) {
-		std::auto_ptr<SingleGameManager> game_master (new SingleGameManager(match));
-		if (game_master->play() != 0) {
-			return -1;
-		}
-	}
-
-		return 0;
+	return 0;
 
 }

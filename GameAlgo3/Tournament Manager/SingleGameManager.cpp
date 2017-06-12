@@ -1,4 +1,4 @@
-#include "TournamentManager.h"
+#include "main.h"
 #include "SingleGameManager.h"
 #include "Types.h"
 #include <iostream>
@@ -12,7 +12,7 @@ using namespace std;
 ////		SingleGameManager
 ////--------------------------
 
-SingleGameManager::SingleGameManager(tuple<shared_ptr<Player>, shared_ptr<Player>, shared_ptr<Board>> match) : match(match), board(get<2>(match)) , board0(board) , board1(board), dims(board->rows(), board->cols(), board->depth()) {
+SingleGameManager::SingleGameManager(Match match) : match(match), board(get<2>(match)) , board0(board) , board1(board), dims(board->rows(), board->cols(), board->depth()) {
 	dll0 = { get<0>(match)->name,get<0>(match)->hdll, get<0>(match)->getAlgo };
 	dll1 = { get<1>(match)->name,get<1>(match)->hdll, get<1>(match)->getAlgo };
 	player0 = get<2>(dll0)();
@@ -30,6 +30,9 @@ void SingleGameManager::setBoards(Board board)
 	player1->setBoard(board1);
 }
 
+vector<int> SingleGameManager::getScores() {
+	return {scores[0], scores[1]};
+}
 
 Coordinate SingleGameManager::attack()
 {
@@ -76,15 +79,15 @@ int SingleGameManager::play()
 		prevMove = move;
 		move = attack();
 
+		// Failure
 		if (move == Coordinate(-2, -2, -2))
 		{
-			// failure 
 			return -1;
 		}
 
+		// No more moves
 		if (move == Coordinate(-1, -1, -1))
 		{
-			// the player has no more moves
 			if (turn == Players::PlayerA) {
 				turn = Players::PlayerB;
 				player0_done = 1;
