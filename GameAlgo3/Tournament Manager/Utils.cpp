@@ -12,30 +12,25 @@
 using namespace std;
 
 
-bool Utils::is_sink(Board board, Coordinate coor, Board boardCopy, Coordinate dims)
+bool Utils::is_sink(Board origBoard, Coordinate coor, Board gameBoard, Coordinate dims)
 {
-	for (int i = 0; i < dims.row; i++) {
-		for (int j = 0; j < dims.col; j++) {
-			if (boardCopy.get(coor) != ' ') {
-				if (board.get(coor) != '@') {
-					if (coor.col != i || coor.row != j) {
-						return false;
+
+	Board singleShipBoard(origBoard, coor.depth, coor.row, coor.col);
+
+	for (int dpt = 0; dpt < singleShipBoard.depth(); dpt++) {
+		for (int row = 0; row < singleShipBoard.rows(); row++) {
+			for (int col = 0; col < singleShipBoard.cols(); col++) {
+				if (singleShipBoard.get(dpt,row,col) != ' ') {
+					if (gameBoard.get(dpt, row, col) != '@') {
+						if (coor.col != col || coor.row != row || coor.depth != dpt) {
+							return false;
+						}
 					}
 				}
 			}
 		}
 	}
 	return true;
-	/*
-	bool up, down, left, right;
-
-	up = Utils::search_up(boards, x, y, curr);
-	down = Utils::search_down(boards, x, y, curr);
-	right = Utils::search_right(boards, x, y, curr);
-	left = Utils::search_left(boards, x, y, curr);
-
-	return up&down&right&left;
-	*/
 }
 
 bool Utils::search_up(char** boards, int x, int y, char curr)
