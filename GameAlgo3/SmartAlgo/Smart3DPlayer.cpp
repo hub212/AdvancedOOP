@@ -1,4 +1,5 @@
 #include "Smart3DPlayer.h"
+#include "Utils.h"
 
 int Smart3DPlayer::strategyAVictories = 0;
 int Smart3DPlayer::strategyBVictories = 0;
@@ -562,6 +563,7 @@ Coordinate Smart3DPlayer::findAttackMoveByScore() const
 
 void Smart3DPlayer::notifyOnAttackResult(int player, Coordinate move, AttackResult result)
 {
+	cout << "player " << player << " notifyOnAttackResults "<< endl;
 	bool isAlreadyDiscovered = false;
 	int row = move.row -1, col = move.col -1, depth = move.depth -1; //Adjust GameManager values
 

@@ -40,18 +40,18 @@ private:
 	tuple<string, HINSTANCE, GetAlgoType> dll1;
 
 
-	tuple<shared_ptr<Player>, shared_ptr<Player>, shared_ptr<Board>> match;
+	Match match;
 
 
 	std::pair<Vessel_ID, AttackResult> attack_results(Coordinate move);
 
-	void setBoards(Board board);
+	void setBoards();
 
 	Coordinate attack();
 
 	void update_state(Coordinate move, std::pair<Vessel_ID, AttackResult> results);
 
-	bool is_defeat();
+	bool anyWinner();
 
 	// input - 
 	//		const char curr - (@,' ', BPMD, bpmd) a charecter representation of board point

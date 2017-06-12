@@ -12,19 +12,18 @@ using namespace std;
 ////		SingleGameManager
 ////--------------------------
 
-SingleGameManager::SingleGameManager(Match match) : match(match), board(get<2>(match)) , board0(board) , board1(board), dims(board->rows(), board->cols(), board->depth()) {
-	dll0 = { get<0>(match)->name,get<0>(match)->hdll, get<0>(match)->getAlgo };
+SingleGameManager::SingleGameManager(Match match) : match(match), board(shared_ptr<Board>(new Board(*get<2>(match)))) , origBoard(shared_ptr<Board>(new Board(*board))), board0(board) , board1(board), dims(board->rows(), board->cols(), board->depth()) {
+	dll0 = { get<0>(match)->name,get<0>(match)->hdll, get<0>(match)->getAlgo }; 
 	dll1 = { get<1>(match)->name,get<1>(match)->hdll, get<1>(match)->getAlgo };
 	player0 = get<2>(dll0)();
 	player1 = get<2>(dll1)();
-	origBoard = shared_ptr<Board>(new Board(*board));
-	setBoards(*board);
+	setBoards();
 	scores[0] = 0;
 	scores[1] = 0;
 }
 
 
-void SingleGameManager::setBoards(Board board)
+void SingleGameManager::setBoards()
 {
 	player0->setBoard(board0);
 	player1->setBoard(board1);
@@ -38,6 +37,9 @@ Coordinate SingleGameManager::attack()
 {
 	Coordinate curr_move = { -1,-1,-1 };
 
+	if (DEBUG) {
+		cout << "attack()" << endl;
+	}
 	switch (turn)
 	{
 	case(Players::PlayerA):
@@ -53,7 +55,7 @@ Coordinate SingleGameManager::attack()
 
 	if (curr_move == Coordinate(-2, -2, -2))
 	{
-		cout << "Error: attack() failed on " << ("%s", Players::PlayerA == turn ? "player A's " : "player B's ") << "turn					" << endl;
+		cout << "Error: attack() failed on " << ("%s", Players::PlayerA == turn ? "player A's " : "player B's ") << "turn" << endl;
 		return{ -2,-2,-2 };
 	}
 	else if (curr_move != Coordinate(-2,-2,-2) && DEBUG)
@@ -86,7 +88,7 @@ int SingleGameManager::play()
 		}
 
 		// No more moves
-		if (move == Coordinate(-1, -1, -1))
+		if (move == Coordinate(0, 0, 0))
 		{
 			if (turn == Players::PlayerA) {
 				turn = Players::PlayerB;
@@ -103,9 +105,17 @@ int SingleGameManager::play()
 
 		update_state(move, results);
 
+		if (DEBUG) {
+			cout << "board updated" << endl;
+			cout << "move coor = " << move << endl;
+		}
 
 		player0->notifyOnAttackResult(activePlayerIndex, move, results.second);
 		player1->notifyOnAttackResult(activePlayerIndex, move, results.second);
+
+		if (DEBUG) {
+			cout << "players notified" << endl;
+		}
 
 		if (DEBUG) {
 			cout << ("%s ", turn == Players::PlayerA ? "player A move results " : "player B move results ");
@@ -115,7 +125,7 @@ int SingleGameManager::play()
 				cout << "Miss" << endl;
 			cout << "Score " << scores[0] << ":" << scores[1] << endl;
 		}
-		if (is_defeat())
+		if (anyWinner())
 		{
 			break;
 		}
@@ -139,7 +149,8 @@ int SingleGameManager::play()
 
 pair<Vessel_ID, AttackResult> SingleGameManager::attack_results(Coordinate move)
 {
-	char shipSign = board->get(move + Coordinate(-1, -1, -1));
+	move = move + Coordinate(-1, -1, -1);
+	char shipSign = board->get(move);
 	Vessel_ID vessel;
 
 	if (shipSign == '\0') 
@@ -169,13 +180,18 @@ pair<Vessel_ID, AttackResult> SingleGameManager::attack_results(Coordinate move)
 
 void SingleGameManager::update_state(Coordinate move, pair<Vessel_ID, AttackResult> results)
 {
-	board->set(move + Coordinate(-1,-1,-1), '@');
+	move = move + Coordinate(-1, -1, -1);
+	if (DEBUG) {
+		cout << "update state on move" << move << endl;
+	}
+
+	board->set(move, '@');
 
 	if (results.second == AttackResult::Sink)
 		scores[static_cast<int>((results.first.player == Players::PlayerA ? Players::PlayerB : Players::PlayerA))] += results.first.score;
 }
 
-bool SingleGameManager::is_defeat()
+bool SingleGameManager::anyWinner()
 {
 	bool boolA = false;
 	bool boolB = false;
@@ -252,12 +268,10 @@ Vessel_ID SingleGameManager::get_vessel(char curr, IBattleshipGameAlgo* playerA,
 void SingleGameManager::print_results()
 {
 	if (scores[0] != scores[1])
-		cout << "Player " << ("%s", scores[0] > scores[1] ? "A " : "B ") << "won					" << endl;
+		cout << "Player " << ("%s", scores[0] > scores[1] ? "A " : "B ") << "won" << endl;
 
 	cout << "Points: " << endl;
-	cout << "Player A: " << ("%d", scores[0]) << "					" << endl;
-	cout << "Player B: " << ("%d", scores[1]) << "					" << endl;
+	cout << "Player A: " << ("%d", scores[0])  << endl;
+	cout << "Player B: " << ("%d", scores[1]) << endl;
 
 }
-
-

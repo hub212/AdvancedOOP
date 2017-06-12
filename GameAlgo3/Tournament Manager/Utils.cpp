@@ -181,7 +181,7 @@ bool Utils::search_left(char** boards, int x, int y, char curr)
 
  Coordinate operator + (const Coordinate coor0, const Coordinate coor1)
  {
-	 return{ coor0.col + coor1.col, coor0.row + coor1.row, coor0.depth + coor1.depth};
+	 return{coor0.row + coor1.row, coor0.col + coor1.col, coor0.depth + coor1.depth};
  }
 
 

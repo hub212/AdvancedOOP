@@ -3,6 +3,7 @@
 #include "Board.h"
 #include "Types.h"
 #include "tuple"
+#include "main.h"
 #include <memory>
 #include <vector>
 #include <list>
@@ -93,6 +94,7 @@ void TournamentManager::updateStatus(Match match, vector<int> score)
 	if (gameStatus.size() == playersDlls.size()) {
 		for (uint16_t i = 0; i < NUM_OF_PLAYERS; i++) {
 			scores[players[i]] += score[i];
+			cout << players[i] << ": " << scores[players[i]] << endl;
 		}
 		popScores();
 	}
@@ -109,6 +111,9 @@ int TournamentManager::play()
 {
 	// need to change this part to threads
 	for (auto match : matchesQueue) {
+		if (DEBUG) {
+			get<2>(match)->printBoard();
+		}
 		std::auto_ptr<SingleGameManager> game_master(new SingleGameManager(match));
 		if (game_master->play() != 0) {
 			return -1;

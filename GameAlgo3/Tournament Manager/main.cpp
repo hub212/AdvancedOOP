@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
 	bool	isInputOk;
 	bool	isDllFound = false;
 	char	pwd[MY_MAX_PATH];
-	BoardChecker::isDebug = DEBUG;
+	BoardChecker::isDebug = 0;
 	unique_ptr<BoardChecker> bc(new  BoardChecker());
 
 	if (argc > 1 && string("-threads").compare(argv[1])) {
