@@ -139,8 +139,13 @@ int SingleGameManager::play()
 
 pair<Vessel_ID, AttackResult> SingleGameManager::attack_results(Coordinate move)
 {
-	char shipSign = board->get(move);
+	char shipSign = board->get(move + Coordinate(-1, -1, -1));
 	Vessel_ID vessel;
+
+	if (shipSign == '\0') 
+	{
+		cout << "index out of bounds; move = " << move << endl;
+	}
 
 	if (shipSign == '@' || shipSign == ' ')
 	{
@@ -164,7 +169,8 @@ pair<Vessel_ID, AttackResult> SingleGameManager::attack_results(Coordinate move)
 
 void SingleGameManager::update_state(Coordinate move, pair<Vessel_ID, AttackResult> results)
 {
-	board->set(move, '@');
+	board->set(move + Coordinate(-1,-1,-1), '@');
+
 	if (results.second == AttackResult::Sink)
 		scores[static_cast<int>((results.first.player == Players::PlayerA ? Players::PlayerB : Players::PlayerA))] += results.first.score;
 }

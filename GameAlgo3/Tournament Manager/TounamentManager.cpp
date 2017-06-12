@@ -51,16 +51,18 @@ void TournamentManager::setPlayers(vector<string>& dllVec)
 				isInputOK = false;
 			}
 		}
-		if (isInputOK) {
-			shared_ptr<Player> player(new Player({ AlgoName, hDll, getAlgo }));
-			playersDlls.push_back(player);
-		}
+		
+		shared_ptr<Player> player(new Player({ AlgoName, hDll, getAlgo }));
+		playersDlls.push_back(player);
+
 	}
 }
 
 void TournamentManager::setThreads(int threads)
 {
-	singleGameThreads.push_back(-1);
+	for (int i = 0; i < threads; i++) {
+		singleGameThreads.push_back(-1);
+	}
 }
 
 void TournamentManager::setMatches()

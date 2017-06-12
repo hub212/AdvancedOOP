@@ -62,4 +62,7 @@ bool operator != (const Coordinate coor0, const Coordinate coor1);
 
 std::ostream& operator<<(std::ostream & out, const Coordinate& coor);
 
+Coordinate operator + (const Coordinate coor0, const Coordinate coor1);
+
+
 #endif

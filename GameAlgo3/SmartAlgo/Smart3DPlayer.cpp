@@ -104,11 +104,12 @@ double Smart3DPlayer::calcFuncMinDiff() const
 {
 	unordered_set<double> distinctVals;
 	double minDiff = DBL_MAX;
-	int d = 0;
-	for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 10; j++) {
-			double res = mapCellToValue({ i,j,d });
-			distinctVals.insert(res);
+	for (int d = 0; d < boardDepth; d++) {
+		for (int i = 0; i < numOfRows; i++) {
+			for (int j = 0; j < numOfCols; j++) {
+				double res = mapCellToValue({ i,j,d });
+				distinctVals.insert(res);
+			}
 		}
 	}
 	vector<double>orderedVals;
@@ -124,7 +125,7 @@ double Smart3DPlayer::calcFuncMinDiff() const
 }
 
 //maps each location on the board to a distinct vaue such that the location in the center of the board get higher values then the edges of the board
-void Smart3DPlayer::createCellToIndexMapping()
+void Smart3DPlayer::createCenteredCellToIndexMapping()
 {
 	unordered_set<double>indexes;
 	map<double, Coordinate> rankedIndexes;
@@ -132,8 +133,8 @@ void Smart3DPlayer::createCellToIndexMapping()
 	double adjustedMinVal = minDiff / (numOfRows*numOfCols*boardDepth * 2);
 
 	for (int d = 0; d < boardDepth; d++){
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) {
+		for (int i = 0; i < numOfRows; i++) {
+			for (int j = 0; j < numOfCols; j++) {
 				double cellIndex = numOfRows*numOfCols*boardDepth - ((numOfRows*numOfCols)*d + numOfCols*i + j);
 				double res = mapCellToValue({ i,j,d });
 				int insertionRes = indexes.insert(res).second;
@@ -154,12 +155,72 @@ void Smart3DPlayer::createCellToIndexMapping()
 		index++;
 	}
 	/*for (int d = 0; d < boardDepth; d++) {
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) {
-			cout << locationToIndexMap[{i, j, d}] << " ";
+		for (int i = 0; i < numOfRows; i++) {
+			for (int j = 0; j < numOfCols; j++) {
+				cout << locationToIndexMap[{i, j, d}] << " ";
+			}
+			cout << endl;
 		}
-		cout << endl;
 	}*/
+}
+
+void Smart3DPlayer::createRandomCellToIndexMapping()
+{
+	vector<int> indexes;
+	for (int d = 0; d < boardDepth; d++) {
+		for (int i = 0; i < numOfRows; i++) {
+			for (int j = 0; j < numOfCols; j++) {
+				int cellIndex = (numOfRows*numOfCols)*d + numOfCols*i + j;
+				indexes.push_back(cellIndex);
+			}
+		}
+	}
+	static std::random_device rd;
+	static auto engine = std::default_random_engine{rd()};
+	std::shuffle(std::begin(indexes), std::end(indexes), engine);
+	int index = 0;
+	for (int d = 0; d < boardDepth; d++) {
+		for (int i = 0; i < numOfRows; i++) {
+			for (int j = 0; j < numOfCols; j++) {
+				locationToIndexMap.insert({ { i,j,d },indexes[index++] });
+			}
+		}
+
+	}
+	for (int d = 0; d < boardDepth; d++) {
+		for (int i = 0; i < numOfRows; i++) {
+			for (int j = 0; j < numOfCols; j++) {
+				cout << locationToIndexMap[{i, j, d}] << " ";
+			}
+			cout << endl;
+		}
+	}
+}
+
+void Smart3DPlayer::savePerviousGameInfo()
+{
+	int strategyAModefier = 0, strategyBModefier = 0;
+	if (!isFirstGame)
+	{
+		if (strategyAVictories >= strategyBVictories)
+			strategyAModefier = 1;
+		else
+			strategyBModefier =1;
+		if (totalPlayersShips > 0)
+		{
+			strategyAVictories += strategyAModefier;
+			strategyBVictories += strategyBModefier;
+		}
+		else
+		{
+			strategyAVictories -= strategyAModefier;
+			strategyBVictories -= strategyBModefier;
+		}
+		//cout << "strategyAVictories after update=" << strategyAVictories << endl;
+		//cout << "strategyBVictories after update=" << strategyBVictories << endl;
+	}
+	else
+		isFirstGame = false;
 }
 
 // ranks a given location on board using various logic
@@ -261,12 +322,20 @@ int Smart3DPlayer::calcAvailableMovesInDirection(Coordinate loc, int vertical, i
 	return moveCounter;
 }
 
+void Smart3DPlayer::createCellToIndexMapping()
+{
+	//createCenteredCellToIndexMapping();//maps each location on the board to a distinct vaue
+	createRandomCellToIndexMapping();
+}
+
 //creates the board and then initializes it according to the board passed by the GameManager, so all the locations that can't hold an enemy ship according to the rules, are marked as such
 void Smart3DPlayer::setBoard(const BoardData& board)
 {
+	savePerviousGameInfo();
 	resetGameState();
 	createGameBoard(board);//initializes the board
-	createCellToIndexMapping();//maps each location on the board to a distinct vaue
+
+	createCellToIndexMapping();
 	EPSILON = 1.0 / (numOfRows*numOfCols*boardDepth * 2);// set a value to EPSILON based on the board size. Such that (EPSILON*numOfRows*numOfCols*boardDepth) < 1
 	
 	for (int d = 0; d < boardDepth; d++)
@@ -359,7 +428,7 @@ void Smart3DPlayer::resetGameState()
 	smallestEnemyShipIndex = 0;
 	shipTypes = { 0,0,0,0 };
 	locationToIndexMap.clear();
-	totalEnemyShips=0;
+	totalPlayersShips = 0;
 }
 
 // prints the gameboard
@@ -539,7 +608,7 @@ void Smart3DPlayer::handleSink(Coordinate loc, int player, bool isAlreadyDiscove
 		registerHit(loc, verticalModefier, horizontalModefier, sidewaysModefier, attackedShip);
 		handleSinkHelper(true, attackedShip);
 	}
-	else if (!isAlreadyDiscovered)//if isAlreadyDiscovered==true then it's my ship and i have nothing to do when enemy sinks it.
+	else if (!isAlreadyDiscovered)//if isAlreadyDiscovered==true then it's my ship
 	{
 		list<Coordinate> curSunkShip;
 		bool isCurrentlyAttackedShip = findEnemySunkShip(loc, curSunkShip);
@@ -548,6 +617,8 @@ void Smart3DPlayer::handleSink(Coordinate loc, int player, bool isAlreadyDiscove
 		else
 			handleSinkHelper(false, curSunkShip);
 	}
+	else
+		totalPlayersShips--;//documents that players' ship was sunk
 }
 
 // handles a successful hit - be it a self hit by the enemy or a hit on an enemy ship by the Smart3DPlayer
@@ -598,8 +669,7 @@ void Smart3DPlayer::createGameBoard(const BoardData & board)
 		if (shipTypes[smallestEnemyShipIndex] == 0)
 			smallestEnemyShipIndex++;
 	}
-	totalEnemyShips = calcNumOfShipsUpToGivenSize(MAX_SHIP_SIZE);//calc how many ships its persumed the enemy has (based on the amount of ships this player has)
-	//cout << "Enemy Ship Count=" << totalEnemyShips << endl;
+	totalPlayersShips = calcNumOfShipsUpToGivenSize(MAX_SHIP_SIZE);//calc how many ships its persumed the enemy has (based on the amount of ships this player has)
 }
 
 void Smart3DPlayer::updateShipCount(char cur)

@@ -93,10 +93,6 @@ int parseArgs(int argc, char* argv[], int& threads) {
 	return 0;
 }
 
-void updateStatus(tuple<shared_ptr<Player>, shared_ptr<Player>, shared_ptr<Board>> match, tuple<int, int> newScores, map<string, vector<int>>& scores) {
-	scores[get<0>(match)->name].push_back((get<0>(newScores)));
-	scores[get<1>(match)->name].push_back(get<1>(newScores));
-}
 
 int main(int argc, char* argv[])
 {
@@ -109,15 +105,10 @@ int main(int argc, char* argv[])
 	}
 
 
-
-
 	// Checking phase
 	bool	isInputOk;
 	bool	isDllFound = false;
 	char	pwd[MY_MAX_PATH];
-
-
-	// start boards check - in this section we need to add multiple boards check 
 	BoardChecker::isDebug = DEBUG;
 	unique_ptr<BoardChecker> bc(new  BoardChecker());
 

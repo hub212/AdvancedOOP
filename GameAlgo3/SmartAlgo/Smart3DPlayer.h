@@ -1,3 +1,4 @@
+#pragma once
 #include "IBattleshipGameAlgo.h"
 #include <iostream>
 #include <string>
@@ -7,6 +8,7 @@
 #include <vector>
 #include <unordered_set>
 #include <algorithm>
+#include <random>
 using namespace std;
 
 bool operator<(const Coordinate& c1, const Coordinate& c2);
@@ -69,7 +71,8 @@ class Smart3DPlayer : public IBattleshipGameAlgo {
 	vector<int> shipTypes{ 0,0,0,0 };
 	int smallestEnemyShipIndex = 0;
 	map<Coordinate, int> locationToIndexMap;
-	int totalEnemyShips = 0;//holds the total number of enemy ships its assumed it has at the start of the game
+	int totalPlayersShips = 0;//holds the total number of enemy ships its assumed it has at the start of the game
+	bool isFirstGame = true; //a flag to check whether this is this instance's first game
 
 	int calcEnemyProximity(Coordinate loc) const; // calculates the ammount of self hits made by the enemy near a given location. 
 	void findLegalAttackMoves();// finds and ranks all the available move on the board at the start of the game. 
@@ -105,8 +108,10 @@ class Smart3DPlayer : public IBattleshipGameAlgo {
 	Coordinate calc3DCubeCenter() const;
 	double mapCellToValue(Coordinate point) const;
 	double calcFuncMinDiff() const;
+	void createCenteredCellToIndexMapping();
+	void savePerviousGameInfo();
+	void createRandomCellToIndexMapping();
 	void createCellToIndexMapping();
-
 
 	int getLocationIndex(Coordinate move) const{
 		return locationToIndexMap.at(move);
