@@ -114,7 +114,8 @@ int TournamentManager::play()
 		if (DEBUG) {
 			get<2>(match)->printBoard();
 		}
-		std::auto_ptr<SingleGameManager> game_master(new SingleGameManager(match));
+		MatchHard hardenMatch = { get<0>(match), get<1>(match), *get<2>(match) };
+		std::auto_ptr<SingleGameManager> game_master(new SingleGameManager(hardenMatch));
 		if (game_master->play() != 0) {
 			return -1;
 		}

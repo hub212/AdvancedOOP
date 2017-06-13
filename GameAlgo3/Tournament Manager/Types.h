@@ -82,4 +82,6 @@ public:
 
 typedef tuple<shared_ptr<Player>, shared_ptr<Player>, shared_ptr<Board>> Match;
 
+typedef tuple<shared_ptr<Player>, shared_ptr<Player>, Board> MatchHard;
+
 #endif #ifndef TYPES_H

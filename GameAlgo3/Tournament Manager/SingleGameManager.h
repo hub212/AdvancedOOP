@@ -25,8 +25,8 @@ private:
 	std::set<char>		lettersA = {'B','P','M','D' };
 	std::set<char>		lettersB = {'b','p','m','d' };
 
-	shared_ptr<Board> board;
-	shared_ptr<Board> origBoard;
+	Board board;
+	Board origBoard;
 	Player0Board board0;
 	Player1Board board1;
 
@@ -40,12 +40,14 @@ private:
 	tuple<string, HINSTANCE, GetAlgoType> dll1;
 
 
-	Match match;
+	MatchHard match;
 
 
 	std::pair<Vessel_ID, AttackResult> attack_results(Coordinate move);
 
 	void setBoards();
+
+	void setPlayers();
 
 	Coordinate attack();
 
@@ -73,7 +75,7 @@ public:
 	* \brief init all internal variables - paths and boards. intansiating the Player intances.
 	* \param match
 	*/
-	SingleGameManager(Match match);
+	SingleGameManager(MatchHard match);
 
 	/**
 	* \brief impliments the game running phase.

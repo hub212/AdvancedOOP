@@ -1,4 +1,5 @@
 #include "Smart3DPlayer.h"
+#include "main.h"
 #include "Utils.h"
 
 int Smart3DPlayer::strategyAVictories = 0;
@@ -484,6 +485,10 @@ Coordinate Smart3DPlayer::attack()
 	verticalModefier = 0;
 	sidewaysModefier = 0;
 
+	if (DEBUG) {
+		cout << "Smart3DPlayer::attack() player " << playerID << endl;
+	}
+
 	if (!isAttacking)//in case the algo is in search mode after an enemy ship
 		candidateAttackMove = findAttackMoveByScore();
 	else//in case an enemy ship was already detected
@@ -585,7 +590,7 @@ void Smart3DPlayer::notifyOnAttackResult(int player, Coordinate move, AttackResu
 			handleHit({ row, col, depth }, player, isAlreadyDiscovered);
 			break;
 	}
-#ifdef DEBUG 
+#ifdef DEBUG_LOW
 	if (player == playerID)
 	{
 		cout << "player " << playerID << endl;

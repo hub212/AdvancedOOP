@@ -12,11 +12,12 @@ using namespace std;
 ////		SingleGameManager
 ////--------------------------
 
-SingleGameManager::SingleGameManager(Match match) : match(match), board(shared_ptr<Board>(new Board(*get<2>(match)))) , origBoard(shared_ptr<Board>(new Board(*board))), board0(board) , board1(board), dims(board->rows(), board->cols(), board->depth()) {
+SingleGameManager::SingleGameManager(MatchHard match) : match(match), board(get<2>(match)) , origBoard(board), board0(make_shared<Board>(board)) , board1(make_shared<Board>(board)), dims(board.rows(), board.cols(), board.depth()) {
 	dll0 = { get<0>(match)->name,get<0>(match)->hdll, get<0>(match)->getAlgo }; 
 	dll1 = { get<1>(match)->name,get<1>(match)->hdll, get<1>(match)->getAlgo };
 	player0 = get<2>(dll0)();
 	player1 = get<2>(dll1)();
+	setPlayers();
 	setBoards();
 	scores[0] = 0;
 	scores[1] = 0;
@@ -29,6 +30,12 @@ void SingleGameManager::setBoards()
 	player1->setBoard(board1);
 }
 
+void SingleGameManager::setPlayers()
+{
+	player0->setPlayer(0);
+	player1->setPlayer(1);
+}
+
 vector<int> SingleGameManager::getScores() {
 	return {scores[0], scores[1]};
 }
@@ -38,19 +45,25 @@ Coordinate SingleGameManager::attack()
 	Coordinate curr_move = { -1,-1,-1 };
 
 	if (DEBUG) {
-		cout << "attack()" << endl;
+		cout << "SingleGameManager::attack()" << endl;
 	}
 	switch (turn)
 	{
-	case(Players::PlayerA):
-		curr_move = player0->attack();
-		break;
+		case(Players::PlayerA):
+			if (DEBUG) {
+				cout << "calling Smart3DPlayer::attack() player 0" << endl;
+			}
+			curr_move = player0->attack();
+			break;
 
-	case(Players::PlayerB):
-		curr_move = player1->attack();
-		break;
-	default:
-		return{ -2, -2,-2 };
+		case(Players::PlayerB):
+			if (DEBUG) {
+				cout << "calling Smart3DPlayer::attack() player 1" << endl;
+			}
+			curr_move = player1->attack();
+			break;
+		default:
+			return{ -2, -2,-2 };
 	}
 
 	if (curr_move == Coordinate(-2, -2, -2))
@@ -150,7 +163,7 @@ int SingleGameManager::play()
 pair<Vessel_ID, AttackResult> SingleGameManager::attack_results(Coordinate move)
 {
 	move = move + Coordinate(-1, -1, -1);
-	char shipSign = board->get(move);
+	char shipSign = board.get(move);
 	Vessel_ID vessel;
 
 	if (shipSign == '\0') 
@@ -165,7 +178,7 @@ pair<Vessel_ID, AttackResult> SingleGameManager::attack_results(Coordinate move)
 
 	vessel = SingleGameManager::get_vessel(shipSign, player0, player1);
 
-	bool isSink = Utils::is_sink(*board, move, *origBoard, dims);
+	bool isSink = Utils::is_sink(board, move, origBoard, dims);
 
 
 	if (isSink)
@@ -185,7 +198,7 @@ void SingleGameManager::update_state(Coordinate move, pair<Vessel_ID, AttackResu
 		cout << "update state on move" << move << endl;
 	}
 
-	board->set(move, '@');
+	board.set(move, '@');
 
 	if (results.second == AttackResult::Sink)
 		scores[static_cast<int>((results.first.player == Players::PlayerA ? Players::PlayerB : Players::PlayerA))] += results.first.score;
@@ -200,12 +213,12 @@ bool SingleGameManager::anyWinner()
 		{
 			for (int j = 0; j < dims.col && (!boolA || !boolB); j++)
 			{
-				if (lettersA.find(board->get(d,i,j)) != lettersA.end())
+				if (lettersA.find(board.get(d,i,j)) != lettersA.end())
 				{
 					boolA = true;
 				}
 
-				if (lettersB.find(board->get(d, i, j)) != lettersB.end())
+				if (lettersB.find(board.get(d, i, j)) != lettersB.end())
 				{
 					boolB = true;
 				}
