@@ -480,14 +480,14 @@ void Smart3DPlayer::markSurrounding(Coordinate loc, bool updateRanking) {
 
 Coordinate Smart3DPlayer::attack()
 {
+	if (DEBUG) {
+		cout << "Smart3DPlayer::attack() player " << playerID << endl;
+	}
+
 	Coordinate candidateAttackMove{0,0,0}; 
 	horizontalModefier = 0;
 	verticalModefier = 0;
 	sidewaysModefier = 0;
-
-	if (DEBUG) {
-		cout << "Smart3DPlayer::attack() player " << playerID << endl;
-	}
 
 	if (!isAttacking)//in case the algo is in search mode after an enemy ship
 		candidateAttackMove = findAttackMoveByScore();
