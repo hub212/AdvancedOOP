@@ -201,7 +201,10 @@ void Board::printBoard() const {
 			if (rowString.length() > num_cols) {
 				rowString = rowString.substr(0, num_cols);
 			}
-			std::cout << rowString << std::endl;
+			if (row_index == 0) {
+				std::cout << " 1234567890" << std::endl;
+			}
+			std::cout << (row_index+1)%10 << rowString << std::endl;
 		}
 	}
 	std::cout << std::endl;

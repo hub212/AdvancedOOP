@@ -326,8 +326,8 @@ int Smart3DPlayer::calcAvailableMovesInDirection(Coordinate loc, int vertical, i
 
 void Smart3DPlayer::createCellToIndexMapping()
 {
-	//createCenteredCellToIndexMapping();//maps each location on the board to a distinct vaue
-	createRandomCellToIndexMapping();
+	createCenteredCellToIndexMapping();//maps each location on the board to a distinct vaue
+	//createRandomCellToIndexMapping();
 }
 
 //creates the board and then initializes it according to the board passed by the GameManager, so all the locations that can't hold an enemy ship according to the rules, are marked as such
@@ -534,6 +534,9 @@ Coordinate Smart3DPlayer::findAttackMoveByDirectionAndScore()
 		findCandidateAttackMovesInDirection(candidateAttackMoves, 1, 0, 0);
 		findCandidateAttackMovesInDirection(candidateAttackMoves, 0, 0, 1);
 	}
+	if (candidateAttackMoves.rbegin() == candidateAttackMoves.rend()) {
+		cout << "no more options for attacks" << endl;
+	}
 	horizontalModefier = candidateAttackMoves.rbegin()->second.horizontal;
 	verticalModefier = candidateAttackMoves.rbegin()->second.vertical;
 	sidewaysModefier = candidateAttackMoves.rbegin()->second.sideways;
@@ -590,7 +593,7 @@ void Smart3DPlayer::notifyOnAttackResult(int player, Coordinate move, AttackResu
 			handleHit({ row, col, depth }, player, isAlreadyDiscovered);
 			break;
 	}
-#ifdef DEBUG_LOW
+#ifdef DEBUG_1
 	if (player == playerID)
 	{
 		cout << "player " << playerID << endl;
