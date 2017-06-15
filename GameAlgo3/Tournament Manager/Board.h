@@ -12,19 +12,18 @@
 typedef std::vector<char> v1d;
 typedef std::vector<v1d> v2d;
 typedef std::vector<v2d> v3d;
-typedef std::shared_ptr<v3d> v3dp;
 
 class Board 
 {
 
-	v3dp board;
+	v3d board;
 
 	int num_depth;
 	int num_rows;
 	int num_cols;
 	int num_taken_cells;
 	
-	v3dp newBoard(int depth, int rows, int cols);
+	v3d newBoard(int depth, int rows, int cols);
 	bool genRandomShip(char c, int size);
 	static int randomGen(int min, int max);
 	static std::istream& safeGetline(std::istream& is, std::string& t);
@@ -41,7 +40,7 @@ public:
 	Board(const Board &other, int depth, int row, int col);
 	Board(const Board &other);
 	Board(int depth, int num_rows, int num_cols);
-	Board(v3dp other, int depth, int num_rows, int num_cols);
+	Board(v3d other, int depth, int num_rows, int num_cols);
 	char get(int dpth, int row, int col) const;
 	void set(int dpth, int row, int col, char ch);
 	char get(Coordinate coor) const;
@@ -56,7 +55,6 @@ public:
 	int maxOccupiedCol() const;
 	int minOccupiedDpth() const;
 	int maxOccupiedDpth() const;
-	bool isNull() const;
 	int rows() const;
 	int cols() const;
 	int depth() const;
