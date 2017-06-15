@@ -12,7 +12,7 @@
 using namespace std;
 
 
-bool Utils::is_sink(Board origBoard, Coordinate coor, Board gameBoard, Coordinate dims)
+bool Utils::is_sink(Board gameBoard, Coordinate coor, Board origBoard, Coordinate dims)
 {
 
 	Board singleShipBoard(origBoard, coor.depth, coor.row, coor.col);
