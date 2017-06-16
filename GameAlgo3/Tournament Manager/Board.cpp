@@ -666,7 +666,7 @@ char Player0Board::charAt(Coordinate c) const {
 	if (c.row < 1 || c.col < 1 || c.depth < 1 || c.row > rows() || c.col > cols() || c.depth > depth()) {
 		return ' ';
 	}
-	ch = brd->get(c.depth-1, c.row-1, c.col-1);
+	ch = brd.get(c.depth-1, c.row-1, c.col-1);
 
 	if (ch == ' ' || !isupper(ch)) {
 		return ' ';
@@ -680,7 +680,7 @@ char Player1Board::charAt(Coordinate c) const {
 	if (c.row < 1 || c.col < 1 || c.depth < 1 || c.row > rows() || c.col > cols() || c.depth > depth()) {
 		return ' ';
 	}
-	ch = brd->get(c.depth - 1, c.row - 1, c.col - 1);
+	ch = brd.get(c.depth - 1, c.row - 1, c.col - 1);
 
 	if (ch == ' ' || !islower(ch)) {
 		return ' ';
@@ -689,15 +689,15 @@ char Player1Board::charAt(Coordinate c) const {
 	return ch;
 }
 
-Player0Board::Player0Board(const std::shared_ptr<const Board> &board) : brd(board) {
-	_rows = brd->rows();
-	_cols = brd->cols();
-	_depth = brd->depth();
+Player0Board::Player0Board(const Board board) : brd(board) {
+	_rows = brd.rows();
+	_cols = brd.cols();
+	_depth = brd.depth();
 }
 
-Player1Board::Player1Board(const std::shared_ptr<const Board> &board) : brd(board) {
-	_rows = brd->rows();
-	_cols = brd->cols();
-	_depth = brd->depth();
+Player1Board::Player1Board(const Board board) : brd(board) {
+	_rows = brd.rows();
+	_cols = brd.cols();
+	_depth = brd.depth();
 }
 

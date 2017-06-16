@@ -12,7 +12,7 @@ using namespace std;
 ////		SingleGameManager
 ////--------------------------
 
-SingleGameManager::SingleGameManager(MatchHard match) : match(match), board(get<2>(match)) , origBoard(board), board0(make_shared<Board>(board)) , board1(make_shared<Board>(board)), dims(board.rows(), board.cols(), board.depth()) {
+SingleGameManager::SingleGameManager(MatchHard match) : match(match), board(get<2>(match)) , origBoard(board), board0(Board(board)) , board1(Board(board)), dims(board.rows(), board.cols(), board.depth()) {
 	dll0 = { get<0>(match)->name,get<0>(match)->hdll, get<0>(match)->getAlgo }; 
 	dll1 = { get<1>(match)->name,get<1>(match)->hdll, get<1>(match)->getAlgo };
 	player0 = get<2>(dll0)();

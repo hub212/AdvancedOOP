@@ -62,16 +62,16 @@ public:
 };
 
 class Player0Board : public BoardData {
-	const Board brd;
+	const std::shared_ptr<const Board> &brd;
 public:
-	Player0Board(const Board board);
+	Player0Board(const std::shared_ptr<const Board> &board);
 	virtual char charAt(Coordinate c) const;
 };
 
 class Player1Board : public BoardData {
-	const Board brd;
+	const std::shared_ptr<const Board> &brd;
 public:
-	Player1Board(const Board board);
+	Player1Board(const std::shared_ptr<const Board>& board);
 	virtual char charAt(Coordinate c) const;
 };
 

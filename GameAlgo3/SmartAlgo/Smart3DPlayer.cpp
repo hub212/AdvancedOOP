@@ -357,9 +357,9 @@ void Smart3DPlayer::setBoard(const BoardData& board)
 		{
 			for (int j = 0; j < numOfCols; j++)
 			{
-				if (board.charAt(Coordinate(i,j,d)) == UNDISCOVERED_AREA && getBoardPiece(Coordinate(i, j, d)) != DISCOVERED_AREA)
+				if (board.charAt(Coordinate(i+1,j+1,d+1)) == UNDISCOVERED_AREA && getBoardPiece(Coordinate(i, j, d)) != DISCOVERED_AREA)
 					setBoardPiece({ i, j, d }, UNDISCOVERED_AREA, false);
-				else if (board.charAt(Coordinate(i, j, d)) != UNDISCOVERED_AREA)
+				else if (board.charAt(Coordinate(i+1, j+1, d+1)) != UNDISCOVERED_AREA)
 				{
 					setBoardPiece({ i, j, d }, DISCOVERED_AREA, false);
 					markSurrounding({ i, j, d }, false);
@@ -667,7 +667,7 @@ void Smart3DPlayer::createGameBoard(const BoardData & board)
 		for (int i = 0; i < numOfRows; i++) {
 			gameBoard[d][i].resize(numOfCols);
 			for (int j = 0; j < numOfCols; j++) {
-				char curchar = board.charAt(Coordinate(i, j, d));
+				char curchar = board.charAt(Coordinate(i+1, j+1, d+1));
 				gameBoard[d][i][j] = curchar;
 				updateShipCount(curchar);
 			}
