@@ -148,7 +148,7 @@ int SingleGameManager::play()
 		}
 	}
 
-	print_results();
+	//print_results();
 	return 0;
 }
 
