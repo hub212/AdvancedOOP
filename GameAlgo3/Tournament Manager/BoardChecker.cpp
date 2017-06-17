@@ -235,7 +235,6 @@ bool BoardChecker::checkPath(char* path, bool& isDllFound) {
 		std::shared_ptr<Board> brd = checkBoard(boards_list[i]);
 
 		if (brd != nullptr) {
-			brd->printBoard();
 			boardVec.push_back(brd);
 		}
 	}

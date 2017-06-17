@@ -129,6 +129,7 @@ int main(int argc, char* argv[])
 	if (!isInputOk) return 1;
 
 	manager.setThreads();
+	manager.printStatus();
 
 	return 0;
 
