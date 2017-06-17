@@ -4,19 +4,20 @@
 #include "Types.h"
 #include "tuple"
 #include "main.h"
+#include <thread>
 #include <memory>
 #include <vector>
 #include <list>
+#include <map>
 
 using namespace std;
 
-TournamentManager::TournamentManager(int threads, vector<std::shared_ptr<Board>> boardVec, vector<string> dllVec) : threads(threads) {
+TournamentManager::TournamentManager(int threads, vector<std::shared_ptr<Board>> boardVec, vector<string> dllVec) : threads(threads), numOfPlayers(dllVec.size()) {
 
-	setThreads(threads);
 	setBoards(boardVec);
 	setPlayers(dllVec);
 	setMatches();
-	
+	initScores();
 }
 
 void TournamentManager::setBoards(vector<shared_ptr<Board>>& inBoards)
@@ -59,10 +60,15 @@ void TournamentManager::setPlayers(vector<string>& dllVec)
 	}
 }
 
-void TournamentManager::setThreads(int threads)
+void TournamentManager::setThreads()
 {
+	vector<thread>		singleGameThreads;
 	for (int i = 0; i < threads; i++) {
-		singleGameThreads.push_back(-1);
+		singleGameThreads.push_back(thread(&TournamentManager::play, this));
+	}
+
+	for (auto& thread : singleGameThreads) {
+		thread.join();
 	}
 }
 
@@ -72,7 +78,7 @@ void TournamentManager::setMatches()
 	for (auto board : BoardsVector) {
 		for (auto player0 : playersDlls) {
 			for (auto player1 : playersDlls) {
-				if (player0 == player1) continue;
+				if (player0->name == player1->name) continue;
 				Match match = { make_shared<Player>(0, *player0), make_shared<Player>(1, *player1), board };
 				matchesQueue.push_back(match);
 			}
@@ -80,37 +86,66 @@ void TournamentManager::setMatches()
 	}
 	// randomizing queue
 	std::random_shuffle(matchesQueue.begin(), matchesQueue.end());
+	
+	for (auto &match : matchesQueue) {
+		cout << match << endl;
+	}
 }
 
 void TournamentManager::updateStatus(Match match, vector<int> score)
 {
+	unique_lock<mutex> locker(mut_scores);
 	string players[] = { get<0>(match)->name, get<1>(match)->name };
 
-	for (uint16_t i = 0; i < NUM_OF_PLAYERS; i++) {
+	for (uint16_t i = 0; i < PLAYERS_IN_MATCH; i++) {
 		gameStatus[players[i]].push(score[i]);
 	}
 
 	// All players has at least one score
-	if (gameStatus.size() == playersDlls.size()) {
-		for (uint16_t i = 0; i < NUM_OF_PLAYERS; i++) {
-			scores[players[i]] += score[i];
-			cout << players[i] << ": " << scores[players[i]] << endl;
+	if (gameStatus.size() == numOfPlayers) {
+		for (auto &player : playersDlls) {
+			scores[player->name] += gameStatus[player->name].front();
+			cout << player->name << ": " << scores[player->name] << endl;
 		}
 		popScores();
 	}
+	locker.unlock();
 }
 
 void TournamentManager::popScores()
 {
-	for (auto &q : gameStatus) {
-		q.second.pop();
+	auto itr = gameStatus.begin();
+	while (itr != gameStatus.end()) {
+		itr->second.pop();
+		if (itr->second.size() == 0) {
+			itr = gameStatus.erase(itr);
+		}
+		else {
+			itr = next(itr);
+		}
+	}
+}
+
+void TournamentManager::initScores()
+{
+	for (auto &player : playersDlls) {
+		scores[player->name] = 0;
 	}
 }
 
 int TournamentManager::play()
 {
 	// need to change this part to threads
-	for (auto match : matchesQueue) {
+	while (true){
+		unique_lock<mutex> locker(mut_matches);
+		if (matchesQueue.empty()) {
+			locker.unlock();
+			break;
+		}
+		Match match = matchesQueue.back();
+		matchesQueue.pop_back();
+		locker.unlock();
+
 		if (DEBUG) {
 			get<2>(match)->printBoard();
 		}
@@ -121,6 +156,7 @@ int TournamentManager::play()
 		}
 
 		TournamentManager::updateStatus(match, game_master->getScores());
+
 	}
 	return 0;
 }

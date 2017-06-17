@@ -65,4 +65,13 @@ std::ostream& operator<<(std::ostream & out, const Coordinate& coor);
 Coordinate operator + (const Coordinate coor0, const Coordinate coor1);
 
 
+/////////////////////////////////
+//////	Match
+/////////////////////////////////
+
+std::ostream& operator<<(std::ostream & out, const Match& match);
+
+std::ostream& operator<<(std::ostream & out, const MatchHard& match);
+
+
 #endif

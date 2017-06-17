@@ -185,4 +185,18 @@ bool Utils::search_left(char** boards, int x, int y, char curr)
  }
 
 
+ /////////////////////////////////
+ //////	Match
+ /////////////////////////////////
 
+ std::ostream& operator<<(std::ostream & out, const Match& match) {
+
+	 out << "Player0: " << get<0>(match)->name << "\tPlayer1: " << get<1>(match)->name << endl;
+	 return out;
+ }
+
+ std::ostream& operator<<(std::ostream & out, const MatchHard& match) {
+
+	 out << "Player0: " << get<0>(match)->name << "\tPlayer1: " << get<1>(match)->name << endl;
+	 return out;
+ }

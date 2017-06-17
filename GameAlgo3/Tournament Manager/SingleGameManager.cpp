@@ -87,15 +87,10 @@ int SingleGameManager::play()
 	Coordinate prevMove = { -3,-3,-3 };
 	int player0_done = 0;
 	int player1_done = 0;
-	int conditional = 0;
 
 	while (!player0_done || !player1_done)
 	{
 
-		cout << "round: " << conditional << endl;
-
-		board.printBoard();
-		
 		prevMove = move;
 		move = attack();
 
@@ -151,12 +146,9 @@ int SingleGameManager::play()
 		else {
 			turn = (turn == Players::PlayerA) ? Players::PlayerB : Players::PlayerA;
 		}
-
-		conditional++;
 	}
 
 	print_results();
-
 	return 0;
 }
 
@@ -284,7 +276,7 @@ void SingleGameManager::print_results()
 	if (scores[0] != scores[1])
 		cout << "Player " << ("%s", scores[0] > scores[1] ? "A " : "B ") << "won" << endl;
 
-	cout << "Points: " << endl;
+	cout << "Points: " << match << endl;
 	cout << "Player A: " << ("%d", scores[0])  << endl;
 	cout << "Player B: " << ("%d", scores[1]) << endl;
 

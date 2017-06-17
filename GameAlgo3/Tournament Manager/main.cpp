@@ -128,8 +128,7 @@ int main(int argc, char* argv[])
 
 	if (!isInputOk) return 1;
 
-	if (manager.play())
-		return 1;
+	manager.setThreads();
 
 	return 0;
 

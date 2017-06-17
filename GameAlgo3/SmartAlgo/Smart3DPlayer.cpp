@@ -480,9 +480,6 @@ void Smart3DPlayer::markSurrounding(Coordinate loc, bool updateRanking) {
 
 Coordinate Smart3DPlayer::attack()
 {
-	if (DEBUG) {
-		cout << "Smart3DPlayer::attack() player " << playerID << endl;
-	}
 
 	Coordinate candidateAttackMove{0,0,0}; 
 	horizontalModefier = 0;
@@ -571,7 +568,6 @@ Coordinate Smart3DPlayer::findAttackMoveByScore() const
 
 void Smart3DPlayer::notifyOnAttackResult(int player, Coordinate move, AttackResult result)
 {
-	cout << "player " << player << " notifyOnAttackResults "<< endl;
 	bool isAlreadyDiscovered = false;
 	int row = move.row -1, col = move.col -1, depth = move.depth -1; //Adjust GameManager values
 

@@ -3,31 +3,37 @@
 #include <memory>
 #include <list>
 #include <queue>
+#include <mutex>
+#include <thread>
 #include "Types.h"
 
-#define NUM_OF_PLAYERS 2
+#define PLAYERS_IN_MATCH 2
 
 using namespace std;
 
 class TournamentManager {
 
-	int threads;
+	int threads = 4;
+	int numOfPlayers;
 	bool isInputOK;
 
-	vector<int>						singleGameThreads;
 	vector<shared_ptr<Board>>		BoardsVector;
 	vector<shared_ptr<Player>>		playersDlls;
 	vector<Match>					matchesQueue;
 
 	map<string, queue<int>>			gameStatus;
-	map<string, int>					scores;
+	map<string, int>				scores;
+
+	mutex							mut_matches;
+	mutex							mut_scores;
+
 
 
 	void setBoards(vector<shared_ptr<Board>>& inBoards);
 
 	void setPlayers(vector<string>& dllVec);
 
-	void setThreads(int threads);
+	int play();
 
 	void setMatches();
 
@@ -35,8 +41,11 @@ class TournamentManager {
 
 	void popScores();
 
+	void initScores();
+
 public:
 
 	TournamentManager(int threads, vector<std::shared_ptr<Board>> boardVec, vector<string> dllVec);
-	int play();
+
+	void setThreads();
 };
