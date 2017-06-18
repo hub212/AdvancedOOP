@@ -41,7 +41,7 @@ void TournamentManager::setPlayers(vector<string>& dllVec)
 		HINSTANCE hDll = LoadLibraryA(dll.c_str());
 		bool dllOk = true;
 		if (!hDll) {
-			cout << "Cannot not load dll: " << dll << std::endl;
+			BoardChecker::log << BoardChecker::getTime() << ": Cannot not load dll: " << dll << std::endl;
 			dllOk = false;
 			isInputOK = false;
 		}
@@ -51,7 +51,7 @@ void TournamentManager::setPlayers(vector<string>& dllVec)
 		if (!getAlgo)
 		{
 			if (dllOk) {
-				cout << "Cannot not load dll: " << dll << std::endl;
+				BoardChecker::log << BoardChecker::getTime() << ": Cannot not load dll: " << dll << std::endl;
 				dllOk = false;
 				isInputOK = false;
 			}
@@ -163,7 +163,7 @@ void TournamentManager::printStatus() {
 		firstTable = 0;
 	}
 	Utils::gotoxy(ScreenBufferInfo.dwCursorPosition.X, ScreenBufferInfo.dwCursorPosition.Y);
-	cout << "Matches progress : " << totalMatches << "/" << realMatchNumber << endl;
+	cout << "Matches progress : " << realMatchNumber << "/" << totalMatches << endl;
 	cout << left << setw(5) << "#" << left << setw(15) << "Team Name" << left << setw(width) << "Wins" << left << setw(width) << "Losses" << left << setw(width) << "%" << left << setw(width) << "Pts For" << left << setw(width) << "Pts Against" << endl;
 	for (auto &player : playersDlls) {
 		string name = player->name;

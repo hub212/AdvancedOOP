@@ -70,7 +70,7 @@ void createPath(int argc, char* argv[], char* pwd) {
 	}
 }
 
-int parseArgs(int argc, char* argv[], int& threads) {
+int parseArgs(int argc, char* argv[], int& threads, bool& threadsSet) {
 
 	for (int i = 0; i < argc; i++) {
 		if (!string("-threads").compare(argv[i])) {
@@ -81,6 +81,7 @@ int parseArgs(int argc, char* argv[], int& threads) {
 			istringstream iss(argv[i + 1]);
 
 			if (!(iss >> threads).fail()) {
+				threadsSet = true;
 				if (DEBUG)
 					cout << "threads was set to " << threads << " threads" << endl;
 			}
@@ -99,8 +100,10 @@ int main(int argc, char* argv[])
 	// Game Parameters
 	int threads = 4;
 
+	bool threadsSetFromCmdLn = false;
+
 	// Command Line Parsing
-	if (parseArgs(argc, argv, threads) != 0) {
+	if (parseArgs(argc, argv, threads, threadsSetFromCmdLn) != 0) {
 		return 1;
 	}
 
@@ -124,12 +127,14 @@ int main(int argc, char* argv[])
 
 	if (argc > 1 && string("-threads").compare(argv[1])) {
 		createPath(argc, argv, pwd);
-		isInputOk = bc->checkBoard(pwd, isDllFound);
+		isInputOk = bc->checkBoard(pwd, isDllFound, threadsSetFromCmdLn, threads);
 	}
 	else {
 		GetCurrentDirectoryA(MY_MAX_PATH, pwd);
-		isInputOk = bc->checkBoard(pwd, isDllFound);
+		isInputOk = bc->checkBoard(pwd, isDllFound, threadsSetFromCmdLn, threads);
 	}
+
+	BoardChecker::log << BoardChecker::getTime() << ": Number of threads: " << threads << std::endl;
 
 	// stop timer
 	QueryPerformanceCounter(&t2);
