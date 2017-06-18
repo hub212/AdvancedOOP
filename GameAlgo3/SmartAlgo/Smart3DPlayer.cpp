@@ -183,14 +183,6 @@ void Smart3DPlayer::createRandomCellToIndexMapping()
 		}
 
 	}
-	for (int d = 0; d < boardDepth; d++) {
-		for (int i = 0; i < numOfRows; i++) {
-			for (int j = 0; j < numOfCols; j++) {
-				cout << locationToIndexMap[{i, j, d}] << " ";
-			}
-			cout << endl;
-		}
-	}
 }
 
 //saves results of index celection stratagies of previous game
@@ -312,9 +304,9 @@ int Smart3DPlayer::calcAvailableMovesInDirection(Coordinate loc, int vertical, i
 //maps each location on the board to a distinct value - can choose between two different index allocation strategies and chooses based on past successes of each strategy.
 void Smart3DPlayer::createCellToIndexMapping()
 {
-	if (strategyAVictories >= strategyBVictories)
+	 if (strategyAVictories >= strategyBVictories)
 		createCenteredCellToIndexMapping();
-	else
+	 else
 		createRandomCellToIndexMapping();
 }
 
@@ -322,7 +314,7 @@ void Smart3DPlayer::createCellToIndexMapping()
 void Smart3DPlayer::setBoard(const BoardData& board)
 {
 	savePerviousGameInfo();
-	resetGameState();
+	resetGameState();//resets player between games
 	createGameBoard(board);//initializes the board
 	rng.seed(std::random_device()()); //set the random number generator
 	createCellToIndexMapping();
@@ -345,7 +337,7 @@ void Smart3DPlayer::setBoard(const BoardData& board)
 		{
 			for (int j = 0; j < numOfCols; j++)
 			{
-				if (board.charAt(Coordinate(i+1,j+1,d+1)) == UNDISCOVERED_AREA && getBoardPiece(Coordinate(i, j, d)) != DISCOVERED_AREA)
+				if (board.charAt(Coordinate(i+1, j+1, d+1)) == UNDISCOVERED_AREA && getBoardPiece(Coordinate(i, j, d)) != DISCOVERED_AREA)
 					setBoardPiece({ i, j, d }, UNDISCOVERED_AREA, false);
 				else if (board.charAt(Coordinate(i+1, j+1, d+1)) != UNDISCOVERED_AREA)
 				{
@@ -549,15 +541,17 @@ void Smart3DPlayer::findCandidateAttackMovesInDirection(map<double, AttackMove>&
 // returns the best available move that will lead to the discovery of an enemy ship (based on a score given to each move)
 Coordinate Smart3DPlayer::findAttackMoveByScore() const
 {
-	if (consecutiveMisses >= (numOfRows*numOfCols*boardDepth * MISS_PERCENT_THRESHOLD))
+	if (rankedLegalAttackMoves.size() > 0)
 	{
-		int attackIndex = getRandMoveIndex() % rankedLegalAttackMoves.size();
-		auto it = std::next(rankedLegalAttackMoves.begin(), attackIndex);
-		return (*it).second;
-	}
-	
-	if (rankedLegalAttackMoves.size()>0)
+		if (consecutiveMisses >= (numOfRows*numOfCols*boardDepth * MISS_PERCENT_THRESHOLD))
+		{
+			int attackIndex = getRandMoveIndex() % rankedLegalAttackMoves.size();
+			auto it = std::next(rankedLegalAttackMoves.begin(), attackIndex);
+			return (*it).second;
+		}
+
 		return rankedLegalAttackMoves.rbegin()->second;
+	}
 	return InvalidAttack;
 }
 

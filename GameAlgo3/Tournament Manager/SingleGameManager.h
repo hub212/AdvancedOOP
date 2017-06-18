@@ -59,6 +59,8 @@ private:
 	/* transfrom from char type vessel to more readble vessel type (e.g War, Missile and etc.)*/
 	Vessel_ID getVessel(const char curr);
 
+	bool isLegal(Coordinate coor);
+
 	/* debug function for tracking a game flow*/
 	void print_results();
 

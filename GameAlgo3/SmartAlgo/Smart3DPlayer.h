@@ -58,7 +58,7 @@ class Smart3DPlayer : public IBattleshipGameAlgo {
 	static const int NO_ENEMY_SHIP_SCORE = -1;
 	static const int RAND_MOVE_THRESHOLD = 20;
 	static const int CONFIRMED_ENEMY_PROXIMITY_FACTOR = 25;
-	const double MISS_PERCENT_THRESHOLD = 0.03;
+	const double MISS_PERCENT_THRESHOLD = 0.02;
 	const int BASE_SCORE[4][4] = { { 1, 2, 3, 4 }, { 2, 4, 6, 7 }, { 3, 6, 8, 9 }, { 4, 7, 9, 10 } }; //likelihood of enemy ship in a given square based on its surrounding (how many undiscovered locations are there in its proximity)
 	double EPSILON = 0; //unique value for each location on the board, to make sure no two different locations have the same score. 
 	static const char DISCOVERED_AREA = 'X';

@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Shlomi\Source\Repos\AdvancedOOP2\Submission\Smart3DPlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Shlomi\Source\Repos\AdvancedOOP2\Submission\Board.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Shlomi\Source\Repos\AdvancedOOP2\Submission\IBattleshipGameAlgo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Shlomi\Source\Repos\AdvancedOOP2\Submission\main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Shlomi\Source\Repos\AdvancedOOP2\Submission\Types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Shlomi\Source\Repos\AdvancedOOP2\Submission\Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Shlomi\Source\Repos\AdvancedOOP2\Submission\Smart3DPlayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Shlomi\Source\Repos\AdvancedOOP2\Submission\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{FDB3F571-B8B0-38B7-A634-6AFA782B172A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{8B27A58E-EADD-38F2-BCA3-8B1338652337}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

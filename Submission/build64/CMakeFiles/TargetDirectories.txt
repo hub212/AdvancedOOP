@@ -1,0 +1,4 @@
+C:/Users/Shlomi/Source/Repos/AdvancedOOP2/Submission/build64/CMakeFiles/ex3.shlomizabari.dir
+C:/Users/Shlomi/Source/Repos/AdvancedOOP2/Submission/build64/CMakeFiles/ex3.shlomizabari.smart.dir
+C:/Users/Shlomi/Source/Repos/AdvancedOOP2/Submission/build64/CMakeFiles/ALL_BUILD.dir
+C:/Users/Shlomi/Source/Repos/AdvancedOOP2/Submission/build64/CMakeFiles/ZERO_CHECK.dir

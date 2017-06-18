@@ -14,7 +14,7 @@
 
 using namespace std;
 
-TournamentManager::TournamentManager(int threads, vector<std::shared_ptr<Board>> boardVec, vector<string> dllVec) : threads(threads), numOfPlayers(dllVec.size()) {
+TournamentManager::TournamentManager(int threads, vector<std::shared_ptr<Board>> boardVec, vector<string> dllVec) : threads(threads), numOfPlayers(dllVec.size()), maxLengthName(0) {
 
 	setBoards(boardVec);
 	setPlayers(dllVec);
@@ -45,7 +45,7 @@ void TournamentManager::setPlayers(vector<string>& dllVec)
 		
 		shared_ptr<Player> player(new Player({ AlgoName, hDll, getAlgo }));
 		playersDlls.push_back(player);
-
+		maxLengthName = AlgoName.size() > maxLengthName ? AlgoName.size() : maxLengthName;
 	}
 }
 
@@ -158,13 +158,13 @@ void TournamentManager::printStatus() {
 	}
 	Utils::gotoxy(ScreenBufferInfo.dwCursorPosition.X, ScreenBufferInfo.dwCursorPosition.Y);
 	cout << "Matches progress : " << realMatchNumber << "/" << totalMatches << endl;
-	cout << left << setw(5) << "#" << left << setw(30) << "Team Name" << left << setw(width) << "Wins" << left << setw(width) << "Losses" << left << setw(width) << "%" << left << setw(width) << "Pts For" << left << setw(width) << "Pts Against" << endl;
+	cout << left << setw(5) << "#" << left << setw(maxLengthName + 4) << "Team Name" << left << setw(width) << "Wins" << left << setw(width) << "Losses" << left << setw(width) << "%" << left << setw(width) << "Pts For" << left << setw(width) << "Pts Against" << endl;
 	for (auto &pair : namePer) {
 		string name = pair.first;
 		tuple<int, int, int, int> score = scores[name];
 		stringstream indxstr;
 		indxstr << index << ".";
-		cout << left << setw(5) << indxstr.str() << left << setw(30) << name << left << setw(width) << get<0>(score) << left << setw(width) << get<1>(score) << left << setw(width) << setprecision(2) << fixed << pair.second << left << setw(width) << get<2>(score) << left << setw(width) << get<3>(score) << endl;
+		cout << left << setw(5) << indxstr.str() << left << setw(maxLengthName + 4) << name << left << setw(width) << get<0>(score) << left << setw(width) << get<1>(score) << left << setw(width) << setprecision(2) << fixed << pair.second << left << setw(width) << get<2>(score) << left << setw(width) << get<3>(score) << endl;
 		index++;
 	}
 

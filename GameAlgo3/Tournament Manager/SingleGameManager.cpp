@@ -110,6 +110,10 @@ int SingleGameManager::play()
 		}
 		pair<Vessel_ID, AttackResult> results = attack_results(move);
 		int activePlayerIndex = turn == Players::PlayerA ? 0 : 1;
+		if (!isLegal(move)) {
+			turn = (turn == Players::PlayerA) ? Players::PlayerB : Players::PlayerA;
+			continue;
+		}
 
 		updateScores(move, results);
 
@@ -268,6 +272,11 @@ Vessel_ID SingleGameManager::getVessel(char curr)
 	}
 
 	return vessel;
+}
+
+bool SingleGameManager::isLegal(Coordinate coor)
+{
+	return coor.depth > 0 && coor.depth <= dims.depth && coor.depth > 0 && coor.col <= dims.col && coor.row > 0 && coor.depth <= dims.row;
 }
 
 

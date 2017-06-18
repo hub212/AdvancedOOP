@@ -33,6 +33,7 @@ class TournamentManager {
 	int firstTable = 1;
 	int matchNumber;
 	int totalMatches;
+	int maxLengthName;
 
 	void setBoards(vector<shared_ptr<Board>>& inBoards);
 
