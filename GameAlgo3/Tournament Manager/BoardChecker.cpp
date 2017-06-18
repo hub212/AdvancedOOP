@@ -14,7 +14,7 @@ string BoardChecker::getTime() {
 
 	string date = dt;
 
-	for (int i = 0; i < date.length(); i++) {
+	for (uint16_t i = 0; i < date.length(); i++) {
 
 		if (date[i] == '\n') {
 			date[i] = ' ';

@@ -39,23 +39,9 @@ void TournamentManager::setPlayers(vector<string>& dllVec)
 		int back_slash = dll.find_last_of("\\");
 		string AlgoName = dll.substr(back_slash == string::npos ? 0 : back_slash + 1, back_slash == string::npos ? 0 : dll.length()- 5 - back_slash);
 		HINSTANCE hDll = LoadLibraryA(dll.c_str());
-		bool dllOk = true;
-		if (!hDll) {
-			cout << "Cannot not load dll: " << dll << std::endl;
-			dllOk = false;
-			isInputOK = false;
-		}
 
 		GetAlgoType getAlgo;
 		getAlgo = (GetAlgoType)GetProcAddress(hDll, "GetAlgorithm");
-		if (!getAlgo)
-		{
-			if (dllOk) {
-				cout << "Cannot not load dll: " << dll << std::endl;
-				dllOk = false;
-				isInputOK = false;
-			}
-		}
 		
 		shared_ptr<Player> player(new Player({ AlgoName, hDll, getAlgo }));
 		playersDlls.push_back(player);
@@ -63,7 +49,7 @@ void TournamentManager::setPlayers(vector<string>& dllVec)
 	}
 }
 
-void TournamentManager::setThreads()
+void TournamentManager::runGameThreads()
 {
 	vector<thread>		singleGameThreads;
 	for (int i = 0; i < threads; i++) {
@@ -157,20 +143,28 @@ void TournamentManager::printStatus() {
 	int width = 10;
 	int realMatchNumber = (matchNumber < totalMatches) ? matchNumber : totalMatches;
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	// I didn't figure out how can one sort a map by value so I created an helper data set for sorting needs only
+	vector<pair<string, float>> namePer;
+	for (auto &player : playersDlls) {
+		namePer.push_back({ player->name,  static_cast<float>(get<0>(scores[player->name])) / (get<0>(scores[player->name]) + get<1>(scores[player->name])) * 100.00 });
+	}
+	sort(namePer.begin(), namePer.end(), pairCompare);
+
 	if (firstTable)
 	{
 		GetConsoleScreenBufferInfo(hStdout, &ScreenBufferInfo);
 		firstTable = 0;
 	}
 	Utils::gotoxy(ScreenBufferInfo.dwCursorPosition.X, ScreenBufferInfo.dwCursorPosition.Y);
-	cout << "Matches progress : " << totalMatches << "/" << realMatchNumber << endl;
+	cout << "Matches progress : " << realMatchNumber << "/" << totalMatches << endl;
 	cout << left << setw(5) << "#" << left << setw(15) << "Team Name" << left << setw(width) << "Wins" << left << setw(width) << "Losses" << left << setw(width) << "%" << left << setw(width) << "Pts For" << left << setw(width) << "Pts Against" << endl;
-	for (auto &player : playersDlls) {
-		string name = player->name;
+	for (auto &pair : namePer) {
+		string name = pair.first;
 		tuple<int, int, int, int> score = scores[name];
 		stringstream indxstr;
 		indxstr << index << ".";
-		cout << left << setw(5) << indxstr.str() << left << setw(15) << name << left << setw(width) << get<0>(score) << left << setw(width) << get<1>(score) << left << setw(width) << setprecision(2) << fixed << static_cast<float>(get<0>(score)) / (get<0>(score) + get<1>(score)) * 100.00 << left << setw(width) << get<2>(score) << left << setw(width) << get<3>(score) << endl;
+		cout << left << setw(5) << indxstr.str() << left << setw(15) << name << left << setw(width) << get<0>(score) << left << setw(width) << get<1>(score) << left << setw(width) << setprecision(2) << fixed << pair.second << left << setw(width) << get<2>(score) << left << setw(width) << get<3>(score) << endl;
 		index++;
 	}
 
@@ -179,7 +173,7 @@ void TournamentManager::printStatus() {
 int TournamentManager::play()
 {
 	// need to change this part to threads
-	while (true){
+	while (true && playersDlls.size()){
 		unique_lock<mutex> locker(mut_matches);
 		if (matchesQueue.empty()) {
 			locker.unlock();

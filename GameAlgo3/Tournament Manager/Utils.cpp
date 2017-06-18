@@ -162,7 +162,18 @@ bool Utils::search_left(char** boards, int x, int y, char curr)
  }
 
 
- // Coordinate
+
+ // This function returns true if the second pair is "less"
+ // than the second one according to some metric
+ // In this case, we say the first pair is "less" if the second element of the first pair
+ // is less than the second element of the second pair
+ bool pairCompare(const std::pair<string, float>& firstElem, const std::pair<string, float>& secondElem) {
+	 return firstElem.second > secondElem.second;
+
+ }
+
+
+// Coordinate
  bool operator==(const Coordinate coor0, const Coordinate coor1)
  {
 	 return coor0.col == coor1.col && coor0.row == coor1.row && coor0.depth == coor1.depth;
@@ -200,3 +211,6 @@ bool Utils::search_left(char** boards, int x, int y, char curr)
 	 out << "Player0: " << get<0>(match)->name << "\tPlayer1: " << get<1>(match)->name << endl;
 	 return out;
  }
+
+
+

@@ -111,7 +111,7 @@ int SingleGameManager::play()
 		pair<Vessel_ID, AttackResult> results = attack_results(move);
 		int activePlayerIndex = turn == Players::PlayerA ? 0 : 1;
 
-		update_state(move, results);
+		updateScores(move, results);
 
 		if (DEBUG) {
 			cout << "board updated" << endl;
@@ -169,7 +169,7 @@ pair<Vessel_ID, AttackResult> SingleGameManager::attack_results(Coordinate move)
 		return{ Vessel_ID::Vessel_ID(), AttackResult::Miss };
 	}
 
-	vessel = SingleGameManager::get_vessel(shipSign, player0, player1);
+	vessel = SingleGameManager::getVessel(shipSign);
 
 	bool isSink = Utils::is_sink(board, move, origBoard, dims);
 
@@ -184,7 +184,7 @@ pair<Vessel_ID, AttackResult> SingleGameManager::attack_results(Coordinate move)
 	}
 }
 
-void SingleGameManager::update_state(Coordinate move, pair<Vessel_ID, AttackResult> results)
+void SingleGameManager::updateScores(Coordinate move, pair<Vessel_ID, AttackResult> results)
 {
 	move = move + Coordinate(-1, -1, -1);
 	if (DEBUG) {
@@ -223,7 +223,7 @@ bool SingleGameManager::anyWinner()
 }
 
 
-Vessel_ID SingleGameManager::get_vessel(char curr, IBattleshipGameAlgo* playerA, IBattleshipGameAlgo* playerB)
+Vessel_ID SingleGameManager::getVessel(char curr)
 {
 	Vessel_ID vessel;
 

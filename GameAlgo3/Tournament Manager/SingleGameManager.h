@@ -20,8 +20,7 @@ private:
 
 	IBattleshipGameAlgo* player0;
 	IBattleshipGameAlgo* player1;
-	char **boardCopy;
-
+	
 	std::set<char>		lettersA = {'B','P','M','D' };
 	std::set<char>		lettersB = {'b','p','m','d' };
 
@@ -31,7 +30,6 @@ private:
 	Player1Board board1;
 
 	Coordinate dims;
-	const char* players_moves;
 
 	int		scores[2];
 	Players turn;
@@ -39,47 +37,42 @@ private:
 	tuple<string, HINSTANCE, GetAlgoType> dll0;
 	tuple<string, HINSTANCE, GetAlgoType> dll1;
 
-
 	MatchHard match;
-
 
 	std::pair<Vessel_ID, AttackResult> attack_results(Coordinate move);
 
+	/* call set_board() for each player*/
 	void setBoards();
 
+	/* call set_player() for each player*/
 	void setPlayers();
 
+	/* call attack() for each player in his turn*/
 	Coordinate attack();
 
-	void update_state(Coordinate move, std::pair<Vessel_ID, AttackResult> results);
+	/* updating scores after each turn*/
+	void updateScores(Coordinate move, std::pair<Vessel_ID, AttackResult> results);
 
+	/* check if the game is over*/
 	bool anyWinner();
 
-	// input - 
-	//		const char curr - (@,' ', BPMD, bpmd) a charecter representation of board point
-	//		CommonAlgo PlayerA/B - two players with different char representation (BPMD vs. BPMD)
-	//
-	// output - 
-	//		the function return the vessel type of the given char (transforming from char to vessel type)
-	//
-	// given a charecter representation of board point (@,' ', BPMD, bpmd) and two players with 
-	// different char representation (BPMD vs. bpmd) the functino nill return the vessel on board (common game master board)
-	// the function is being used for updating the game master board and for later (opt.) for complex algorithms
-	Vessel_ID get_vessel(const char curr, IBattleshipGameAlgo* playerA, IBattleshipGameAlgo* playerB);
+	/* transfrom from char type vessel to more readble vessel type (e.g War, Missile and etc.)*/
+	Vessel_ID getVessel(const char curr);
 
+	/* debug function for tracking a game flow*/
 	void print_results();
 
 public:
 
 	/**
-	* \brief init all internal variables - paths and boards. intansiating the Player intances.
-	* \param match
+	* brief init all internal variables - paths and boards. intansiating the Player intances.
+	* param match
 	*/
 	SingleGameManager(MatchHard match);
 
 	/**
-	* \brief impliments the game running phase.
-	*		  responsible for attack() and notifyOnAttackResult() and updating current state.
+	* impliments the game running phase.
+	* responsible for attack() and notifyOnAttackResult() and updating current state.
 	*/
 	int play();
 

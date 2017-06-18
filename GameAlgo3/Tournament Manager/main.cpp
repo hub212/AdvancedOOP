@@ -14,7 +14,7 @@
 
 using namespace std;
 
-
+// this function 
 void createPath(int argc, char* argv[], char* pwd) {
 
 	int cnt = 0;
@@ -99,21 +99,24 @@ int main(int argc, char* argv[])
 	// Game Parameters
 	int threads = 4;
 
-	// Command Line Parsing
-	if (parseArgs(argc, argv, threads) != 0) {
-		return 1;
-	}
-
 	// time measurments
 	LARGE_INTEGER frequency;        // ticks per second
 	LARGE_INTEGER t1, t2;           // ticks
 	double elapsedTime;
 
-	// get ticks per second
-	QueryPerformanceFrequency(&frequency);
 
-	// start timer
-	QueryPerformanceCounter(&t1);
+	// Command Line Parsing
+	if (parseArgs(argc, argv, threads) != 0) {
+		return 1;
+	}
+
+	if (TIME) {
+		// get ticks per second
+		QueryPerformanceFrequency(&frequency);
+
+		// start timer
+		QueryPerformanceCounter(&t1);
+	}
 
 	// Checking phase
 	bool	isInputOk;
@@ -131,19 +134,21 @@ int main(int argc, char* argv[])
 		isInputOk = bc->checkBoard(pwd, isDllFound);
 	}
 
-	// stop timer
-	QueryPerformanceCounter(&t2);
+	if (TIME) {
+		// stop timer
+		QueryPerformanceCounter(&t2);
 
-	// compute and print the elapsed time in sec
-	elapsedTime = (t2.QuadPart - t1.QuadPart)*1.0 / frequency.QuadPart;
+		// compute and print the elapsed time in sec
+		elapsedTime = (t2.QuadPart - t1.QuadPart)*1.0 / frequency.QuadPart;
 
-	cout << "check boards time: " << elapsedTime << " [sec]" << endl;
+		cout << "check boards time: " << elapsedTime << " [sec]" << endl;
 
-	// get ticks per second
-	QueryPerformanceFrequency(&frequency);
+		// get ticks per second
+		QueryPerformanceFrequency(&frequency);
 
-	// start timer
-	QueryPerformanceCounter(&t1);
+		// start timer
+		QueryPerformanceCounter(&t1);
+	}
 
 	// Tournament phase
 	TournamentManager manager(threads, bc->boardVec, bc->dllVec);
@@ -154,20 +159,23 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	manager.setThreads();
+	manager.runGameThreads();
 	manager.printStatus();
 
 
 	BoardChecker::log << std::endl;
 	BoardChecker::log.close();
 
-	// stop timer
-	QueryPerformanceCounter(&t2);
+	if (TIME) {
 
-	// compute and print the elapsed time in sec
-	elapsedTime = (t2.QuadPart - t1.QuadPart) *1.0 / frequency.QuadPart;
+		// stop timer
+		QueryPerformanceCounter(&t2);
 
-	cout << "tournament time: " << elapsedTime << " [sec]" << endl;
+		// compute and print the elapsed time in sec
+		elapsedTime = (t2.QuadPart - t1.QuadPart) *1.0 / frequency.QuadPart;
+
+		cout << "tournament time: " << elapsedTime << " [sec]" << endl;
+	}
 
 	return 0;
 

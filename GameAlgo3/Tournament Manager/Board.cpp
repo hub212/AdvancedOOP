@@ -176,7 +176,7 @@ Board::Board(std::ifstream& file) {
 				lineExists = true;
 			}
 
-			for (size_t col_index = 0; lineExists && col_index < num_cols && col_index < str.length() && !afterEmptyLine; col_index++) {
+			for (size_t col_index = 0; lineExists && static_cast<int>(col_index) < num_cols && col_index < str.length() && !afterEmptyLine; col_index++) {
 				char inputChar = str.at(col_index);
 				bool charIsLegal = false;
 				if (inputChar == ' ' || shipSize(inputChar) > 0) {
@@ -198,7 +198,7 @@ void Board::printBoard() const {
 		std::cout << std::endl;
 		for (int row_index = 0; row_index < num_rows; row_index++) {
 			std::string rowString(board[dpth][row_index].begin(), board[dpth][row_index].end());
-			if (rowString.length() > num_cols) {
+			if (rowString.length() > static_cast<size_t>(num_cols)) {
 				rowString = rowString.substr(0, num_cols);
 			}
 			if (row_index == 0) {
@@ -229,7 +229,7 @@ void Board::printBoard(const std::string filePath) const {
 		myfile << std::endl;
 		for (int row_index = 0; row_index < num_rows; row_index++) {
 			std::string rowString(board[dpth][row_index].begin(), board[dpth][row_index].end());
-			if (rowString.length() > num_cols) {
+			if (rowString.length() > static_cast<size_t>(num_cols)) {
 				rowString = rowString.substr(0, num_cols);
 			}
 			myfile << rowString << std::endl;

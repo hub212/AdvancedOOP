@@ -51,6 +51,7 @@ public:
 
 };
 
+bool pairCompare(const std::pair<string, float>& firstElem, const std::pair<string, float>& secondElem);
 
 /////////////////////////////////
 //////	Coordinate
