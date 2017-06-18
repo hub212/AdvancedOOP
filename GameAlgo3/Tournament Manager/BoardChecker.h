@@ -10,6 +10,10 @@ class BoardChecker
 {
 public:
 
+	static std::ofstream log;
+
+	static string getTime();
+
 	static bool isDebug;
 
 	static vector<string> dllVec;

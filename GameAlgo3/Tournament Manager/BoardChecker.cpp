@@ -1,7 +1,28 @@
 #include "BoardChecker.h"
 #include "windows.h"
 
+std::ofstream BoardChecker::log;
 
+string BoardChecker::getTime() {
+	// current date/time based on current system
+	time_t now = time(0);
+
+	char dt[1000];
+
+	// convert now to string form
+	ctime_s(dt, 1000, &now);
+
+	string date = dt;
+
+	for (int i = 0; i < date.length(); i++) {
+
+		if (date[i] == '\n') {
+			date[i] = ' ';
+		}
+	}
+
+	return date;
+}
 
 BoardChecker::BoardChecker()
 {
@@ -28,10 +49,10 @@ void BoardChecker::printIllegalShapeError(string illegalShips, char ch) {
 
 	if (contains) {
 		if (isupper(ch)) {
-			std::cout << "Wrong size or shape for ship " << ch << " for player A" << std::endl;
+			log << getTime() <<": Wrong size or shape for ship " << ch << " for player A" << std::endl;
 		}
 		else {
-			std::cout << "Wrong size or shape for ship " << ch << " for player B" << std::endl;
+			log << getTime() << ": Wrong size or shape for ship " << ch << " for player B" << std::endl;
 		}
 	}
 }
@@ -56,7 +77,7 @@ bool dirExists(const std::string& dirName_in)
 std::shared_ptr<Board> BoardChecker::checkBoard(string boardPath) {
 
 
-	std::cout << "Checking board: " << boardPath << std::endl;
+	log << getTime() << ": Checking board: " << boardPath << std::endl;
 
 	std::ifstream boardStream = ifstream(boardPath);
 
@@ -95,23 +116,6 @@ std::shared_ptr<Board> BoardChecker::checkBoard(string boardPath) {
 					newBoard.add(tmpBoard);
 
 
-					if (isDebug) {
-						std::cout << "adding shape: " << std::endl;
-
-						tmpBoard.printBoard();
-
-						std::cout << "--------------------------------------------" << std::endl;
-
-						std::cout << "shape added: " << std::endl;
-
-						newBoard.printBoard();
-
-						std::cout << "--------------------------------------------" << std::endl;
-
-					}
-
-
-
 					int minRow = tmpBoard.minOccupiedRow();
 					int minCol = tmpBoard.minOccupiedCol();
 					int minDpt = tmpBoard.minOccupiedDpth();
@@ -120,14 +124,10 @@ std::shared_ptr<Board> BoardChecker::checkBoard(string boardPath) {
 					int maxDpt = tmpBoard.maxOccupiedDpth();
 
 					if (minRow == -1 || minCol == -1 || maxRow == -1 || maxCol == -1 || minDpt == -1 || maxDpt == -1) {
-						if (isDebug)
-							std::cout << "error, no chars in tmpBoard" << std::endl;
 						continue;
 					}
 
 					if ((minRow < maxRow && minCol < maxCol) || (minRow < maxRow && minDpt < maxDpt) || (minCol < maxCol && minDpt < maxDpt)) {
-
-						std::cout << "minRow: " << minRow << " maxRow: " << maxRow << " minCol: " << minCol << " maxCol: " << maxCol << " minDpt: " << minDpt << " maxDpt: " << maxDpt <<  std::endl;
 
 						illegalShips.append(1, curChar);
 						continue;
@@ -135,8 +135,6 @@ std::shared_ptr<Board> BoardChecker::checkBoard(string boardPath) {
 
 					if (tmpBoard.countNonEmptyCells() != Board::shipSize(curChar)) {
 
-						if (isDebug)
-							std::cout << "Illegal shape was added: " << curChar <<  " of size: " << Board::shipSize(curChar) <<  std::endl;
 
 						illegalShips.append(1, curChar);
 						continue;
@@ -172,29 +170,29 @@ std::shared_ptr<Board> BoardChecker::checkBoard(string boardPath) {
 		blayer0_shipSizes[2] != blayer1_shipSizes[2] ||
 		blayer0_shipSizes[3] != blayer1_shipSizes[3])
 	{	
-		std::cout << "Imbalanced board" << std::endl;
+		log << getTime() << ": Imbalanced board" << std::endl;
 	}
 	else {
-		std::cout << "Balanced board" << std::endl;
+		log << getTime() << ": Balanced board" << std::endl;
 	}
 	if (player0_ships == 0) {
-		std::cout << "Player A has no ships" << std::endl;
+		log << getTime() << ": Player A has no ships" << std::endl;
 	}
 	if (player1_ships == 0) {
-		std::cout << "Player B has no ships" << std::endl;
+		log << getTime() << ": Player B has no ships" << std::endl;
 	}
 	if (areAdjacentShips) {
-		std::cout << "Adjacent Ships on Board" << std::endl;
+		log << getTime() << ": Adjacent Ships on Board" << std::endl;
 		boardIsOk = false;
 	}
 
 
 	if (boardIsOk) {
-		std::cout << "Legal board" << std::endl;
+		log << getTime() << ": Legal board" << std::endl;
 		return board;
 	}
 	else {
-		std::cout << "Illegal board" << std::endl;
+		log << getTime() << ": Illegal board" << std::endl;
 		return nullptr;
 	}
 }
@@ -218,9 +216,17 @@ bool BoardChecker::checkPath(char* path, bool& isDllFound) {
 
 	if (!dirExists(files_dir)) {
 		std::cout << "Wrong path: " << dir << std::endl;
+		
 		return false;
 	}
-	
+
+
+	char logPath[1000];
+	strcpy_s(logPath, 1000, dir);
+	strcat_s(logPath, 1000, "\\game.log\0");
+	log.open(logPath, std::ios_base::app | std::ios_base::out);
+
+	log << getTime() << ": program execution begin" << std::endl;
 
 	// builds moves vector list
 	Utils::GetFileNamesInDirectory(&boards_list, files_dir);
@@ -231,12 +237,13 @@ bool BoardChecker::checkPath(char* path, bool& isDllFound) {
 	std::sort(boards_list.begin(), boards_list.end());
 
 	for (int i = 0; i < static_cast<int> (boards_list.size()); ++i) {
-		isBoardFound = true;
+		
 		std::shared_ptr<Board> brd = checkBoard(boards_list[i]);
 
 		if (brd != nullptr) {
-			brd->printBoard();
+			//brd->printBoard();
 			boardVec.push_back(brd);
+			isBoardFound = true;
 		}
 	}
 
@@ -248,15 +255,12 @@ bool BoardChecker::checkPath(char* path, bool& isDllFound) {
 	for (int i = 0; i < static_cast<int> (dlls_list.size()); ++i) {
 		isDllFound = true;
 		dllVec.push_back(dlls_list[i]);
+		log << getTime() << ": dll found: " << dlls_list[i] << std::endl;
 	}
 
 	if (!isBoardFound) {
-		std::cout << "Missing board file (*.sboard) looking in path: " << dir << std::endl;
-	}
-
-	if (static_cast<int> (boardVec.size()) < 1) {
-		std::cout << "No legal boards found in dir: " << dir << std::endl;
-		isBoardFound = false;
+		std::cout << "No board files (*.sboard) looking in path: " << dir << std::endl;
+		log << getTime() << ": No board files (*.sboard) looking in path: " << dir << std::endl;
 	}
 
 	if (isDllFound) {
@@ -264,21 +268,37 @@ bool BoardChecker::checkPath(char* path, bool& isDllFound) {
 			std::ifstream dllStream = ifstream(dllVec[i]);
 			if (!dllStream) {
 				dllVec.erase(dllVec.begin() + i);
+				log << getTime() << ": dll could not be opened: " << dlls_list[i] << std::endl;
+				continue;
 			}
 			else {
 				dllStream.close();
+			}
+			string AlgoName = dllVec[i].substr(dllVec[i].find_last_of("\\") == string::npos ? 0 : dllVec[i].find_last_of("\\") + 1, dllVec[i].find_first_of('.'));
+			HINSTANCE hDll = LoadLibraryA(dllVec[i].c_str());
+			bool dllOk = true;
+			if (!hDll) {
+				dllVec.erase(dllVec.begin() + i);
+				log << getTime() << ": dll could not be opened: " << dlls_list[i] << std::endl;
 			}
 		}
 	}
 
 	if (dllVec.size() < 2) {
-		cout << "Missing an algorithm (dll) file looking in path: " << path << " (needs at least two)" << endl;
+		cout << "Missing algorithm (dll) files looking in path: " << path << " (needs at least two)" << endl;
+		log << getTime() << ": Missing algorithm (dll) files looking in path: " << path << " (needs at least two)" << endl;
 		isDllFound = false;
 	}
 
 	if (!isDllFound || !isBoardFound) {
 		return false;
 	}
+
+	std::cout << "Number of legal players: " << dllVec.size() << std::endl;
+	std::cout << "Number of legal boards: " << boardVec.size() << std::endl;
+
+	log << getTime() << ": Number of legal players: " << dllVec.size() << std::endl;
+	log << getTime() << ": Number of legal boards: " << boardVec.size() << std::endl;
 
 	return true;
 }
@@ -291,6 +311,4 @@ bool BoardChecker::checkBoard(char* path, bool& isDllFound) {
 
 BoardChecker::~BoardChecker()
 {
-	if (isDebug)
-		std::cout << "deleting board checker" << std::endl;
 }

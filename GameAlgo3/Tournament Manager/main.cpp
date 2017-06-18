@@ -126,9 +126,17 @@ int main(int argc, char* argv[])
 	// Tournament phase
 	TournamentManager manager(threads, bc->boardVec, bc->dllVec);
 
-	if (!isInputOk) return 1;
+	if (!isInputOk) {
+		BoardChecker::log << std::endl;
+		BoardChecker::log.close();
+		return 1;
+	}
 
 	manager.setThreads();
+
+
+	BoardChecker::log << std::endl;
+	BoardChecker::log.close();
 
 	return 0;
 
