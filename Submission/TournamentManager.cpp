@@ -90,7 +90,7 @@ void TournamentManager::updateStatus(Match match, vector<int> score)
 	bool winner = score[0] >= score[1];
 
 	for (uint16_t i = 0; i < PLAYERS_IN_MATCH; i++) {
-		bool won = i == winner;
+		bool won = i == (winner ? 1 : 0);
 		int pntFor = score[i];
 		int pntAgn = score[i ? 0 : 1];
 		tuple<bool, int, int> state = { won, pntFor, pntAgn };
@@ -145,9 +145,9 @@ void TournamentManager::printStatus() {
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	// I didn't figure out how can one sort a map by value so I created an helper data set for sorting needs only
-	vector<pair<string, float>> namePer;
+	vector<pair<string, double>> namePer;
 	for (auto &player : playersDlls) {
-		namePer.push_back({ player->name,  static_cast<float>(get<0>(scores[player->name])) / (get<0>(scores[player->name]) + get<1>(scores[player->name])) * 100.00 });
+		namePer.push_back({ player->name,  static_cast<double>(get<0>(scores[player->name])) / (get<0>(scores[player->name]) + get<1>(scores[player->name])) * 100.00 });
 	}
 	sort(namePer.begin(), namePer.end(), pairCompare);
 
@@ -158,13 +158,13 @@ void TournamentManager::printStatus() {
 	}
 	Utils::gotoxy(ScreenBufferInfo.dwCursorPosition.X, ScreenBufferInfo.dwCursorPosition.Y);
 	cout << "Matches progress : " << realMatchNumber << "/" << totalMatches << endl;
-	cout << left << setw(5) << "#" << left << setw(15) << "Team Name" << left << setw(width) << "Wins" << left << setw(width) << "Losses" << left << setw(width) << "%" << left << setw(width) << "Pts For" << left << setw(width) << "Pts Against" << endl;
+	cout << left << setw(5) << "#" << left << setw(30) << "Team Name" << left << setw(width) << "Wins" << left << setw(width) << "Losses" << left << setw(width) << "%" << left << setw(width) << "Pts For" << left << setw(width) << "Pts Against" << endl;
 	for (auto &pair : namePer) {
 		string name = pair.first;
 		tuple<int, int, int, int> score = scores[name];
 		stringstream indxstr;
 		indxstr << index << ".";
-		cout << left << setw(5) << indxstr.str() << left << setw(15) << name << left << setw(width) << get<0>(score) << left << setw(width) << get<1>(score) << left << setw(width) << setprecision(2) << fixed << pair.second << left << setw(width) << get<2>(score) << left << setw(width) << get<3>(score) << endl;
+		cout << left << setw(5) << indxstr.str() << left << setw(30) << name << left << setw(width) << get<0>(score) << left << setw(width) << get<1>(score) << left << setw(width) << setprecision(2) << fixed << pair.second << left << setw(width) << get<2>(score) << left << setw(width) << get<3>(score) << endl;
 		index++;
 	}
 

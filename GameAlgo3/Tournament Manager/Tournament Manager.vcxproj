@@ -33,7 +33,7 @@
     <ClCompile Include="BoardChecker.cpp" />
     <ClCompile Include="SingleGameManager.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="TounamentManager.cpp" />
+    <ClCompile Include="TournamentManager.cpp" />
     <ClCompile Include="Types.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
@@ -133,6 +133,7 @@
       <AdditionalIncludeDirectories>C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\SmartAlgo;C:\Users\Shlomi\Source\Repos\AdvancedOOP2\GameAlgo3\SmartAlgo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
