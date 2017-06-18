@@ -6,6 +6,7 @@
 #include <mutex>
 #include <thread>
 #include "Types.h"
+#include "BoardChecker.h"
 
 #define PLAYERS_IN_MATCH 2
 
