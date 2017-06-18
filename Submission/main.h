@@ -3,7 +3,7 @@
 
 
 #define DEBUG 0
-#define TIME 1
+#define TIME 0
 
 #include <iostream>
 #include <string>

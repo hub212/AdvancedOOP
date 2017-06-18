@@ -197,44 +197,8 @@ std::shared_ptr<Board> BoardChecker::checkBoard(string boardPath) {
 	}
 }
 
-void BoardChecker::parseThreadsFromConfigFile(int& threads, string dir) {
 
-	vector<string> conf_list = {};
-	string files_dir(dir);
-	Utils::GetFileNamesInDirectory(&conf_list, files_dir);
-	conf_list.erase(remove_if(conf_list.begin(), conf_list.end(), [](string str) { return !Utils::string_has_suffix(str, ".config"); }), conf_list.end());
-	std::sort(conf_list.begin(), conf_list.end());
-	if (conf_list.size() < 1) {
-		return;
-	}
-	string confFilePath = conf_list[0];
-	std::ifstream conf;
-	conf.open(confFilePath, std::ios_base::in);
-
-
-	std::string line;
-	while (std::getline(conf, line))
-	{
-		std::istringstream iss(line);
-		string threadsSpecifier;
-		int threadsNum;
-		if (!(iss >> threadsSpecifier >> threadsNum)) {
-			continue;
-		}
-		if (threadsSpecifier.compare("-threads")) {
-			continue;
-		}
-		if (threadsNum < 1) {
-			continue;
-		}
-		threads = threadsNum;
-		break;
-	}
-	conf.close();
-}
-
-
-bool BoardChecker::checkPath(char* path, bool& isDllFound, bool& threadsSetFromCmdLn, int& threads) {
+bool BoardChecker::checkPath(char* path, bool& isDllFound) {
 
 	char dir[MY_MAX_PATH];
 	strcpy_s(dir, MY_MAX_PATH, path);
@@ -254,10 +218,6 @@ bool BoardChecker::checkPath(char* path, bool& isDllFound, bool& threadsSetFromC
 		std::cout << "Wrong path: " << dir << std::endl;
 		
 		return false;
-	}
-
-	if (!threadsSetFromCmdLn) {
-		parseThreadsFromConfigFile(threads, files_dir);
 	}
 
 
@@ -287,46 +247,42 @@ bool BoardChecker::checkPath(char* path, bool& isDllFound, bool& threadsSetFromC
 		}
 	}
 
-	if (!isBoardFound) {
-		std::cout << "No board files (*.sboard) looking in path: " << dir << std::endl;
-		log << getTime() << ": No board files (*.sboard) looking in path: " << dir << std::endl;
-	}
 
 	dlls_list.erase(remove_if(dlls_list.begin(), dlls_list.end(), [](string str) { return !Utils::string_has_suffix(str, ".dll"); }), dlls_list.end());
 
 	std::sort(dlls_list.begin(), dlls_list.end());
 
 	for (int i = 0; i < static_cast<int> (dlls_list.size()); ++i) {
-
-		std::ifstream dllStream = ifstream(dlls_list[i]);
-		if (!dllStream) {
-			log << getTime() << ": dll could not be opened: " << dlls_list[i] << std::endl;
-			continue;
-		}
-		else {
-			dllStream.close();
-		}
-		string AlgoName = dlls_list[i].substr(dlls_list[i].find_last_of("\\") == string::npos ? 0 : dlls_list[i].find_last_of("\\") + 1, dlls_list[i].find_first_of('.'));
-		HINSTANCE hDll = LoadLibraryA(dlls_list[i].c_str());
-		if (!hDll) {
-			log << getTime() << ": dll could not be opened: " << dlls_list[i] << std::endl;
-			continue;
-		}
-		GetAlgoType getAlgo;
-		getAlgo = (GetAlgoType)GetProcAddress(hDll, "GetAlgorithm");
-		if (!getAlgo)
-		{
-			log << getTime() << ": dll could not be opened: " << dlls_list[i] << std::endl;
-			continue;
-		}
-
 		isDllFound = true;
 		dllVec.push_back(dlls_list[i]);
-		log << getTime() << ": legal dll found: " << dlls_list[i] << std::endl;
+		log << getTime() << ": dll found: " << dlls_list[i] << std::endl;
 	}
 
+	if (!isBoardFound) {
+		std::cout << "No board files (*.sboard) looking in path: " << dir << std::endl;
+		log << getTime() << ": No board files (*.sboard) looking in path: " << dir << std::endl;
+	}
 
-
+	if (isDllFound) {
+		for (size_t i = 0; i < dllVec.size(); i++) {
+			std::ifstream dllStream = ifstream(dllVec[i]);
+			if (!dllStream) {
+				dllVec.erase(dllVec.begin() + i);
+				log << getTime() << ": dll could not be opened: " << dlls_list[i] << std::endl;
+				continue;
+			}
+			else {
+				dllStream.close();
+			}
+			string AlgoName = dllVec[i].substr(dllVec[i].find_last_of("\\") == string::npos ? 0 : dllVec[i].find_last_of("\\") + 1, dllVec[i].find_first_of('.'));
+			HINSTANCE hDll = LoadLibraryA(dllVec[i].c_str());
+			bool dllOk = true;
+			if (!hDll) {
+				dllVec.erase(dllVec.begin() + i);
+				log << getTime() << ": dll could not be opened: " << dlls_list[i] << std::endl;
+			}
+		}
+	}
 
 	if (dllVec.size() < 2) {
 		cout << "Missing algorithm (dll) files looking in path: " << path << " (needs at least two)" << endl;
@@ -348,9 +304,9 @@ bool BoardChecker::checkPath(char* path, bool& isDllFound, bool& threadsSetFromC
 }
 
 
-bool BoardChecker::checkBoard(char* path, bool& isDllFound, bool& threadsSetFromCmdLn, int& threads) {
+bool BoardChecker::checkBoard(char* path, bool& isDllFound) {
 	
-	return checkPath(path, isDllFound, threadsSetFromCmdLn, threads);
+	return checkPath(path, isDllFound);
 }
 
 BoardChecker::~BoardChecker()
