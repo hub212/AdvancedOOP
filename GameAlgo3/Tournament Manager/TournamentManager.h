@@ -21,13 +21,14 @@ class TournamentManager {
 	vector<shared_ptr<Player>>		playersDlls;
 	vector<Match>					matchesQueue;
 
-	map<string, queue<int>>			gameStatus;
-	map<string, int>				scores;
+	map<string, queue<tuple<int, int, int>>>	gameStatus;
+	map<string, tuple<int,int,int,int>>				scores;
 
-	mutex							mut_matches;
-	mutex							mut_scores;
+	mutex		mut_matches;
+	mutex		mut_scores;
 
-
+	CONSOLE_SCREEN_BUFFER_INFO ScreenBufferInfo = { 0 };
+	int firstTable = 1;
 
 	void setBoards(vector<shared_ptr<Board>>& inBoards);
 
@@ -43,9 +44,12 @@ class TournamentManager {
 
 	void initScores();
 
+
 public:
 
 	TournamentManager(int threads, vector<std::shared_ptr<Board>> boardVec, vector<string> dllVec);
 
 	void setThreads();
+
+	void printStatus();
 };

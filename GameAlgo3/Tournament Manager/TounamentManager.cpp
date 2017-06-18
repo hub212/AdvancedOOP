@@ -4,11 +4,13 @@
 #include "Types.h"
 #include "tuple"
 #include "main.h"
+#include <iomanip>
 #include <thread>
 #include <memory>
 #include <vector>
 #include <list>
 #include <map>
+#include <sstream>
 
 using namespace std;
 
@@ -34,7 +36,8 @@ void TournamentManager::setPlayers(vector<string>& dllVec)
 
 	for (const auto dll : dllVec) {
 
-		string AlgoName = dll.substr(dll.find_last_of("\\") == string::npos ? 0 : dll.find_last_of("\\") + 1, dll.find_first_of('.'));
+		int back_slash = dll.find_last_of("\\");
+		string AlgoName = dll.substr(back_slash == string::npos ? 0 : back_slash + 1, back_slash == string::npos ? 0 : dll.length()- 5 - back_slash);
 		HINSTANCE hDll = LoadLibraryA(dll.c_str());
 		bool dllOk = true;
 		if (!hDll) {
@@ -87,26 +90,39 @@ void TournamentManager::setMatches()
 	// randomizing queue
 	std::random_shuffle(matchesQueue.begin(), matchesQueue.end());
 	
-	for (auto &match : matchesQueue) {
-		cout << match << endl;
-	}
+	//for (auto &match : matchesQueue) {
+	//	cout << match << endl;
+	//}
 }
 
 void TournamentManager::updateStatus(Match match, vector<int> score)
 {
 	unique_lock<mutex> locker(mut_scores);
 	string players[] = { get<0>(match)->name, get<1>(match)->name };
+	bool winner = score[0] >= score[1];
 
 	for (uint16_t i = 0; i < PLAYERS_IN_MATCH; i++) {
-		gameStatus[players[i]].push(score[i]);
+		bool won = i == winner;
+		int pntFor = score[i];
+		int pntAgn = score[i ? 0 : 1];
+		tuple<bool, int, int> state = { won, pntFor, pntAgn };
+		gameStatus[players[i]].push(state);
 	}
 
 	// All players has at least one score
 	if (gameStatus.size() == numOfPlayers) {
 		for (auto &player : playersDlls) {
-			scores[player->name] += gameStatus[player->name].front();
-			cout << player->name << ": " << scores[player->name] << endl;
+			tuple<int, int, int> state = gameStatus[player->name].front();
+			// Winns
+			get<0>(scores[player->name]) += get<0>(state);
+			// Losses
+			get<1>(scores[player->name]) += !get<0>(state);
+			// Pts For
+			get<2>(scores[player->name]) += get<1>(state);
+			// Pts Against
+			get<3>(scores[player->name]) += get<2>(state);
 		}
+		printStatus();
 		popScores();
 	}
 	locker.unlock();
@@ -129,8 +145,30 @@ void TournamentManager::popScores()
 void TournamentManager::initScores()
 {
 	for (auto &player : playersDlls) {
-		scores[player->name] = 0;
+		scores[player->name] = {0,0,0,0};
 	}
+}
+
+void TournamentManager::printStatus() {
+	int index = 1;
+	int width = 10;
+	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (firstTable)
+	{
+		GetConsoleScreenBufferInfo(hStdout, &ScreenBufferInfo);
+		firstTable = 0;
+	}
+	Utils::gotoxy(ScreenBufferInfo.dwCursorPosition.X, ScreenBufferInfo.dwCursorPosition.Y);
+	cout << left << setw(5) << "#" << left << setw(15) << "Team Name" << left << setw(width) << "Wins" << left << setw(width) << "Losses" << left << setw(width) << "%" << left << setw(width) << "Pts For" << left << setw(width) << "Pts Against" << endl;
+	for (auto &player : playersDlls) {
+		string name = player->name;
+		tuple<int, int, int, int> score = scores[name];
+		stringstream indxstr;
+		indxstr << index << ".";
+		cout << left << setw(5) << indxstr.str() << left << setw(15) << name << left << setw(width) << get<0>(score) << left << setw(width) << get<1>(score) << left << setw(width) << setprecision(2) << fixed << static_cast<float>(get<0>(score)) / (get<0>(score) + get<1>(score)) * 100.00 << left << setw(width) << get<2>(score) << left << setw(width) << get<3>(score) << endl;
+		index++;
+	}
+
 }
 
 int TournamentManager::play()

@@ -133,6 +133,7 @@ int main(int argc, char* argv[])
 	}
 
 	manager.setThreads();
+	manager.printStatus();
 
 
 	BoardChecker::log << std::endl;
