@@ -104,6 +104,16 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+	// time measurments
+	LARGE_INTEGER frequency;        // ticks per second
+	LARGE_INTEGER t1, t2;           // ticks
+	double elapsedTime;
+
+	// get ticks per second
+	QueryPerformanceFrequency(&frequency);
+
+	// start timer
+	QueryPerformanceCounter(&t1);
 
 	// Checking phase
 	bool	isInputOk;
@@ -121,7 +131,19 @@ int main(int argc, char* argv[])
 		isInputOk = bc->checkBoard(pwd, isDllFound);
 	}
 
+	// stop timer
+	QueryPerformanceCounter(&t2);
 
+	// compute and print the elapsed time in sec
+	elapsedTime = (t2.QuadPart - t1.QuadPart)*1.0 / frequency.QuadPart;
+
+	cout << "check boards time: " << elapsedTime << " [sec]" << endl;
+
+	// get ticks per second
+	QueryPerformanceFrequency(&frequency);
+
+	// start timer
+	QueryPerformanceCounter(&t1);
 
 	// Tournament phase
 	TournamentManager manager(threads, bc->boardVec, bc->dllVec);
@@ -138,6 +160,14 @@ int main(int argc, char* argv[])
 
 	BoardChecker::log << std::endl;
 	BoardChecker::log.close();
+
+	// stop timer
+	QueryPerformanceCounter(&t2);
+
+	// compute and print the elapsed time in sec
+	elapsedTime = (t2.QuadPart - t1.QuadPart) *1.0 / frequency.QuadPart;
+
+	cout << "tournament time: " << elapsedTime << " [sec]" << endl;
 
 	return 0;
 

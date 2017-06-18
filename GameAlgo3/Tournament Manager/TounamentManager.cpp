@@ -90,6 +90,8 @@ void TournamentManager::setMatches()
 	// randomizing queue
 	std::random_shuffle(matchesQueue.begin(), matchesQueue.end());
 	
+	totalMatches = matchesQueue.size();
+	matchNumber = 1;
 	//for (auto &match : matchesQueue) {
 	//	cout << match << endl;
 	//}
@@ -125,6 +127,7 @@ void TournamentManager::updateStatus(Match match, vector<int> score)
 		printStatus();
 		popScores();
 	}
+	matchNumber++;
 	locker.unlock();
 }
 
@@ -152,6 +155,7 @@ void TournamentManager::initScores()
 void TournamentManager::printStatus() {
 	int index = 1;
 	int width = 10;
+	int realMatchNumber = (matchNumber < totalMatches) ? matchNumber : totalMatches;
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (firstTable)
 	{
@@ -159,6 +163,7 @@ void TournamentManager::printStatus() {
 		firstTable = 0;
 	}
 	Utils::gotoxy(ScreenBufferInfo.dwCursorPosition.X, ScreenBufferInfo.dwCursorPosition.Y);
+	cout << "Matches progress : " << totalMatches << "/" << realMatchNumber << endl;
 	cout << left << setw(5) << "#" << left << setw(15) << "Team Name" << left << setw(width) << "Wins" << left << setw(width) << "Losses" << left << setw(width) << "%" << left << setw(width) << "Pts For" << left << setw(width) << "Pts Against" << endl;
 	for (auto &player : playersDlls) {
 		string name = player->name;

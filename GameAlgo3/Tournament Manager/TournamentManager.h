@@ -13,7 +13,7 @@ using namespace std;
 
 class TournamentManager {
 
-	int threads = 4;
+	int threads;
 	int numOfPlayers;
 	bool isInputOK;
 
@@ -29,6 +29,8 @@ class TournamentManager {
 
 	CONSOLE_SCREEN_BUFFER_INFO ScreenBufferInfo = { 0 };
 	int firstTable = 1;
+	int matchNumber;
+	int totalMatches;
 
 	void setBoards(vector<shared_ptr<Board>>& inBoards);
 
